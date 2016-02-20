@@ -2,93 +2,99 @@
   Variable names
 \-------------------------------------------------------------------------------/
 
-import data.nat
-open nat
+import data.nat data.list data.list.sorted
+open nat list
 
 ---------------------------------------------------------------------------------
 
-inductive names : Type :=
-  | name : ℕ → names
-  | cons : ℕ → names → names
+definition names := list ℕ
+
+---------------------------------------------------------------------------------
 
 namespace names
 
-definition mem (x : ℕ) : names → Prop
-  | (name n)    := n = x
-  | (cons n ns) := if n < x then mem ns else n = x
+definition sorted := @locally_sorted ℕ gt
 
-inductive sorted : names → Prop :=
-  | base  : ∀ n,                                          sorted (name n)
-  | step₁ : ∀ {n₁ n₂},    n₁ < n₂                       → sorted (cons n₂ (name n₁))
-  | step₂ : ∀ {n₁ n₂ ns}, n₁ < n₂ → sorted (cons n₁ ns) → sorted (cons n₂ (cons n₁ ns))
+---------------------------------------------------------------------------------
 
-open sorted
+namespace sorted
 
-lemma sorted_replace_head : ∀ {x y ns}, x < y → sorted (cons x ns) → sorted (cons y ns)
-  | x y (name w)    x_lt_y (step₁ w_lt_x)    := step₁ (lt.trans w_lt_x x_lt_y)
-  | x y (cons w ns) x_lt_y (step₂ w_lt_x IH) := step₂ (lt.trans w_lt_x x_lt_y) IH
+open list.locally_sorted
 
-lemma sorted_cons_of_gt_of_sorted : ∀ {x y ns}, x < y → sorted (cons x ns) → sorted (cons y (cons x ns))
-  | _ _ (name _)   x_lt_y (step₁ w_lt_x)    := step₂ x_lt_y (step₁ w_lt_x)
-  | _ _ (cons _ _) x_lt_y (step₂ w_lt_x IH) := step₂ x_lt_y (sorted_cons_of_gt_of_sorted w_lt_x IH)
+private lemma replace_head : ∀ {x y ns}, y > x → sorted (x :: ns) → sorted (y :: ns)
+  | x y []        _      _                := !base
+  | x y (w :: ns) y_gt_x (step x_gt_w IH) := step (gt.trans y_gt_x x_gt_w) IH
 
-lemma not_mem_of_sorted_cons : ∀ {n ns}, sorted (cons n ns) → ¬ mem n ns
-  | m (name n) (step₁ n_lt_m) := by unfold mem; exact (ne_of_lt n_lt_m)
+private lemma sorted_cons_of_gt : ∀ {x y ns}, y > x → sorted (x :: ns) → sorted (y :: x :: ns)
+  | x y []        y_gt_x _                := step y_gt_x !base
+  | x y (n :: ns) y_gt_x (step x_gt_n IH) := step y_gt_x (step x_gt_n IH)
 
-  | m (cons n₂ (name n₁)) (step₂ n2_lt_m S) :=
-    begin
-      unfold mem,
-      rewrite (if_pos n2_lt_m),
-      unfold mem,
-      cases S,  -- Generates: a : n₁ < n₂
-      exact (ne_of_lt (lt.trans a n2_lt_m))
+private lemma hd_not_mem_of_tl : ∀ {n ns}, sorted (n :: ns) → n ∉ ns
+  | n [] _ := not_mem_nil n
+
+  | n [m] (step n_gt_m IH) :=
+    assume n_mem_singleton_m : n ∈ [m],
+    match iff.elim_left (mem_cons_iff n m []) n_mem_singleton_m with
+      | or.inl n_eq_m    := absurd n_eq_m (ne_of_gt n_gt_m)
+      | or.inr n_mem_nil := absurd n_mem_nil (not_mem_nil n)
     end
 
-  | m (cons n₂ (cons n₁ ns)) (step₂ n2_lt_m S) :=
+  | n (m₂ :: m₁ :: ms) (step n_gt_m2 (step m2_gt_m1 IH)) :=
     begin
-      cases S,  -- Generates: a : n₁ < n₂, a_1 : sorted (cons n₁ ns)
       unfold mem,
-      rewrite (if_pos n2_lt_m),
-      exact (not_mem_of_sorted_cons (sorted_cons_of_gt_of_sorted (lt.trans a n2_lt_m) a_1))
+      intro eq_or_mem,
+      match eq_or_mem with
+        | or.inl n_eq_m := absurd n_eq_m (ne_of_gt n_gt_m2)
+        | or.inr n_mem_m1_ms :=
+          have n_gt_m1 : n > m₁, from gt.trans n_gt_m2 m2_gt_m1,
+          have n_not_mem_m1_ms : n ∉ m₁ :: ms, from
+            hd_not_mem_of_tl (sorted_cons_of_gt n_gt_m1 IH),
+          absurd n_mem_m1_ms n_not_mem_m1_ms
+      end
     end
 
-lemma not_mem_of_gt2 {x y ns} (x_lt_y : x < y) (S : sorted (cons x ns)) : ¬ mem y ns :=
-  not_mem_of_sorted_cons (sorted_replace_head x_lt_y S)
+theorem not_mem_if_gt_hd : ∀ {x y ns}, y > x → sorted (x :: ns) → y ∉ x :: ns
+  | x y [] y_gt_x _ :=
+    begin
+      unfold mem,
+      intro eq_or_mem,
+      match eq_or_mem with
+        | or.inl y_eq_x    := absurd y_eq_x (ne_of_gt y_gt_x)
+        | or.inr y_mem_nil := not_mem_nil x y_mem_nil
+      end
+    end
 
-theorem not_mem_of_gt : ∀ {x y ns}, x < y → sorted (cons x ns) → ¬ mem y (cons x ns)
-  | x y (name n) x_lt_y (step₁ n_lt_x) :=
+  | x y (m :: ms) y_gt_x (step x_gt_m IH) :=
     begin
       unfold mem,
-      rewrite (if_pos x_lt_y),
-      unfold mem,
-      exact (ne_of_lt (lt.trans n_lt_x x_lt_y))
+      intro eq_or_mem,
+      match eq_or_mem with
+        | or.inl y_eq_x := absurd y_eq_x (ne_of_gt y_gt_x)
+        | or.inr y_mem_m_ms :=
+          have y_gt_m : y > m, from gt.trans y_gt_x x_gt_m,
+          have y_not_mem_m_ms : y ∉ m :: ms, from
+            not_mem_if_gt_hd y_gt_m IH,
+          absurd y_mem_m_ms y_not_mem_m_ms
+      end
     end
-  | x y (cons n ns) x_lt_y (step₂ n_lt_x IH) :=
-    begin
-      unfold mem,
-      rewrite (if_pos x_lt_y),
-      unfold mem,
-      rewrite (if_pos (lt.trans n_lt_x x_lt_y)),
-      exact (not_mem_of_gt2 (lt.trans n_lt_x x_lt_y) IH)
-    end
+
+end sorted
+
+---------------------------------------------------------------------------------
 
 definition fresh : names → ℕ
-  | (name n)    := succ n
-  | (cons n ns) := succ n
+  | []        := zero
+  | (n :: ns) := succ n
 
-theorem fresh_not_mem (x : ℕ) : ∀ ns, sorted ns → x = fresh ns → ¬ mem x ns
-  | (name n) _ x_is_fresh :=
+theorem fresh.not_mem_of_sorted (n : ℕ) : ∀ ns, sorted ns → n = fresh ns → n ∉ ns
+  | [] _ _ := not_mem_nil n
+  | (m :: ms) sorted_m_ms n_is_fresh :=
     begin
-      unfold fresh at x_is_fresh,
-      rewrite x_is_fresh,
-      unfold mem,
-      exact (ne.symm succ_ne_self)
+      unfold fresh at n_is_fresh,
+      rewrite n_is_fresh,
+      exact (sorted.not_mem_if_gt_hd !lt_succ_self sorted_m_ms)
     end
-  | (cons n ns) ns_sorted x_is_fresh :=
-    begin
-      unfold fresh at x_is_fresh,
-      rewrite x_is_fresh,
-      exact (not_mem_of_gt (self_lt_succ n) ns_sorted),
-    end
+
+---------------------------------------------------------------------------------
 
 end names
