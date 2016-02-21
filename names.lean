@@ -1,5 +1,18 @@
 /-------------------------------------------------------------------------------\
-  Variable names
+
+Variable names
+
+A variable name is `n : ℕ`, an element from an infinite set of variable names
+with decidable equality.
+
+We use `names : list ℕ` as a finite subset of variable names. Given that `names`
+is a finite subset of an infinite set, we are guaranteed to always be able to
+find a fresh name s.t. it is not a member of `names`.
+
+To simplify the search for a fresh name, we assume `names` is sorted by greatest
+first and has no duplicates. Thus, a fresh name will always be the successor of
+the list head.
+
 \-------------------------------------------------------------------------------/
 
 import data.nat data.list data.list.sorted
