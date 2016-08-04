@@ -9,7 +9,7 @@ open list.sorted.ops
 open [class] sum
 
 namespace list.sorted
-variables {A : Type}
+variable {A : Type}
 
 namespace insert
 
