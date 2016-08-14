@@ -46,7 +46,7 @@ definition insert (x y : A) (S : sset X Y) : sset (set.insert x X) (set.insert y
 definition id (X : set A) : sset X X :=
   λ m n, m = n ∧ m ∈ X
 
-definition converse (R : sset X Y) : sset Y X :=
+definition inverse (R : sset X Y) : sset Y X :=
   λ m n, mem n m R
 
 definition compose (R : sset X Y) (S : sset Y Z) : sset X Z :=
@@ -84,6 +84,83 @@ open sset
 
 definition symm_update (R : sset X Y) (x y : A) : sset (insert x X) (insert y Y) :=
   λ m n, m = x ∧ n = y ∨ m ≠ x ∧ n ≠ y ∧ mem m n R
+
+--------------------------------------------------------------------------------
+
+section symm_update_and_inverse
+variables {x y a b : A} {R : sset X Y}
+
+private
+lemma mem_symm_update_inverse.left
+(H : mem a b (inverse (symm_update R x y)))
+: mem a b (symm_update (inverse R) y x) :=
+  have a_mem_insert_y_Y : a ∈ insert y Y, from and.left H,
+  have b_mem_insert_x_X : b ∈ insert x X, from and.left (and.right H),
+  have inverse_symm_update : symm_update R x y b a, from
+    and.right (and.right (and.right (and.right H))),
+  have lswap : b = x ∧ a = y → a = y ∧ b = x, from and.swap,
+  have rswap : b ≠ x ∧ a ≠ y ∧ b ∈ X ∧ a ∈ Y ∧ R b a
+             → a ≠ y ∧ b ≠ x ∧ a ∈ Y ∧ b ∈ X ∧ b ∈ X ∧ a ∈ Y ∧ R b a, from
+    assume H₁,
+    have b_ne_x : b ≠ x, from and.left H₁,
+    have a_ne_y : a ≠ y, from and.left (and.right H₁),
+    have b_mem_X : b ∈ X, from and.left (and.right (and.right H₁)),
+    have a_mem_Y : a ∈ Y, from and.left (and.right (and.right (and.right H₁))),
+    have b_R_a : R b a, from and.right (and.right (and.right (and.right H₁))),
+    and.intro  a_ne_y
+    (and.intro b_ne_x
+    (and.intro a_mem_Y
+    (and.intro b_mem_X
+    (and.intro b_mem_X
+    (and.intro a_mem_Y
+               b_R_a))))),
+  have symm_update_inverse : symm_update (inverse R) y x a b, from
+    or.elim inverse_symm_update
+      (λ H₁, or.inl (lswap H₁))
+      (λ H₁, or.inr (rswap H₁)),
+  show mem a b (symm_update (inverse R) y x), from
+    and.intro a_mem_insert_y_Y (and.intro b_mem_insert_x_X symm_update_inverse)
+
+private
+lemma mem_symm_update_inverse.right
+(H : mem a b (symm_update (inverse R) y x))
+: mem a b (inverse (symm_update R x y)) :=
+  have a_mem_insert_y_Y : a ∈ insert y Y, from and.left H,
+  have b_mem_insert_x_X : b ∈ insert x X, from and.left (and.right H),
+  have symm_update_inverse : symm_update (inverse R) y x a b, from
+    and.right (and.right H),
+  have lswap : a = y ∧ b = x → b = x ∧ a = y, from and.swap,
+  have rswap : a ≠ y ∧ b ≠ x ∧ a ∈ Y ∧ b ∈ X ∧ b ∈ X ∧ a ∈ Y ∧ R b a
+             → b ≠ x ∧ a ≠ y ∧ b ∈ X ∧ a ∈ Y ∧ R b a, from
+    assume H₁,
+    have a_ne_y : a ≠ y, from and.left H₁,
+    have b_ne_x : b ≠ x, from and.left (and.right H₁),
+    have a_mem_Y : a ∈ Y, from and.left (and.right (and.right H₁)),
+    have b_mem_X : b ∈ X, from and.left (and.right (and.right (and.right H₁))),
+    have b_R_a : R b a, from
+      and.right (and.right (and.right (and.right (and.right (and.right H₁))))),
+    and.intro  b_ne_x
+    (and.intro a_ne_y
+    (and.intro b_mem_X
+    (and.intro a_mem_Y
+               b_R_a))),
+  have inverse_symm_update : symm_update R x y b a, from
+    or.elim symm_update_inverse
+      (λ H₁, or.inl (lswap H₁))
+      (λ H₁, or.inr (rswap H₁)),
+  show mem a b (inverse (symm_update R x y)), from
+    and.intro  a_mem_insert_y_Y
+    (and.intro b_mem_insert_x_X
+    (and.intro b_mem_insert_x_X
+    (and.intro a_mem_insert_y_Y
+               inverse_symm_update)))
+
+theorem mem_symm_update_inverse
+: mem a b (inverse (symm_update R x y))
+↔ mem a b (symm_update (inverse R) y x) :=
+  iff.intro mem_symm_update_inverse.left mem_symm_update_inverse.right
+
+end symm_update_and_inverse
 
 --------------------------------------------------------------------------------
 
