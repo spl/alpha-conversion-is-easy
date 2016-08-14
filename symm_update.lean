@@ -1,15 +1,24 @@
 import data.set
 
+--------------------------------------------------------------------------------
+
+open eq.ops
 open prod.ops
 open set
 
+--------------------------------------------------------------------------------
+
 definition symm_update₁ (R : set (ℕ × ℕ)) (x y : ℕ) : set (ℕ × ℕ) :=
   λ p, p = (x, y) ∨ p.1 ≠ x ∧ p.1 ≠ y ∧ p ∈ R
+
+--------------------------------------------------------------------------------
 
 variables {A : Type} {X Y Z : set A}
 
 definition sset (X : set A) (Y : set A) : Type :=
   A → A → Prop
+
+--------------------------------------------------------------------------------
 
 namespace sset
 
@@ -34,7 +43,7 @@ definition from_set (X : set A) (Y : set A) (S : set (A × A)) : sset X Y :=
 definition insert (x y : A) (S : sset X Y) : sset (set.insert x X) (set.insert y Y) :=
   λ m n, m = x ∧ n = y ∨ mem m n S
 
-definition unit (X : set A) : sset X X :=
+definition id (X : set A) : sset X X :=
   λ m n, m = n ∧ m ∈ X
 
 definition converse (R : sset X Y) : sset Y X :=
@@ -69,12 +78,80 @@ end mem_compose
 
 end sset
 
+--------------------------------------------------------------------------------
+
 open sset
 
 definition symm_update (R : sset X Y) (x y : A) : sset (insert x X) (insert y Y) :=
   λ m n, m = x ∧ n = y ∨ m ≠ x ∧ n ≠ y ∧ mem m n R
 
-section mem_symm_update_compose_of_mem_compose_symm_update
+--------------------------------------------------------------------------------
+
+section symm_update_and_id
+variables {x a b : A}
+
+private
+lemma mem_symm_update_id.left
+(H : mem a b (symm_update (id X) x x))
+: mem a b (id (insert x X)) :=
+  have a_mem_insert_x_X : a ∈ insert x X, from and.left H,
+  have b_mem_insert_x_X : b ∈ insert x X, from and.left (and.right H),
+  have H' : a = x ∧ b = x ∨ a ≠ x ∧ b ≠ x ∧ mem a b (id X), from
+    and.right (and.right H),
+  have a_eq_b : a = b, from
+    or.elim H'
+      (suppose H₁ : a = x ∧ b = x,
+       have a_eq_x : a = x, from and.left H₁,
+       have b_eq_x : b = x, from and.right H₁,
+       b_eq_x⁻¹ ▸ a_eq_x)
+      (suppose H₁ : a ≠ x ∧ b ≠ x ∧ mem a b (id X),
+       have a_eq_b : a = b, from
+         and.left (and.right (and.right (and.right (and.right H₁)))),
+       a_eq_b),
+  show mem a b (id (insert x X)), from
+    and.intro a_mem_insert_x_X
+    (and.intro b_mem_insert_x_X
+    (and.intro a_eq_b a_mem_insert_x_X))
+
+variable [decidable_eq A]
+
+private
+lemma mem_symm_update_id.right
+(H : mem a b (id (insert x X)))
+: mem a b (symm_update (id X) x x) :=
+  have a_mem_insert_x_X : a ∈ insert x X, from and.left H,
+  have b_mem_insert_x_X : b ∈ insert x X, from and.left (and.right H),
+  have a_eq_b : a = b, from and.left (and.right (and.right H)),
+  have symm_update_id : symm_update (id X) x x a b, from
+    if P : a = x then
+      have a_eq_x : a = x, from P,
+      have b_eq_x : b = x, from a_eq_b ▸ a_eq_x,
+      or.inl (and.intro a_eq_x b_eq_x)
+    else
+      have a_ne_x : a ≠ x, from P,
+      have b_ne_x : b ≠ x, from a_eq_b ▸ a_ne_x,
+      have a_mem_X : a ∈ X, from
+        mem_of_mem_insert_of_ne a_mem_insert_x_X a_ne_x,
+      have b_mem_X : b ∈ X, from
+        mem_of_mem_insert_of_ne b_mem_insert_x_X b_ne_x,
+      have a_b_mem_id_X : mem a b (id X), from
+        and.intro a_mem_X
+        (and.intro b_mem_X
+        (and.intro a_eq_b a_mem_X)),
+      or.inr (and.intro a_ne_x (and.intro b_ne_x a_b_mem_id_X)),
+  show mem a b (symm_update (id X) x x), from
+    and.intro a_mem_insert_x_X (and.intro b_mem_insert_x_X symm_update_id)
+
+theorem mem_symm_update_id
+: mem a b (symm_update (id X) x x)
+↔ mem a b (id (insert x X)) :=
+  iff.intro mem_symm_update_id.left mem_symm_update_id.right
+
+end symm_update_and_id
+
+--------------------------------------------------------------------------------
+
+section symm_update_and_compose
 variables {R : sset X Y} {S : sset Y Z} {x y z a c : A}
 
 theorem mem_symm_update_compose_of_mem_compose_symm_update
@@ -119,4 +196,4 @@ theorem mem_symm_update_compose_of_mem_compose_symm_update
   show mem a c (symm_update (compose R S) x z), from
     and.intro a_mem_insert_x_X (and.intro c_mem_insert_z_Z symm_update_compose)
 
-end mem_symm_update_compose_of_mem_compose_symm_update
+end symm_update_and_compose
