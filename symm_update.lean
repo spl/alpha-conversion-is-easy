@@ -87,6 +87,29 @@ definition symm_update (R : sset X Y) (x y : A) : sset (insert x X) (insert y Y)
 
 --------------------------------------------------------------------------------
 
+section symm_update_map
+variables {a b x y : A} {R S : sset X Y}
+
+definition map_symm_update
+(f : ∀{c d}, mem c d R → mem c d S)
+(H : mem a b (symm_update R x y))
+: mem a b (symm_update S x y) :=
+  have a_mem_insert_x_X : a ∈ insert x X, from and.left H,
+  have b_mem_insert_y_Y : b ∈ insert y Y, from and.left (and.right H),
+  have H₁ : symm_update R x y a b, from and.right (and.right H),
+  have left : a = x ∧ b = y → symm_update S x y a b, from or.inl,
+  have right : a ≠ x ∧ b ≠ y ∧ mem a b R → symm_update S x y a b, from
+    suppose H₂ : a ≠ x ∧ b ≠ y ∧ mem a b R,
+    or.inr (and.imp_right (and.imp_right f) H₂),
+  show mem a b (symm_update S x y), from
+    and.intro  a_mem_insert_x_X
+    (and.intro b_mem_insert_y_Y
+               (or.elim H₁ left right))
+
+end symm_update_map
+
+--------------------------------------------------------------------------------
+
 section symm_update_and_inverse
 variables {x y a b : A} {R : sset X Y}
 

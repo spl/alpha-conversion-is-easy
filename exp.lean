@@ -8,6 +8,6 @@ inductive exp₁ : set ℕ → Type :=
   | lam : Π {X}  x, exp₁ X          → exp₁ (X \ '{x})
 
 inductive exp₂ : set ℕ → Type :=
-  | var : Π X    x, x ∈ X           → exp₂ X
-  | app : Π {X}   , exp₂ X → exp₂ X → exp₂ X
-  | lam : Π {X}  x, exp₂ (X ∪ '{x}) → exp₂ X
+  | var : Π {X}  x, x ∈ X             → exp₂ X
+  | app : Π {X}   , exp₂ X → exp₂ X   → exp₂ X
+  | lam : Π {X}  x, exp₂ (insert x X) → exp₂ X
