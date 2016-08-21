@@ -49,6 +49,17 @@ definition id (X : set A) : sset X X :=
 definition inverse (R : sset X Y) : sset Y X :=
   λ m n, mem n m R
 
+theorem mem_inverse {x y : A} {R : sset X Y} (H : mem x y R) : mem y x (inverse R) :=
+  have x_mem_X : x ∈ X, from  mem_left H,
+  have y_mem_Y : y ∈ Y, from  mem_right H,
+  have x_R_y : R x y, from mem_prop H,
+  show mem y x (inverse R), from
+    and.intro  y_mem_Y
+    (and.intro x_mem_X
+    (and.intro x_mem_X
+    (and.intro y_mem_Y
+               x_R_y)))
+
 definition compose (R : sset X Y) (S : sset Y Z) : sset X Z :=
   λ m n, ∃ y, mem m y R ∧ mem y n S
 
@@ -88,23 +99,51 @@ definition symm_update (R : sset X Y) (x y : A) : sset (insert x X) (insert y Y)
 --------------------------------------------------------------------------------
 
 section symm_update_map
-variables {a b x y : A} {R S : sset X Y}
+variables {a b x y : A} {X' Y' : set A} {R : sset X Y} {S : sset X' Y'}
+
+definition map_symm_update.left
+(H : a = x ∧ b = y)
+: a ∈ insert x X' ∧ b ∈ insert y Y' ∧ symm_update S x y a b :=
+  have a_eq_x : a = x, from and.left H,
+  have b_eq_y : b = y, from and.right H,
+  have symm_update_S : symm_update S x y a b, from or.inl H,
+  have x_mem_insert_x_X' : x ∈ insert x X', from mem_insert x X',
+  have y_mem_insert_y_Y' : y ∈ insert y Y', from mem_insert y Y',
+  show a ∈ insert x X' ∧ b ∈ insert y Y' ∧ symm_update S x y a b, from
+    begin
+      rewrite -a_eq_x at x_mem_insert_x_X' {1},
+      rewrite -b_eq_y at y_mem_insert_y_Y' {1},
+      apply and.intro  x_mem_insert_x_X'
+            (and.intro y_mem_insert_y_Y'
+                       symm_update_S)
+    end
+
+definition map_symm_update.right
+(f : ∀{c d}, mem c d R → mem c d S)
+(H : a ≠ x ∧ b ≠ y ∧ mem a b R)
+: a ∈ insert x X' ∧ b ∈ insert y Y' ∧ symm_update S x y a b :=
+  have a_b_mem_R : mem a b R, from and.right (and.right H),
+  have symm_update_S : symm_update S x y a b, from
+    or.inr (and.imp_right (and.imp_right f) H),
+  have a_b_mem_S : mem a b S, from f a_b_mem_R,
+  have a_mem_X' : a ∈ X', from and.left a_b_mem_S,
+  have b_mem_Y' : b ∈ Y', from and.left (and.right a_b_mem_S),
+  have a_mem_insert_x_X' : a ∈ insert x X', from mem_insert_of_mem x a_mem_X',
+  have b_mem_insert_y_Y' : b ∈ insert y Y', from mem_insert_of_mem y b_mem_Y',
+  show a ∈ insert x X' ∧ b ∈ insert y Y' ∧ symm_update S x y a b, from
+    and.intro  a_mem_insert_x_X'
+    (and.intro b_mem_insert_y_Y'
+               symm_update_S)
 
 definition map_symm_update
 (f : ∀{c d}, mem c d R → mem c d S)
 (H : mem a b (symm_update R x y))
 : mem a b (symm_update S x y) :=
-  have a_mem_insert_x_X : a ∈ insert x X, from and.left H,
-  have b_mem_insert_y_Y : b ∈ insert y Y, from and.left (and.right H),
-  have H₁ : symm_update R x y a b, from and.right (and.right H),
-  have left : a = x ∧ b = y → symm_update S x y a b, from or.inl,
-  have right : a ≠ x ∧ b ≠ y ∧ mem a b R → symm_update S x y a b, from
-    suppose H₂ : a ≠ x ∧ b ≠ y ∧ mem a b R,
-    or.inr (and.imp_right (and.imp_right f) H₂),
+  have symm_update_R : symm_update R x y a b, from and.right (and.right H),
   show mem a b (symm_update S x y), from
-    and.intro  a_mem_insert_x_X
-    (and.intro b_mem_insert_y_Y
-               (or.elim H₁ left right))
+    or.elim symm_update_R
+      map_symm_update.left
+      (@map_symm_update.right A X Y a b x y X' Y' R S @f)
 
 end symm_update_map
 
