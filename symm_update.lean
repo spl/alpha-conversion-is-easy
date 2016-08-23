@@ -60,6 +60,13 @@ theorem mem_inverse {x y : A} {R : sset X Y} (H : mem x y R) : mem y x (inverse 
     (and.intro y_mem_Y
                x_R_y)))
 
+theorem mem_id_of_mem_inverse_id (x y : A) (H : mem x y (inverse (id X))) : mem x y (id X) :=
+  have x_mem_X : x ∈ X, from and.left H,
+  have y_mem_X : y ∈ X, from and.left (and.right H),
+  have y_eq_x : y = x, from and.left (and.right (and.right (and.right (and.right H)))),
+  show x ∈ X ∧ y ∈ X ∧ x = y ∧ x ∈ X, from
+    and.intro x_mem_X (and.intro y_mem_X (and.intro (eq.symm y_eq_x) x_mem_X))
+
 definition compose (R : sset X Y) (S : sset Y Z) : sset X Z :=
   λ m n, ∃ y, mem m y R ∧ mem y n S
 
@@ -86,6 +93,15 @@ theorem mem_compose : (∃ y, mem x y R ∧ mem y z S) ↔ mem x z (compose R S)
   iff.intro mem_compose.left mem_compose.right
 
 end mem_compose
+
+theorem mem_id_of_mem_compose_id (x y : A) (H : mem x y (compose (id X) (id X))) : mem x y (id X) :=
+  have x_mem_X : x ∈ X, from and.left H,
+  have y_mem_X : y ∈ X, from and.left (and.right H),
+  obtain (c : A) (Hc : mem x c (id X) ∧ mem c y (id X)), from and.right (and.right H),
+  have x_eq_c : x = c, from and.left (and.right (and.right (and.left Hc))),
+  have c_eq_y : c = y, from and.left (and.right (and.right (and.right Hc))),
+  show x ∈ X ∧ y ∈ X ∧ x = y ∧ x ∈ X, from
+    and.intro x_mem_X (and.intro y_mem_X (and.intro (eq.trans x_eq_c c_eq_y) x_mem_X))
 
 end sset
 

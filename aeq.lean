@@ -57,3 +57,11 @@ theorem aeq.compose
            → mem a c (symm_update (compose R S) x z), from
       λ a c, mem_symm_update_compose_of_mem_compose_symm_update,
     lam x z (aeq.map f (aeq.compose a₁ a₂))
+
+theorem aeq.reflexive {X} {e : exp₂ X} : aeq (id X) e e := !aeq.id
+
+theorem aeq.symmetric {X} {e₁ e₂ : exp₂ X} (a : aeq (id X) e₁ e₂) : aeq (id X) e₂ e₁ :=
+  aeq.map mem_id_of_mem_inverse_id (aeq.inverse a)
+
+theorem aeq.transitive {X} {e₁ e₂ e₃ : exp₂ X} (a₁ : aeq (id X) e₁ e₂) (a₂ : aeq (id X) e₂ e₃) : aeq (id X) e₁ e₃ :=
+  aeq.map mem_id_of_mem_compose_id (aeq.compose a₁ a₂)
