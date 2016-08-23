@@ -5,20 +5,20 @@ import exp
 open nat
 open set
 open sset
-open exp₂
+open exp
 
-inductive aeq : Π{X Y}, sset X Y → exp₂ X → exp₂ Y → Type :=
-  | var : Π{X Y} {R : sset X Y} x y (m : sset.mem x y R),                                                              aeq R (var x (mem_left m)) (var y (mem_right m))
-  | app : Π{X Y} {R : sset X Y} {f₁ e₁ : exp₂ X} {f₂ e₂ : exp₂ Y}, aeq R f₁ f₂ → aeq R e₁ e₂                         → aeq R (app f₁ e₁)          (app f₂ e₂)
-  | lam : Π{X Y} {R : sset X Y} x y {e₁ : exp₂ (insert x X)} {e₂ : exp₂ (insert y Y)}, aeq (symm_update R x y) e₁ e₂ → aeq R (lam x e₁)           (lam y e₂)
+inductive aeq : Π{X Y}, sset X Y → exp X → exp Y → Type :=
+  | var : Π{X Y} {R : sset X Y} x y (m : sset.mem x y R),                                                            aeq R (var x (mem_left m)) (var y (mem_right m))
+  | app : Π{X Y} {R : sset X Y} {f₁ e₁ : exp X} {f₂ e₂ : exp Y}, aeq R f₁ f₂ → aeq R e₁ e₂                         → aeq R (app f₁ e₁)          (app f₂ e₂)
+  | lam : Π{X Y} {R : sset X Y} x y {e₁ : exp (insert x X)} {e₂ : exp (insert y Y)}, aeq (symm_update R x y) e₁ e₂ → aeq R (lam x e₁)           (lam y e₂)
 
 open aeq
 
-definition aeq_left  {X Y} {R : sset X Y} {e₁ e₂} : aeq R e₁ e₂ → exp₂ X := λ a, e₁
-definition aeq_right {X Y} {R : sset X Y} {e₁ e₂} : aeq R e₁ e₂ → exp₂ Y := λ a, e₂
+definition aeq_left  {X Y} {R : sset X Y} {e₁ e₂} : aeq R e₁ e₂ → exp X := λ a, e₁
+definition aeq_right {X Y} {R : sset X Y} {e₁ e₂} : aeq R e₁ e₂ → exp Y := λ a, e₂
 
 definition aeq.map
-: ∀{X Y} {R : sset X Y} {S : sset X Y} {e₁ : exp₂ X} {e₂ : exp₂ Y}
+: ∀{X Y} {R : sset X Y} {S : sset X Y} {e₁ : exp X} {e₂ : exp Y}
 , (∀{x y}, mem x y R → mem x y S)
 → aeq R e₁ e₂ → aeq S e₁ e₂
   | X Y R S (var x x_mem_X) (var y y_mem_Y) f (var x y x_y_mem_R) := var x y (@f x y x_y_mem_R)
@@ -28,7 +28,7 @@ definition aeq.map
       λ a b, map_symm_update f,
     lam x y (aeq.map f' a)
 
-theorem aeq.id : ∀{X} (e : exp₂ X), aeq (id X) e e
+theorem aeq.id : ∀{X} (e : exp X), aeq (id X) e e
   | X (var x x_mem_X) := var x x (and.intro x_mem_X (and.intro x_mem_X (and.intro rfl x_mem_X)))
   | X (app e₁ e₂)     := app (aeq.id e₁) (aeq.id e₂)
   | X (lam x e)       :=
@@ -58,10 +58,10 @@ theorem aeq.compose
       λ a c, mem_symm_update_compose_of_mem_compose_symm_update,
     lam x z (aeq.map f (aeq.compose a₁ a₂))
 
-theorem aeq.reflexive {X} {e : exp₂ X} : aeq (id X) e e := !aeq.id
+theorem aeq.reflexive {X} {e : exp X} : aeq (id X) e e := !aeq.id
 
-theorem aeq.symmetric {X} {e₁ e₂ : exp₂ X} (a : aeq (id X) e₁ e₂) : aeq (id X) e₂ e₁ :=
+theorem aeq.symmetric {X} {e₁ e₂ : exp X} (a : aeq (id X) e₁ e₂) : aeq (id X) e₂ e₁ :=
   aeq.map mem_id_of_mem_inverse_id (aeq.inverse a)
 
-theorem aeq.transitive {X} {e₁ e₂ e₃ : exp₂ X} (a₁ : aeq (id X) e₁ e₂) (a₂ : aeq (id X) e₂ e₃) : aeq (id X) e₁ e₃ :=
+theorem aeq.transitive {X} {e₁ e₂ e₃ : exp X} (a₁ : aeq (id X) e₁ e₂) (a₂ : aeq (id X) e₂ e₃) : aeq (id X) e₁ e₃ :=
   aeq.map mem_id_of_mem_compose_id (aeq.compose a₁ a₂)
