@@ -1,16 +1,15 @@
-import data.set
+import data.finset
 
 --------------------------------------------------------------------------------
 
 open eq.ops
-open prod.ops
-open set
+open finset
 
 --------------------------------------------------------------------------------
 
-variables {A : Type} {X Y Z X' Y' : set A}
+variables {A : Type} [decidable_eq A] {X Y Z X' Y' : finset A}
 
-definition sset (X : set A) (Y : set A) : Type :=
+definition sset (X Y : finset A) : Type :=
   A → A → Prop
 
 --------------------------------------------------------------------------------
@@ -32,7 +31,7 @@ theorem mem_prop {x y : A} {S : sset X Y} (H : mem x y S) : S x y :=
 definition insert (x y : A) (S : sset X Y) : sset (insert x X) (insert y Y) :=
   λ m n, m = x ∧ n = y ∨ mem m n S
 
-definition id (X : set A) : sset X X :=
+definition id (X : finset A) : sset X X :=
   λ m n, m = n ∧ m ∈ X
 
 definition inverse (R : sset X Y) : sset Y X :=

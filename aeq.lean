@@ -1,11 +1,12 @@
-import data.set
-import symm_update
-import exp
+import data.finset
 
-open nat
-open set
-open sset
+import exp
+import symm_update
+
 open exp
+open finset
+open nat
+open sset
 
 inductive aeq : Π{X Y}, sset X Y → exp X → exp Y → Type :=
   | var : Π{X Y} {R : sset X Y} x y (m : sset.mem x y R),                                                            aeq R (var x (mem_left m)) (var y (mem_right m))
@@ -19,81 +20,167 @@ definition aeq_right {X Y} {R : sset X Y} {e₁ e₂} : aeq R e₁ e₂ → exp 
 
 definition aeq.map
 : ∀{X Y} {R : sset X Y} {S : sset X Y} {e₁ : exp X} {e₂ : exp Y}
-, (∀{x y}, mem x y R → mem x y S)
-→ aeq R e₁ e₂ → aeq S e₁ e₂
+, (∀{x y}, mem x y R → mem x y S) → aeq R e₁ e₂ → aeq S e₁ e₂ :=
+  begin
+    intro X Y R S e₁ e₂ f H,
+    induction H with
+      /- var -/ X Y R x y x_y_mem_R
+      /- app -/ X Y R f₁ e₁ f₂ e₂ a₁ a₂ r₁ r₂
+      /- lam -/ X Y R x y e₁ e₂ a r,
+    begin /- var -/
+      have x_y_mem_S : mem x y S, from f x_y_mem_R,
+      exact var x y x_y_mem_S
+    end,
+    begin /- app -/
+      have a₁' : aeq S f₁ f₂, from r₁ @f,
+      have a₂' : aeq S e₁ e₂, from r₂ @f,
+      exact app a₁' a₂'
+    end,
+    begin /- lam -/
+      have f' : ∀ a b, mem a b (symm_update R x y) → mem a b (symm_update S x y), from
+        λ a b, map_symm_update @f,
+      have a' : aeq (symm_update S x y) e₁ e₂, from r f',
+      exact lam x y a'
+    end,
+  end
 
-  | X Y R S (var x x_mem_X) (var y y_mem_Y) f (var x y x_y_mem_R) :=
-    have x_y_mem_S : mem x y S, from @f x y x_y_mem_R,
-    var x y x_y_mem_S
+theorem aeq.id {X} (e : exp X) : aeq (id X) e e :=
+  begin
+    induction e with
+      /- var -/ X x x_mem_X
+      /- app -/ X e₁ e₂ r₁ r₂
+      /- lam -/ X x e r,
+    begin /- var -/
+      have x_x_mem_X : mem x x (id X), from
+        and.intro x_mem_X (and.intro x_mem_X (and.intro rfl x_mem_X)),
+      exact var x x x_x_mem_X
+    end,
+    begin /- app -/
+      have a₁ : aeq (id X) e₁ e₁, from r₁,
+      have a₂ : aeq (id X) e₂ e₂, from r₂,
+      exact app a₁ a₂
+    end,
+    begin /- lam -/
+      have f : ∀ a b, mem a b (id (insert x X)) → mem a b (symm_update (id X) x x), from
+        λ a b, iff.elim_right mem_symm_update_id,
+      have a : aeq (id (insert x X)) e e, from r,
+      exact lam x x (aeq.map f a)
+    end,
+  end
 
-  | X Y R S (app f₁ e₁) (app f₂ e₂) f (app a₁ a₂) :=
-    have a₁' : aeq S f₁ f₂, from aeq.map f a₁,
-    have a₂' : aeq S e₁ e₂, from aeq.map f a₂,
-    app a₁' a₂'
+definition aeq.inverse
+: ∀{X Y} {R : sset X Y} {e₁ : exp X} {e₂ : exp Y}
+, aeq R e₁ e₂ → aeq (inverse R) e₂ e₁ :=
+  begin
+    intro X Y R e₁ e₂ H,
+    induction H with
+      /- var -/ X Y R x y x_y_mem_R
+      /- app -/ X Y R f₁ e₁ f₂ e₂ a₁ a₂ r₁ r₂
+      /- lam -/ X Y R x y e₁ e₂ a r,
+    begin /- var -/
+      have y_x_mem_inverse_R : mem y x (inverse R), from mem_inverse x_y_mem_R,
+      exact var y x y_x_mem_inverse_R
+    end,
+    begin /- app -/
+      have a₁' : aeq (inverse R) f₂ f₁, from r₁,
+      have a₂' : aeq (inverse R) e₂ e₁, from r₂,
+      exact app a₁' a₂'
+    end,
+    begin /- lam -/
+      have f : ∀ a b,  mem a b (inverse (symm_update R x y))
+             → mem a b (symm_update (inverse R) y x), from
+        λ a b, iff.elim_left mem_symm_update_inverse,
+      have a' : aeq (symm_update (inverse R) y x) e₂ e₁, from aeq.map f r,
+      exact lam y x a'
+    end,
+  end
 
-  | X Y R S (lam x e₁) (lam y e₂) f (lam x y a) :=
-    have f' : ∀ a b, mem a b (symm_update R x y) → mem a b (symm_update S x y), from
-      λ a b, map_symm_update f,
-    have a' : aeq (symm_update S x y) e₁ e₂, from aeq.map f' a,
-    lam x y a'
+private
+theorem aeq.compose_core
+: ∀{X Y} {R : sset X Y} {e₁ : exp X} {e₂ : exp Y}, aeq R e₁ e₂
+→ ∀{Z} {S : sset Y Z} {e₂' : exp Y} {e₃ : exp Z}
+, e₂ = e₂' →  aeq S e₂' e₃ → aeq (compose R S) e₁ e₃ :=
+  begin
+    intro X Y R p_e₁ p_e₂ H₁,
+    induction H₁ with
+      /- var -/ X Y R x y x_y_mem_R
+      /- app -/ X Y R f₁ e₁ f₂ e₂ a₁ a₂ r₁ r₂
+      /- lam -/ X Y R x y e₁ e₂ a₁ r,
+    begin /- H₁: var -/
+      intro Z S p_e₂' p_e₃ P H₂,
+      cases H₂ with
+        /- var -/ Y Z S y' z y_z_mem_S
+        /- app -/ Y Z S f₂' e₂' f₃ e₃ a₃ a₄
+        /- lam -/ Y Z S y' z e₂' e₃ a₂,
+      begin /- H₂: var -/
+        have y_eq_y' : y = y', from exp.no_confusion P (λ P₁ P₂ P₃, P₂),
+        induction y_eq_y',
+        have x_z_mem_compose_R_S : mem x z (compose R S), from
+          iff.elim_left mem_compose (exists.intro y (and.intro x_y_mem_R y_z_mem_S)),
+        exact var x z x_z_mem_compose_R_S
+      end,
+      begin /- H₂: app -/
+        exact exp.no_confusion P
+      end,
+      begin /- H₂: lam -/
+        exact exp.no_confusion P
+      end
+    end,
+    begin /- H₁: app -/
+      intro Z S p_e₂' p_e₃ P H₂,
+      cases H₂ with
+        /- var -/ Y Z S y' z y_z_mem_S
+        /- app -/ Y Z S f₂' e₂' f₃ e₃ a₃ a₄
+        /- lam -/ Y Z S y' z e₂' e₃ a₂,
+      begin /- H₂: var -/
+        exact exp.no_confusion P
+      end,
+      begin /- H₂: app -/
+        have f₂_eq_f₂' : f₂ = f₂', from
+          eq_of_heq (exp.no_confusion P (λ P₁ P₂ P₃, P₂)),
+        have e₂_eq_e₂' : e₂ = e₂', from
+          eq_of_heq (exp.no_confusion P (λ P₁ P₂ P₃, P₃)),
+        have a_f₁_f₃ : aeq (compose R S) f₁ f₃, from r₁ f₂_eq_f₂' a₃,
+        have a_e₁_f₃ : aeq (compose R S) e₁ e₃, from r₂ e₂_eq_e₂' a₄,
+        exact app a_f₁_f₃ a_e₁_f₃
+      end,
+      begin /- H₂: lam -/
+        exact exp.no_confusion P
+      end
+    end,
+    begin /- H₁: lam -/
+      intro Z S p_e₂' p_e₃ P H₂,
+      cases H₂ with
+        /- var -/ Y Z S y' z y_z_mem_S
+        /- app -/ Y Z S f₂' e₂' f₃ e₃ a₃ a₄
+        /- lam -/ Y Z S y' z e₂' e₃ a₂,
+      begin /- H₂: var -/
+        exact exp.no_confusion P
+      end,
+      begin /- H₂: app -/
+        exact exp.no_confusion P
+      end,
+      begin /- H₂: lam -/
+        have y_eq_y' : y = y', from exp.no_confusion P (λ P₁ P₂ P₃, P₂),
+        induction y_eq_y',
+        have e₂_eq_e₂' : e₂ = e₂', from
+          eq_of_heq (exp.no_confusion P (λ P₁ P₂ P₃, P₃)),
+        have a_e₁_e₃ : aeq (compose (symm_update R x y) (symm_update S y z)) e₁ e₃, from
+          r e₂_eq_e₂' a₂,
+        have f : ∀ a c, mem a c (compose (symm_update R x y) (symm_update S y z))
+               → mem a c (symm_update (compose R S) x z), from
+          λ a c, mem_symm_update_compose_of_mem_compose_symm_update,
+        have a_e₁_e₃' : aeq (symm_update (compose R S) x z) e₁ e₃, from
+          aeq.map f a_e₁_e₃,
+        exact lam x z a_e₁_e₃',
+      end
+    end
+  end
 
-theorem aeq.id : ∀{X} (e : exp X), aeq (id X) e e
-
-  | X (var x x_mem_X) :=
-    have x_x_mem_X : mem x x (id X), from
-      and.intro x_mem_X (and.intro x_mem_X (and.intro rfl x_mem_X)),
-    var x x x_x_mem_X
-
-  | X (app e₁ e₂) :=
-    have a₁ : aeq (id X) e₁ e₁, from aeq.id e₁,
-    have a₂ : aeq (id X) e₂ e₂, from aeq.id e₂,
-    app a₁ a₂
-
-  | X (lam x e) :=
-    have f : ∀ a b, mem a b (id (insert x X)) → mem a b (symm_update (id X) x x), from
-      λ a b, iff.elim_right mem_symm_update_id,
-    have a : aeq (id (insert x X)) e e, from aeq.id e,
-    lam x x (aeq.map f a)
-
-theorem aeq.inverse : ∀{X Y} {R : sset X Y} {e₁ e₂}, aeq R e₁ e₂ → aeq (inverse R) e₂ e₁
-
-  | X Y R (var x x_mem_X) (var y y_mem_Y) (var x y x_y_mem_R) :=
-    have y_x_mem_inverse_R : mem y x (inverse R), from mem_inverse x_y_mem_R,
-    var y x y_x_mem_inverse_R
-
-  | X Y R (app f₁ e₁) (app f₂ e₂) (app a₁ a₂) :=
-    have a₁' : aeq (inverse R) f₂ f₁, from aeq.inverse a₁,
-    have a₂' : aeq (inverse R) e₂ e₁, from aeq.inverse a₂,
-    app a₁' a₂'
-
-  | X Y R (lam x e) (lam y e₂) (lam x y a) :=
-    have f : ∀ a b,  mem a b (inverse (symm_update R x y))
-           → mem a b (symm_update (inverse R) y x), from
-      λ a b, iff.elim_left mem_symm_update_inverse,
-    have a' : aeq (symm_update (inverse R) y x) e₂ e, from aeq.map f (aeq.inverse a),
-    lam y x a'
-
-theorem aeq.compose
-: ∀{X Y Z} {R : sset X Y} {S : sset Y Z} {e₁ e₂ e₃}
-, aeq R e₁ e₂ → aeq S e₂ e₃ → aeq (compose R S) e₁ e₃
-
-  | X Y Z R S (var x x_mem_X) (var y y_mem_Y) (var z z_mem_Z) (var x y x_y_mem_R) (var y z y_z_mem_S) :=
-    have x_z_mem_compose_R_S : mem x z (compose R S), from
-      iff.elim_left mem_compose (exists.intro y (and.intro x_y_mem_R y_z_mem_S)),
-    var x z x_z_mem_compose_R_S
-
-  | X Y Z R S (app f₁ e₁) (app f₂ e₂) (app f₃ e₃) (app a₁ a₂) (app a₃ a₄) :=
-    have a₁' : aeq (compose R S) f₁ f₃, from aeq.compose a₁ a₃,
-    have a₂' : aeq (compose R S) e₁ e₃, from aeq.compose a₂ a₄,
-    app a₁' a₂'
-
-  | X Y Z R S (lam x e) (lam y e₂) (lam z e₃) (lam x y a₁) (lam y z a₂) :=
-    have f : ∀ a c, mem a c (compose (symm_update R x y) (symm_update S y z))
-           → mem a c (symm_update (compose R S) x z), from
-      λ a c, mem_symm_update_compose_of_mem_compose_symm_update,
-    have a' : aeq (symm_update (compose R S) x z) e e₃, from
-      aeq.map f (aeq.compose a₁ a₂),
-    lam x z a'
+theorem aeq.compose {X Y Z} {R : sset X Y} {S : sset Y Z}
+{e₁ : exp X} {e₂ : exp Y} {e₃ : exp Z}
+(a_e₁_e₂ : aeq R e₁ e₂) (a_e₂_e₃ : aeq S e₂ e₃) : aeq (compose R S) e₁ e₃ :=
+  @aeq.compose_core X Y R e₁ e₂ a_e₁_e₂ Z S e₂ e₃ rfl a_e₂_e₃
 
 theorem aeq.reflexive {X} {e : exp X} : aeq (id X) e e := !aeq.id
 
