@@ -8,7 +8,7 @@ open set
 
 --------------------------------------------------------------------------------
 
-variables {A : Type} {X Y Z : set A}
+variables {A : Type} {X Y Z X' Y' : set A}
 
 definition sset (X : set A) (Y : set A) : Type :=
   A → A → Prop
@@ -29,13 +29,7 @@ theorem mem_right {x y : A} {S : sset X Y} (H : mem x y S) : y ∈ Y :=
 theorem mem_prop {x y : A} {S : sset X Y} (H : mem x y S) : S x y :=
   and.right (and.right H)
 
-definition to_set (S : sset X Y) : set (A × A) :=
-  λ p, mem p.1 p.2 S
-
-definition from_set (X : set A) (Y : set A) (S : set (A × A)) : sset X Y :=
-  λ m n, m ∈ X ∧ n ∈ Y ∧ (m, n) ∈ S
-
-definition insert (x y : A) (S : sset X Y) : sset (set.insert x X) (set.insert y Y) :=
+definition insert (x y : A) (S : sset X Y) : sset (insert x X) (insert y Y) :=
   λ m n, m = x ∧ n = y ∨ mem m n S
 
 definition id (X : set A) : sset X X :=
@@ -110,9 +104,10 @@ definition symm_update (R : sset X Y) (x y : A) : sset (insert x X) (insert y Y)
 --------------------------------------------------------------------------------
 
 section symm_update_map
-variables {a b x y : A} {X' Y' : set A} {R : sset X Y} {S : sset X' Y'}
+variables {a b x y : A} {R : sset X Y} {S : sset X' Y'}
 
-definition map_symm_update.left
+private
+lemma map_symm_update.left
 (H : a = x ∧ b = y)
 : a ∈ insert x X' ∧ b ∈ insert y Y' ∧ symm_update S x y a b :=
   have a_eq_x : a = x, from and.left H,
@@ -129,7 +124,8 @@ definition map_symm_update.left
                        symm_update_S)
     end
 
-definition map_symm_update.right
+private
+lemma map_symm_update.right
 (f : ∀{c d}, mem c d R → mem c d S)
 (H : a ≠ x ∧ b ≠ y ∧ mem a b R)
 : a ∈ insert x X' ∧ b ∈ insert y Y' ∧ symm_update S x y a b :=
@@ -146,7 +142,7 @@ definition map_symm_update.right
     (and.intro b_mem_insert_y_Y'
                symm_update_S)
 
-definition map_symm_update
+theorem map_symm_update
 (f : ∀{c d}, mem c d R → mem c d S)
 (H : mem a b (symm_update R x y))
 : mem a b (symm_update S x y) :=
@@ -154,7 +150,7 @@ definition map_symm_update
   show mem a b (symm_update S x y), from
     or.elim symm_update_R
       map_symm_update.left
-      (@map_symm_update.right A X Y a b x y X' Y' R S @f)
+      (map_symm_update.right @f)
 
 end symm_update_map
 
