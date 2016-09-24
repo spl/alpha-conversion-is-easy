@@ -11,6 +11,8 @@ definition subst (X Y : finset ℕ) : Type₁ := ∀ x, x ∈ X → exp Y
 
 variables {X Y : finset ℕ}
 
+definition subst.id (X) : subst X X := var
+
 definition subst.update (x e) (f : subst X Y) : subst (insert x X) Y :=
   assume x' (x'_mem_insert_x_X : x' ∈ insert x X),
   if P : x' = x then
@@ -50,3 +52,6 @@ definition subst.apply_core (e : exp X) : ∀ {Y}, (subst X Y) → exp Y :=
 
 definition subst.apply : subst X Y → exp X → exp Y :=
   λ f e, @subst.apply_core X e Y f
+
+definition subst.single (x) (e : exp X) : exp (insert x X) → exp X :=
+  subst.apply (subst.update x e (subst.id X))
