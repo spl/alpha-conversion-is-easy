@@ -19,6 +19,7 @@ namespace aeq -- ===============================================================
 -- Core operations
 
 -- Identity of one expression
+protected
 definition id (e : exp X) : aeq (vrel.id X) e e :=
 
   begin
@@ -144,21 +145,29 @@ namespace aeq -- ===============================================================
 -- Properties of `aeq (id X)`.
 
 -- Reflexivity
+protected
 theorem refl : reflexive (aeq (vrel.id X)) :=
   aeq.id
 
 -- Symmetricity
+protected
 theorem symm : symmetric (aeq (vrel.id X)) :=
   assume e₁ e₂,
   map_simple (λ x y, iff.elim_right vrel.mem_inverse_id_iff_mem_id) ∘ inverse
 
 -- Transitivity
+protected
 theorem trans : transitive (aeq (vrel.id X)) :=
   assume e₁ e₂ e₃ a₁ a₂,
   map_simple (λ x y, iff.elim_left vrel.mem_id_of_mem_compose_id) $ compose a₁ a₂
 
 -- Equivalence
+protected
 theorem equiv : equivalence (aeq (vrel.id X)) :=
-  mk_equivalence (aeq (vrel.id X)) refl symm trans
+  mk_equivalence (aeq (vrel.id X)) aeq.refl aeq.symm aeq.trans
+
+protected
+definition setoid [instance] : setoid (exp X) :=
+  setoid.mk (aeq (vrel.id X)) (by exact aeq.equiv)
 
 end aeq -- namespace -----------------------------------------------------------
