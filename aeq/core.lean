@@ -141,22 +141,24 @@ definition compose : aeq R eX eY → aeq S eY eZ → aeq (R ⨾ S) eX eZ :=
 end aeq -- namespace -----------------------------------------------------------
 
 namespace aeq -- ===============================================================
--- Properties of the identity `aeq`, `aeq (id X)`.
-
-variables {e e₁ e₂ e₃ : exp X}
+-- Properties of `aeq (id X)`.
 
 -- Reflexivity
-theorem reflexive : aeq (vrel.id X) e e :=
-  aeq.id e
+theorem refl : reflexive (aeq (vrel.id X)) :=
+  aeq.id
 
 -- Symmetricity
-theorem symmetric : aeq (vrel.id X) e₁ e₂ → aeq (vrel.id X) e₂ e₁ :=
+theorem symm : symmetric (aeq (vrel.id X)) :=
+  assume e₁ e₂,
   map_simple (λ x y, iff.elim_right vrel.mem_inverse_id_iff_mem_id) ∘ inverse
 
 -- Transitivity
-theorem transitive
-: aeq (vrel.id X) e₁ e₂ → aeq (vrel.id X) e₂ e₃ → aeq (vrel.id X) e₁ e₃ :=
-  assume a₁ a₂,
-  map_simple (λ x y, iff.elim_left vrel.mem_id_of_mem_compose_id) (compose a₁ a₂)
+theorem trans : transitive (aeq (vrel.id X)) :=
+  assume e₁ e₂ e₃ a₁ a₂,
+  map_simple (λ x y, iff.elim_left vrel.mem_id_of_mem_compose_id) $ compose a₁ a₂
+
+-- Equivalence
+theorem equiv : equivalence (aeq (vrel.id X)) :=
+  mk_equivalence (aeq (vrel.id X)) refl symm trans
 
 end aeq -- namespace -----------------------------------------------------------
