@@ -12,7 +12,7 @@ open [notation] function
 -- `V` is the type of an infinite set of variable names with decidable equality.
 variables {V : Type} [decidable_eq V]
 
--- `X` and `Y` consistently refer to finite sets of variable names.
+-- `X` and `Y` are finite sets of variable names.
 variables {X Y : finset V}
 
 namespace exp -- ===============================================================
@@ -28,7 +28,7 @@ definition map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
       /- lam -/ X x e r,
     begin /- var -/
       intro Y P,
-      exact var (cvar.map_of_subset P x)
+      exact var $ cvar.map_of_subset P x
     end,
     begin /- app -/
       intro Y P,
