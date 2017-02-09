@@ -28,7 +28,7 @@ definition id (e : exp X) : aeq (vrel.id X) e e :=
       /- app -/ X f e rf re
       /- lam -/ X x e r,
     begin /- var -/
-      exact var $ eq.refl x
+      exact var $ vrel.mem_id x
     end,
     begin /- app -/
       exact app rf re
@@ -146,28 +146,29 @@ namespace aeq -- ===============================================================
 
 -- Reflexivity
 protected
-theorem refl : reflexive (aeq (vrel.id X)) :=
+theorem refl (X : finset V) : reflexive (aeq (vrel.id X)) :=
   aeq.id
 
 -- Symmetricity
 protected
-theorem symm : symmetric (aeq (vrel.id X)) :=
+theorem symm (X : finset V) : symmetric (aeq (vrel.id X)) :=
   assume e₁ e₂,
   map_simple (λ x y, iff.elim_right vrel.mem_inverse_id_iff_mem_id) ∘ inverse
 
 -- Transitivity
 protected
-theorem trans : transitive (aeq (vrel.id X)) :=
+theorem trans (X : finset V) : transitive (aeq (vrel.id X)) :=
   assume e₁ e₂ e₃ a₁ a₂,
   map_simple (λ x y, iff.elim_left vrel.mem_id_of_mem_compose_id) $ compose a₁ a₂
 
 -- Equivalence
 protected
-theorem equiv : equivalence (aeq (vrel.id X)) :=
-  mk_equivalence (aeq (vrel.id X)) aeq.refl aeq.symm aeq.trans
+theorem equiv (X : finset V) : equivalence (aeq (vrel.id X)) :=
+  mk_equivalence (aeq (vrel.id X)) (aeq.refl X) (aeq.symm X) (aeq.trans X)
 
+-- Setoid
 protected
-definition setoid [instance] : setoid (exp X) :=
-  setoid.mk (aeq (vrel.id X)) (by exact aeq.equiv)
+theorem setoid [instance] (X : finset V) : setoid (exp X) :=
+  setoid.mk (aeq (vrel.id X)) (by exact aeq.equiv X)
 
 end aeq -- namespace -----------------------------------------------------------
