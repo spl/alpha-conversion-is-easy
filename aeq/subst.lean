@@ -105,13 +105,29 @@ lemma subst_preservation_core (H : aeq R eX eY)
     end
   end
 
--- Substitution preserves alpha equality.
-theorem subst_preservation
+-- General form of substitution preserves alpha equality property.
+theorem subst_preservation_general
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 : subst_aeq F G R S
 → aeq R eX eY
 → aeq S (exp.subst_apply F eX) (exp.subst_apply G eY) :=
 
   λ P H, subst_preservation_core H F G @P
+
+end aeq -- namespace -----------------------------------------------------------
+
+namespace aeq -- ===============================================================
+
+variables {X Y : finset V}
+variables {eX₁ eX₂ : exp X}
+
+-- Substitution preserves alpha equality.
+theorem subst_preservation
+(F : exp.subst X Y) (G : exp.subst X Y)
+: subst_aeq F G (vrel.id X) (vrel.id Y)
+→ aeq (vrel.id X) eX₁ eX₂
+→ aeq (vrel.id Y) (exp.subst_apply F eX₁) (exp.subst_apply G eX₂) :=
+
+  subst_preservation_general F G
 
 end aeq -- namespace -----------------------------------------------------------
