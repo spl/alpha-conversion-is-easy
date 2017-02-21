@@ -1,6 +1,6 @@
 /-
 
-This file contains the `vrel` `update` operation and its properties.
+This file contains the `nrel` `update` operation and its properties.
 
 -/
 
@@ -19,10 +19,10 @@ variables {V : Type} [decidable_eq V]
 -- `X`, `Y`, and `Z` are finite sets of variable names.
 variables {X Y Z : finset V}
 
-namespace vrel -- ==============================================================
+namespace nrel -- ==============================================================
 
 /-
-The `update` operation takes `R : vrel X Y`, erases from `R` every pair with
+The `update` operation takes `R : nrel X Y`, erases from `R` every pair with
 either `a` on the left or `b` on the right, and extends the relation with the
 pair `(a, b)`.
 
@@ -39,36 +39,36 @@ But note that `px : a ≠ x` and `py : b ≠ y` are not available as arguments t
 these as propositions as well as their types as arguments.
 -/
 
-definition update (a b : V) : vrel X Y → vrel ('{a} ∪ X) ('{b} ∪ Y) :=
-  assume (R : vrel X Y) (x : ν∈ '{a} ∪ X) (y : ν∈ '{b} ∪ Y),
+definition update (a b : V) : nrel X Y → nrel ('{a} ∪ X) ('{b} ∪ Y) :=
+  assume (R : nrel X Y) (x : ν∈ '{a} ∪ X) (y : ν∈ '{b} ∪ Y),
   (x.1 = a ∧ y.1 = b) ∨
   (∃ (px : x.1 ≠ a) (py : y.1 ≠ b), R (name.erase x px) (name.erase y py))
 
-end vrel -- namespace ----------------------------------------------------------
+end nrel -- namespace ----------------------------------------------------------
 
 -- Global attributes
-attribute vrel.update [reducible]
+attribute nrel.update [reducible]
 
-namespace vrel -- ==============================================================
+namespace nrel -- ==============================================================
 -- Some basic properties of `update`.
 
 variables {X₁ Y₁ X₂ Y₂ : finset V}
 
--- The type of a function that translates one `vrel` to another.
-definition translate [reducible] (R : vrel X₁ Y₁) (S : vrel X₂ Y₂) :=
+-- The type of a function that translates one `nrel` to another.
+definition translate [reducible] (R : nrel X₁ Y₁) (S : nrel X₂ Y₂) :=
   ∀   {x : ν∈ X₁}     {y : ν∈ Y₁},     ⟪x,                    y,                    R⟫
   → ∃ (px : x.1 ∈ X₂) (py : y.1 ∈ Y₂), ⟪name.map_of_mem x px, name.map_of_mem y py, S⟫
 
--- Lift a simpler function on `vrel`s to a `translate`.
-definition translate_simple {R S : vrel X Y}
+-- Lift a simpler function on `nrel`s to a `translate`.
+definition translate_simple {R S : nrel X Y}
 : (∀ {x : ν∈ X} {y : ν∈ Y}, ⟪x, y, R⟫ → ⟪x, y, S⟫) → translate R S :=
 
   assume F x y x_R_y,
   exists.intro x.2 $ exists.intro y.2 (by cases x; cases y; exact F x_R_y)
 
-variables {R : vrel X₁ Y₁} {S : vrel X₂ Y₂}
+variables {R : nrel X₁ Y₁} {S : nrel X₂ Y₂}
 
--- Lift a `translate` over `update`d `vrel`s.
+-- Lift a `translate` over `update`d `nrel`s.
 theorem translate_update {a b : V}
 : translate R S → translate (update a b R) (update a b S) :=
 
@@ -91,12 +91,12 @@ theorem translate_update {a b : V}
     end
   end
 
-end vrel -- namespace ----------------------------------------------------------
+end nrel -- namespace ----------------------------------------------------------
 
-attribute vrel.translate        [reducible]
-attribute vrel.translate_simple [reducible]
+attribute nrel.translate        [reducible]
+attribute nrel.translate_simple [reducible]
 
-namespace vrel -- ==============================================================
+namespace nrel -- ==============================================================
 -- Properties of `update` and `id`.
 
 variables {a : V}
@@ -139,12 +139,12 @@ theorem mem_update_id_iff_mem_id_insert
   iff.intro mem_id_insert_of_mem_update_id
             mem_update_id_of_mem_id_insert
 
-end vrel -- namespace ----------------------------------------------------------
+end nrel -- namespace ----------------------------------------------------------
 
-namespace vrel -- ==============================================================
+namespace nrel -- ==============================================================
 -- Properties of `update` and `inverse`.
 
-variables {R : vrel X Y}
+variables {R : nrel X Y}
 variables {a b : V}
 variables {x : ν∈ '{a} ∪ X} {y : ν∈ '{b} ∪ Y}
 
@@ -191,12 +191,12 @@ theorem mem_update_inverse_iff_mem_inverse_update
   iff.intro mem_update_inverse_of_mem_inverse_update
             mem_inverse_update_of_mem_update_inverse
 
-end vrel -- namespace ----------------------------------------------------------
+end nrel -- namespace ----------------------------------------------------------
 
-namespace vrel -- ==============================================================
+namespace nrel -- ==============================================================
 -- Properties of `update` and `compose`.
 
-variables {R : vrel X Y} {S : vrel Y Z}
+variables {R : nrel X Y} {S : nrel Y Z}
 variables {a b c : V}
 variables {x : ν∈ '{a} ∪ X} {z : ν∈ '{c} ∪ Z}
 
@@ -272,15 +272,15 @@ theorem mem_update_compose_iff_mem_compose_update
   iff.intro (mem_compose_update_of_mem_update_compose pb)
             mem_update_compose_of_mem_compose_update
 
-end vrel -- namespace ----------------------------------------------------------
+end nrel -- namespace ----------------------------------------------------------
 
-namespace vrel -- ==============================================================
+namespace nrel -- ==============================================================
 -- Theorems with name.update
 
 variables [finset.has_fresh V]
 variables {a : V} {F : ν∈ X → ν∈ Y}
 
--- Lift a `name.update` of a fresh variable to a `vrel.update`.
+-- Lift a `name.update` of a fresh variable to a `nrel.update`.
 definition lift_update_of_fresh
 (x : ν∈ '{a} ∪ X) (y : ν∈ '{(finset.fresh Y).1} ∪ Y)
 : lift (name.update a (finset.fresh Y).1 F) x y
@@ -289,7 +289,7 @@ definition lift_update_of_fresh
   begin
     cases x with x px,
     cases y with y py,
-    unfold [vrel.lift, name.update],
+    unfold [nrel.lift, name.update],
     intro H,
     cases decidable.em (x = a) with x_eq_a x_ne_a,
     begin /- x = a -/
@@ -306,4 +306,4 @@ definition lift_update_of_fresh
     end
   end
 
-end vrel -- namespace ----------------------------------------------------------
+end nrel -- namespace ----------------------------------------------------------

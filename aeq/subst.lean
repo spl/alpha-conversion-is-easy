@@ -10,7 +10,7 @@ open [notation] eq.ops
 open [class] [notation] finset
 open [notation] function
 open [notation] sigma.ops
-open [notation] vrel
+open [notation] nrel
 
 -- `V` is the type of an infinite set of variable names with decidable equality.
 variables {V : Type} [decidable_eq V]
@@ -27,12 +27,12 @@ namespace aeq -- ===============================================================
 -- relation on `S` with the substitutions `F` and `G` applied to each side.
 definition subst_aeq
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
-(R : vrel X₁ Y₁) (S : vrel X₂ Y₂) :=
+(R : nrel X₁ Y₁) (S : nrel X₂ Y₂) :=
 
   ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y, R⟫ → aeq S (F x) (G y)
 
 variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂}
-variables {R : vrel X₁ Y₁} {S : vrel X₂ Y₂}
+variables {R : nrel X₁ Y₁} {S : nrel X₂ Y₂}
 variables {a b : V}
 
 -- A lemma needed for the `lam` case in `subst_preservation_core`.
@@ -41,8 +41,8 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 → subst_aeq
     (exp.subst_update_var a nx₂.1 F)
     (exp.subst_update_var b ny₂.1 G)
-    (vrel.update a b R)
-    (vrel.update nx₂.1 ny₂.1 S) :=
+    (nrel.update a b R)
+    (nrel.update nx₂.1 ny₂.1 S) :=
 
   begin
     intro P x₁ y₁ H,
@@ -78,7 +78,7 @@ variables {eX : exp X₁} {eY : exp Y₁}
 
 -- The implementation of `subst_preservation`.
 definition subst_preservation_core (H : aeq R eX eY)
-: ∀ {X₂ Y₂ : finset V} {S : vrel X₂ Y₂}
+: ∀ {X₂ Y₂ : finset V} {S : nrel X₂ Y₂}
     (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
     (P : subst_aeq F G R S)
 , aeq S (exp.subst_apply F eX) (exp.subst_apply G eY) :=
@@ -124,9 +124,9 @@ variables {eX₁ eX₂ : exp X}
 -- Substitution preserves alpha equality.
 definition subst_preservation
 (F : exp.subst X Y) (G : exp.subst X Y)
-: subst_aeq F G (vrel.id X) (vrel.id Y)
-→ aeq (vrel.id X) eX₁ eX₂
-→ aeq (vrel.id Y) (exp.subst_apply F eX₁) (exp.subst_apply G eX₂) :=
+: subst_aeq F G (nrel.id X) (nrel.id Y)
+→ aeq (nrel.id X) eX₁ eX₂
+→ aeq (nrel.id Y) (exp.subst_apply F eX₁) (exp.subst_apply G eX₂) :=
 
   subst_preservation_general F G
 
@@ -136,7 +136,7 @@ namespace aeq -- ===============================================================
 
 theorem self_aeq_subst_apply_lift (e : exp X)
 : ∀ {Y : finset V} (F : ν∈ X → ν∈ Y)
-, aeq (vrel.lift F) e (exp.subst_apply (exp.subst.lift F) e) :=
+, aeq (nrel.lift F) e (exp.subst_apply (exp.subst.lift F) e) :=
 
   begin
     induction e with
@@ -154,7 +154,7 @@ theorem self_aeq_subst_apply_lift (e : exp X)
     begin /- lam -/
       intro Y F,
       exact lam $
-        map_simple vrel.lift_update_of_fresh $
+        map_simple nrel.lift_update_of_fresh $
           (funext (exp.subst_update_var_eq_var_update a (finset.fresh Y).1 F))⁻¹ ▸
           r (name.update a (finset.fresh Y).1 F)
     end

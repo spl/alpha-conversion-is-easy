@@ -7,7 +7,7 @@ This file contains `aeq` core operations and properties.
 import .map
 
 open [notation] function
-open [notation] vrel
+open [notation] nrel
 
 -- `V` is the type of an infinite set of variable names with decidable equality.
 variables {V : Type} [decidable_eq V]
@@ -20,7 +20,7 @@ namespace aeq -- ===============================================================
 
 -- Identity of one expression
 protected
-definition id (e : exp X) : aeq (vrel.id X) e e :=
+definition id (e : exp X) : aeq (nrel.id X) e e :=
 
   begin
     induction e with
@@ -28,20 +28,20 @@ definition id (e : exp X) : aeq (vrel.id X) e e :=
       /- app -/ X f e rf re
       /- lam -/ X x e r,
     begin /- var -/
-      exact var $ vrel.mem_id x
+      exact var $ nrel.mem_id x
     end,
     begin /- app -/
       exact app rf re
     end,
     begin /- lam -/
-      exact lam $ map_simple (λ x y, vrel.mem_update_id_of_mem_id_insert) r
+      exact lam $ map_simple (λ x y, nrel.mem_update_id_of_mem_id_insert) r
     end
   end
 
-variables {R : vrel X Y} {eX : exp X} {eY : exp Y}
+variables {R : nrel X Y} {eX : exp X} {eY : exp Y}
 
 -- Inverse of `aeq`
-definition inverse (H : aeq R eX eY) : aeq (vrel.inverse R) eY eX :=
+definition inverse (H : aeq R eX eY) : aeq (nrel.inverse R) eY eX :=
 
   begin
     induction H with
@@ -49,14 +49,14 @@ definition inverse (H : aeq R eX eY) : aeq (vrel.inverse R) eY eX :=
       /- app -/ X Y R fX eX fY eY af ae rf re
       /- lam -/ X Y R x y eX eY a r,
     begin /- var -/
-      exact var $ iff.elim_left vrel.mem_inverse_iff_mem x_R_y
+      exact var $ iff.elim_left nrel.mem_inverse_iff_mem x_R_y
     end,
     begin /- app -/
       exact app rf re
     end,
     begin /- lam -/
       exact lam $
-        map_simple (λ x y, vrel.mem_update_inverse_of_mem_inverse_update) r
+        map_simple (λ x y, nrel.mem_update_inverse_of_mem_inverse_update) r
     end
   end
 
@@ -64,7 +64,7 @@ variables {eY₁ : exp Y}
 
 -- The `compose` implementation for `aeq`: composition of two `aeq`s.
 definition compose_core (HXY : aeq R eX eY₁)
-: ∀ {Z : finset V} {S : vrel Y Z} {eY₂ : exp Y} {eZ : exp Z}
+: ∀ {Z : finset V} {S : nrel Y Z} {eY₂ : exp Y} {eZ : exp Z}
 , eY₁ = eY₂ →  aeq S eY₂ eZ → aeq (R ⨾ S) eX eZ :=
 
   begin
@@ -82,7 +82,7 @@ definition compose_core (HXY : aeq R eX eY₁)
       begin /- HYZ: var -/
         injection P with y₁_eq_y₂ _,
         induction y₁_eq_y₂,
-        exact var $ vrel.mem_compose x_R_y₁ y₂_S_z
+        exact var $ nrel.mem_compose x_R_y₁ y₂_S_z
       end,
       begin /- HYZ: app -/
         exact exp.no_confusion P
@@ -126,14 +126,14 @@ definition compose_core (HXY : aeq R eX eY₁)
         injection P with y₁_eq_y₂ eY₁_heq_eY₂,
         induction y₁_eq_y₂,
         exact lam $
-          map_simple (λ x z, vrel.mem_update_compose_of_mem_compose_update)
+          map_simple (λ x z, nrel.mem_update_compose_of_mem_compose_update)
                      (r (eq_of_heq eY₁_heq_eY₂) aYZ),
       end
     end
 
   end
 
-variables {S : vrel Y Z} {eZ : exp Z}
+variables {S : nrel Y Z} {eZ : exp Z}
 
 -- A more convenient wrapper for the `compose` implementation.
 definition compose : aeq R eX eY → aeq S eY eZ → aeq (R ⨾ S) eX eZ :=
@@ -146,29 +146,29 @@ namespace aeq -- ===============================================================
 
 -- Reflexivity
 protected
-theorem refl (X : finset V) : reflexive (aeq (vrel.id X)) :=
+theorem refl (X : finset V) : reflexive (aeq (nrel.id X)) :=
   aeq.id
 
 -- Symmetricity
 protected
-theorem symm (X : finset V) : symmetric (aeq (vrel.id X)) :=
+theorem symm (X : finset V) : symmetric (aeq (nrel.id X)) :=
   assume e₁ e₂,
-  map_simple (λ x y, iff.elim_right vrel.mem_inverse_id_iff_mem_id) ∘ inverse
+  map_simple (λ x y, iff.elim_right nrel.mem_inverse_id_iff_mem_id) ∘ inverse
 
 -- Transitivity
 protected
-theorem trans (X : finset V) : transitive (aeq (vrel.id X)) :=
+theorem trans (X : finset V) : transitive (aeq (nrel.id X)) :=
   assume e₁ e₂ e₃ a₁ a₂,
-  map_simple (λ x y, iff.elim_left vrel.mem_id_of_mem_compose_id) $ compose a₁ a₂
+  map_simple (λ x y, iff.elim_left nrel.mem_id_of_mem_compose_id) $ compose a₁ a₂
 
 -- Equivalence
 protected
-theorem equiv (X : finset V) : equivalence (aeq (vrel.id X)) :=
-  mk_equivalence (aeq (vrel.id X)) (aeq.refl X) (aeq.symm X) (aeq.trans X)
+theorem equiv (X : finset V) : equivalence (aeq (nrel.id X)) :=
+  mk_equivalence (aeq (nrel.id X)) (aeq.refl X) (aeq.symm X) (aeq.trans X)
 
 -- Setoid
 protected
 theorem setoid [instance] (X : finset V) : setoid (exp X) :=
-  setoid.mk (aeq (vrel.id X)) (by exact aeq.equiv X)
+  setoid.mk (aeq (nrel.id X)) (by exact aeq.equiv X)
 
 end aeq -- namespace -----------------------------------------------------------
