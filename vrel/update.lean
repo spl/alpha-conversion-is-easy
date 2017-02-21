@@ -6,8 +6,10 @@ This file contains the `vrel` `update` operation and its properties.
 
 import .core
 
+import data.finset.fresh
+
 open [notation] eq.ops
-open [notation] finset
+open [class] [notation] finset
 open [notation] function
 open [notation] sigma.ops
 
@@ -269,5 +271,39 @@ theorem mem_update_compose_iff_mem_compose_update
   assume pb,
   iff.intro (mem_compose_update_of_mem_update_compose pb)
             mem_update_compose_of_mem_compose_update
+
+end vrel -- namespace ----------------------------------------------------------
+
+namespace vrel -- ==============================================================
+-- Theorems with cvar.update
+
+variables [finset.has_fresh V]
+variables {a : V} {F : ν∈ X → ν∈ Y}
+
+-- Lift a `cvar.update` of a fresh variable to a `vrel.update`.
+definition lift_update_of_fresh
+(x : ν∈ '{a} ∪ X) (y : ν∈ '{(finset.fresh Y).1} ∪ Y)
+: lift (cvar.update a (finset.fresh Y).1 F) x y
+→ update a (finset.fresh Y).1 (lift F) x y :=
+
+  begin
+    cases x with x px,
+    cases y with y py,
+    unfold [vrel.lift, cvar.update],
+    intro H,
+    cases decidable.em (x = a) with x_eq_a x_ne_a,
+    begin /- x = a -/
+      rewrite [dif_pos x_eq_a at H],
+      left, split, exact x_eq_a, exact H⁻¹
+    end,
+    begin /- x ≠ a -/
+      rewrite [dif_neg x_ne_a at H],
+      right,
+      existsi x_ne_a,
+      induction H,
+      existsi cvar.ne_of_cvar_of_fvar (F (cvar.erase ⟨x, px⟩ x_ne_a)) (finset.fresh Y),
+      reflexivity,
+    end
+  end
 
 end vrel -- namespace ----------------------------------------------------------

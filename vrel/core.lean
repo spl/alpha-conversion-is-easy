@@ -7,6 +7,7 @@ This files contains a collection of core definitions and properties for `vrel`.
 import .type
 
 open [notation] function
+open [notation] sigma.ops
 
 -- `V` is the type of an infinite set of variable names with decidable equality.
 variables {V : Type} [decidable_eq V]
@@ -41,6 +42,10 @@ definition compose (R : vrel X Y) (S : vrel Y Z) : vrel X Z :=
 -- Convenient notation for `compose`.
 -- Source: http://www.fileformat.info/info/unicode/char/2a3e/index.htm
 notation R ` ⨾ `:60 S := compose R S
+
+-- Lift a function to a `vrel`
+definition lift (F : ν∈ X → ν∈ Y) : vrel X Y :=
+  λ x y, (F x).1 = y.1
 
 end vrel -- namespace ----------------------------------------------------------
 

@@ -18,9 +18,10 @@ variables {V : Type} [decidable_eq V]
 -- `finset V` is the type of a finite set of variable names with freshness.
 variables [finset.has_fresh V]
 
-namespace aeq -- ===============================================================
+-- `X`, `Y`, and variations are finite sets of variable names.
+variables {X X₁ X₂ Y Y₁ Y₂ : finset V}
 
-variables {X₁ Y₁ X₂ Y₂ : finset V}
+namespace aeq -- ===============================================================
 
 -- This is the type of a function that lifts a relation `R` to an alpha-equality
 -- relation on `S` with the substitutions `F` and `G` applied to each side.
@@ -76,7 +77,7 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 variables {eX : exp X₁} {eY : exp Y₁}
 
 -- The implementation of `subst_preservation`.
-lemma subst_preservation_core (H : aeq R eX eY)
+definition subst_preservation_core (H : aeq R eX eY)
 : ∀ {X₂ Y₂ : finset V} {S : vrel X₂ Y₂}
     (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
     (P : subst_aeq F G R S)
@@ -106,7 +107,7 @@ lemma subst_preservation_core (H : aeq R eX eY)
   end
 
 -- General form of substitution preserves alpha equality property.
-theorem subst_preservation_general
+definition subst_preservation_general
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 : subst_aeq F G R S
 → aeq R eX eY
@@ -118,16 +119,45 @@ end aeq -- namespace -----------------------------------------------------------
 
 namespace aeq -- ===============================================================
 
-variables {X Y : finset V}
 variables {eX₁ eX₂ : exp X}
 
 -- Substitution preserves alpha equality.
-theorem subst_preservation
+definition subst_preservation
 (F : exp.subst X Y) (G : exp.subst X Y)
 : subst_aeq F G (vrel.id X) (vrel.id Y)
 → aeq (vrel.id X) eX₁ eX₂
 → aeq (vrel.id Y) (exp.subst_apply F eX₁) (exp.subst_apply G eX₂) :=
 
   subst_preservation_general F G
+
+end aeq -- namespace -----------------------------------------------------------
+
+namespace aeq -- ===============================================================
+
+theorem self_aeq_subst_apply_lift (e : exp X)
+: ∀ {Y : finset V} (F : ν∈ X → ν∈ Y)
+, aeq (vrel.lift F) e (exp.subst_apply (exp.subst.lift F) e) :=
+
+  begin
+    induction e with
+      /- var -/ X x
+      /- app -/ X f e rf re
+      /- lam -/ X a e r,
+    begin /- var -/
+      intro Y F,
+      exact var rfl
+    end,
+    begin /- app -/
+      intro Y F,
+      exact app (rf F) (re F)
+    end,
+    begin /- lam -/
+      intro Y F,
+      exact lam $
+        map_simple vrel.lift_update_of_fresh $
+          (funext (exp.subst_update_var_eq_var_update a (finset.fresh Y).1 F))⁻¹ ▸
+          r (cvar.update a (finset.fresh Y).1 F)
+    end
+  end
 
 end aeq -- namespace -----------------------------------------------------------

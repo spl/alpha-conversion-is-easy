@@ -107,6 +107,10 @@ definition insert (a : V) (x : ν∈ X) : ν∈ '{a} ∪ X :=
 definition replace_of_eq (Y : finset V) (x : ν∈ '{a} ∪ X) : x.1 = a → ν∈ '{a} ∪ Y :=
   λ x_eq_a, ⟨x.1, replace_constraint_of_eq Y x.2 x_eq_a⟩
 
+-- Update a function with an extra argument and a matching result.
+definition update (a b : V) (F : ν∈ X → ν∈ Y) (x : ν∈ '{a} ∪ X) : ν∈ '{b} ∪ Y :=
+  if P : x.1 = a then cvar.self b Y else cvar.insert b (F (cvar.erase x P))
+
 -- Map the free variable set from `X` to `Y` if `x.1 ∈ Y`.
 definition map_of_mem (x : ν∈ X) : x.1 ∈ Y → ν∈ Y :=
   λ px, ⟨x.1, px⟩
@@ -121,7 +125,8 @@ attribute cvar.self          [reducible]
 attribute cvar.erase         [reducible]
 attribute cvar.insert        [reducible]
 attribute cvar.replace_of_eq [reducible]
-attribute cvar.map_of_mem   [reducible]
+attribute cvar.update        [reducible]
+attribute cvar.map_of_mem    [reducible]
 attribute cvar.map_of_subset [reducible]
 
 namespace cvar -- ==============================================================
@@ -133,5 +138,9 @@ theorem eq_of_erase_insert {a : V} (x : ν∈ X) (x_ne_a : x.1 ≠ a)
     cases x,
     unfold [erase],
   end
+
+-- Variables of exclusive constraints are not equal
+theorem ne_of_cvar_of_fvar (x : ν∈ X) (x' : ν∉ X) : x.1 ≠ x'.1 :=
+  finset.ne_of_mem_of_not_mem x.2 x'.2
 
 end cvar -- namespace ----------------------------------------------------------

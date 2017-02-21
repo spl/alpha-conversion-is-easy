@@ -28,6 +28,10 @@ namespace exp -- ===============================================================
 definition subst (X Y : finset V) : Type :=
   ν∈ X → exp Y
 
+-- Lift a function to a substitution
+definition subst.lift : (ν∈ X → ν∈ Y) → subst X Y :=
+  λ F, var ∘ F
+
 -- Identity substitution construction
 definition subst_id (X : finset V) : subst X X :=
   by exact var
@@ -90,8 +94,67 @@ end exp -- namespace -----------------------------------------------------------
 
 -- Global attributes
 attribute exp.subst            [reducible]
+attribute exp.subst.lift       [reducible]
 attribute exp.subst_id         [reducible]
 attribute exp.subst_update     [reducible]
 attribute exp.subst_update_var [reducible]
 attribute exp.subst_apply      [reducible]
 attribute exp.subst_single     [reducible]
+
+namespace exp -- ===============================================================
+
+lemma subst_update_var_eq_var_update (a b : V) (F : ν∈ X → ν∈ Y) (x : ν∈ '{a} ∪ X)
+: subst_update_var a b (subst.lift F) x = subst.lift (cvar.update a b F) x :=
+
+  begin
+    cases x with c pc,
+    unfold [subst_update_var, subst_update, cvar.update, subst.lift],
+    cases decidable.em (c = a) with c_eq_a c_ne_a,
+    do 2 rewrite (dif_pos c_eq_a),
+    do 2 rewrite (dif_neg c_ne_a),
+  end
+
+theorem subst_update_var_distrib (a b : V)
+: ∀ {F G :  subst X Y}, (∀ x : ν∈ X, F x = G x)
+→ ∀ x : ν∈ '{a} ∪ X, subst_update_var a b F x = subst_update_var a b G x :=
+
+  begin
+    intros F G F_eq_G x,
+    cases x with c pc,
+    unfold [subst_update_var, subst_update],
+    cases decidable.em (c = a) with c_eq_a c_ne_a,
+    begin /- c = a -/
+      do 2 rewrite (dif_pos c_eq_a)
+    end,
+    begin /- c ≠ a -/
+      do 2 rewrite (dif_neg c_ne_a),
+      rewrite [F_eq_G (cvar.erase ⟨c, pc⟩ c_ne_a)]
+    end
+  end
+
+theorem subst_apply_distrib (e : exp X)
+: ∀ {Y : finset V} {F G :  subst X Y}, (∀ x : ν∈ X, F x = G x)
+→ subst_apply F e = subst_apply G e :=
+
+  begin
+    induction e with
+      /- var -/ X x
+      /- app -/ X f e rf re
+      /- lam -/ X a e r,
+    begin /- var -/
+      intros Y F G F_eq_G,
+      apply F_eq_G,
+    end,
+    begin /- app -/
+      intros Y F G F_eq_G,
+      do 2 rewrite subst_distrib_app,
+      rewrite [rf F_eq_G, re F_eq_G],
+    end,
+    begin /- lam -/
+      intros Y F G F_eq_G,
+      do 2 rewrite subst_distrib_lam,
+      rewrite [r $ subst_update_var_distrib a (finset.fresh Y).1 F_eq_G],
+    end
+  end
+
+end exp -- namespace -----------------------------------------------------------
