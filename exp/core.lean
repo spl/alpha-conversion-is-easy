@@ -28,7 +28,7 @@ definition map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
       /- lam -/ X x e r,
     begin /- var -/
       intro Y P,
-      exact var $ cvar.map_of_subset P x
+      exact var $ name.map_of_subset P x
     end,
     begin /- app -/
       intro Y P,

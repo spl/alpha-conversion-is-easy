@@ -38,11 +38,11 @@ definition subst_id (X : finset V) : subst X X :=
 
 -- Update substitution construction
 definition subst_update (a : V) (e : exp Y) (F : subst X Y) : subst ('{a} ∪ X) Y :=
-  λ x : ν∈ '{a} ∪ X, if P : x.1 = a then e else F (cvar.erase x P)
+  λ x : ν∈ '{a} ∪ X, if P : x.1 = a then e else F (name.erase x P)
 
 -- An update for substituting one variable for another.
 definition subst_update_var (a b : V) (F : subst X Y) : subst ('{a} ∪ X) ('{b} ∪ Y) :=
-  subst_update a (var (cvar.self b Y)) (insert_var b ∘ F)
+  subst_update a (var (name.self b Y)) (insert_var b ∘ F)
 
 -- Underlying implemention of `subst_apply`.
 definition subst_apply_core (e : exp X) : ∀ {Y : finset V}, subst X Y → exp Y :=
@@ -104,11 +104,11 @@ attribute exp.subst_single     [reducible]
 namespace exp -- ===============================================================
 
 lemma subst_update_var_eq_var_update (a b : V) (F : ν∈ X → ν∈ Y) (x : ν∈ '{a} ∪ X)
-: subst_update_var a b (subst.lift F) x = subst.lift (cvar.update a b F) x :=
+: subst_update_var a b (subst.lift F) x = subst.lift (name.update a b F) x :=
 
   begin
     cases x with c pc,
-    unfold [subst_update_var, subst_update, cvar.update, subst.lift],
+    unfold [subst_update_var, subst_update, name.update, subst.lift],
     cases decidable.em (c = a) with c_eq_a c_ne_a,
     do 2 rewrite (dif_pos c_eq_a),
     do 2 rewrite (dif_neg c_ne_a),
@@ -128,7 +128,7 @@ theorem subst_update_var_distrib (a b : V)
     end,
     begin /- c ≠ a -/
       do 2 rewrite (dif_neg c_ne_a),
-      rewrite [F_eq_G (cvar.erase ⟨c, pc⟩ c_ne_a)]
+      rewrite [F_eq_G (name.erase ⟨c, pc⟩ c_ne_a)]
     end
   end
 

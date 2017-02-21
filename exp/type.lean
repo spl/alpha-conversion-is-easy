@@ -4,9 +4,9 @@ This file contains the `exp` inductive data type.
 
 -/
 
-import var
+import name
 
-open [notation] cvar
+open [notation] name
 open [notation] finset
 
 -- `V` is the type of an infinite set of variable names with decidable equality.

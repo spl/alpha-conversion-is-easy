@@ -64,8 +64,8 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
       begin
         intro x₂ y₂ c_S_d,
         cases x₂ with x₂ px₂, cases y₂ with y₂ py₂,
-        existsi cvar.insert_constraint nx₂.1 px₂,
-        existsi cvar.insert_constraint ny₂.1 py₂,
+        existsi name.insert_constraint nx₂.1 px₂,
+        existsi name.insert_constraint ny₂.1 py₂,
         right,
         existsi finset.ne_of_mem_of_not_mem px₂ nx₂.2,
         existsi finset.ne_of_mem_of_not_mem py₂ ny₂.2,
@@ -156,7 +156,7 @@ theorem self_aeq_subst_apply_lift (e : exp X)
       exact lam $
         map_simple vrel.lift_update_of_fresh $
           (funext (exp.subst_update_var_eq_var_update a (finset.fresh Y).1 F))⁻¹ ▸
-          r (cvar.update a (finset.fresh Y).1 F)
+          r (name.update a (finset.fresh Y).1 F)
     end
   end
 

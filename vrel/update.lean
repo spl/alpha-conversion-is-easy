@@ -32,7 +32,7 @@ A simple way to think about `update a b` is (using brackets for readability):
 
 However, that does not give the proper type indexing of `R`. A closer model is:
 
-  (a = x ∧ b = y) ∨ (a ≠ x ∧ b ≠ y ∧ R (cvar.erase x px) (cvar.erase y py))
+  (a = x ∧ b = y) ∨ (a ≠ x ∧ b ≠ y ∧ R (name.erase x px) (name.erase y py))
 
 But note that `px : a ≠ x` and `py : b ≠ y` are not available as arguments to
 `R`. Therefore, we use an existentially quantified right alternative to include
@@ -42,7 +42,7 @@ these as propositions as well as their types as arguments.
 definition update (a b : V) : vrel X Y → vrel ('{a} ∪ X) ('{b} ∪ Y) :=
   assume (R : vrel X Y) (x : ν∈ '{a} ∪ X) (y : ν∈ '{b} ∪ Y),
   (x.1 = a ∧ y.1 = b) ∨
-  (∃ (px : x.1 ≠ a) (py : y.1 ≠ b), R (cvar.erase x px) (cvar.erase y py))
+  (∃ (px : x.1 ≠ a) (py : y.1 ≠ b), R (name.erase x px) (name.erase y py))
 
 end vrel -- namespace ----------------------------------------------------------
 
@@ -57,7 +57,7 @@ variables {X₁ Y₁ X₂ Y₂ : finset V}
 -- The type of a function that translates one `vrel` to another.
 definition translate [reducible] (R : vrel X₁ Y₁) (S : vrel X₂ Y₂) :=
   ∀   {x : ν∈ X₁}     {y : ν∈ Y₁},     ⟪x,                    y,                    R⟫
-  → ∃ (px : x.1 ∈ X₂) (py : y.1 ∈ Y₂), ⟪cvar.map_of_mem x px, cvar.map_of_mem y py, S⟫
+  → ∃ (px : x.1 ∈ X₂) (py : y.1 ∈ Y₂), ⟪name.map_of_mem x px, name.map_of_mem y py, S⟫
 
 -- Lift a simpler function on `vrel`s to a `translate`.
 definition translate_simple {R S : vrel X Y}
@@ -77,16 +77,16 @@ theorem translate_update {a b : V}
     cases H with H H,
     begin
       cases H,
-      existsi cvar.replace_constraint_of_eq X₂ x.2 `x.1 = a`,
-      existsi cvar.replace_constraint_of_eq Y₂ y.2 `y.1 = b`,
+      existsi name.replace_constraint_of_eq X₂ x.2 `x.1 = a`,
+      existsi name.replace_constraint_of_eq Y₂ y.2 `y.1 = b`,
       left, split, assumption, assumption,
     end,
     begin
       cases H with x_ne_a H, cases H with y_ne_b x_R_y,
       cases F x_R_y with px H,
       cases H with py x_S_y,
-      existsi cvar.insert_constraint a px,
-      existsi cvar.insert_constraint b py,
+      existsi name.insert_constraint a px,
+      existsi name.insert_constraint b py,
       right, existsi by assumption, existsi by assumption, exact x_S_y
     end
   end
@@ -111,12 +111,12 @@ lemma mem_id_insert_of_mem_update_id
     cases H with H H,
     begin
       cases H with x₁_eq_a x₂_eq_a,
-      apply cvar.eq, transitivity a, assumption, symmetry, assumption,
+      apply name.eq, transitivity a, assumption, symmetry, assumption,
     end,
     begin
       cases H with x₁_ne_a H, cases H with x₂_ne_a H,
       injection H with H₁ H₂,
-      apply cvar.eq, exact H₁
+      apply name.eq, exact H₁
     end
   end
 
@@ -225,7 +225,7 @@ lemma mem_update_compose_of_mem_compose_update
         right,
         existsi by assumption,
         existsi by assumption,
-        existsi cvar.erase y y_ne_b,
+        existsi name.erase y y_ne_b,
         split, assumption, assumption
       end
     end
@@ -240,7 +240,7 @@ lemma mem_compose_update_of_mem_update_compose
     cases H with H H,
     begin
       cases H with x_eq_a z_eq_c,
-      existsi ⟨b, cvar.self_constraint b Y⟩,
+      existsi ⟨b, name.self_constraint b Y⟩,
       split,
       left, split, assumption, reflexivity,
       left, split, reflexivity, assumption
@@ -249,16 +249,16 @@ lemma mem_compose_update_of_mem_update_compose
       cases H with x_ne_a H, cases H with z_ne_c H,
       cases H with y H, cases H with x_R_y y_S_z,
       have y_ne_b : y.1 ≠ b, from finset.ne_of_mem_of_not_mem y.2 pb,
-      existsi cvar.insert b y,
+      existsi name.insert b y,
       split,
       begin
         right, existsi by assumption, existsi y_ne_b,
-        rewrite [cvar.eq_of_erase_insert y y_ne_b],
+        rewrite [name.eq_of_erase_insert y y_ne_b],
         exact x_R_y
       end,
       begin
         right, existsi y_ne_b, existsi by assumption,
-        rewrite [cvar.eq_of_erase_insert y y_ne_b],
+        rewrite [name.eq_of_erase_insert y y_ne_b],
         exact y_S_z
       end
     end
@@ -275,21 +275,21 @@ theorem mem_update_compose_iff_mem_compose_update
 end vrel -- namespace ----------------------------------------------------------
 
 namespace vrel -- ==============================================================
--- Theorems with cvar.update
+-- Theorems with name.update
 
 variables [finset.has_fresh V]
 variables {a : V} {F : ν∈ X → ν∈ Y}
 
--- Lift a `cvar.update` of a fresh variable to a `vrel.update`.
+-- Lift a `name.update` of a fresh variable to a `vrel.update`.
 definition lift_update_of_fresh
 (x : ν∈ '{a} ∪ X) (y : ν∈ '{(finset.fresh Y).1} ∪ Y)
-: lift (cvar.update a (finset.fresh Y).1 F) x y
+: lift (name.update a (finset.fresh Y).1 F) x y
 → update a (finset.fresh Y).1 (lift F) x y :=
 
   begin
     cases x with x px,
     cases y with y py,
-    unfold [vrel.lift, cvar.update],
+    unfold [vrel.lift, name.update],
     intro H,
     cases decidable.em (x = a) with x_eq_a x_ne_a,
     begin /- x = a -/
@@ -301,7 +301,7 @@ definition lift_update_of_fresh
       right,
       existsi x_ne_a,
       induction H,
-      existsi cvar.ne_of_cvar_of_fvar (F (cvar.erase ⟨x, px⟩ x_ne_a)) (finset.fresh Y),
+      existsi name.ne_of_iname_of_oname (F (name.erase ⟨x, px⟩ x_ne_a)) (finset.fresh Y),
       reflexivity,
     end
   end

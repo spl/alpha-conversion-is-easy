@@ -5,7 +5,7 @@ variables.
 
 -/
 
-import var
+import name
 
 -- `V` is the type of an infinite set of variable names with decidable equality.
 variables {V : Type} [decidable_eq V]

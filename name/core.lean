@@ -1,8 +1,11 @@
 /-
 
-This file contains type definitions for variables (not) in finite sets.
+This files contains a collection of core definitions and properties for variable
+names.
 
 -/
+
+import .type
 
 import data.finset
 import data.finset.extra
@@ -15,39 +18,12 @@ open [notation] sigma.ops
 -- `V` is the type of an infinite set of variable names with decidable equality.
 variables {V : Type} [decidable_eq V]
 
-/-
-`cvar X` is a constrained variable name (i.e. an element of `V`). It is
-constrained to be a member of the finite set of variable names `X`.
-
-Since the underlying type is `sigma`, we use the notation `⟨x, px⟩` to create a
-`cvar X` with the variable, `x : V`, and its proof of membership, `px : x ∈ X`.
--/
-
-definition cvar (X : finset V) : Type :=
-  Σ x : V, x ∈ X
-
-/-
-`fvar X` is a fresh variable name: an element of `V` but _not_ a member of `X`.
-
-This is the complement to `cvar`. It is used for variables fresh wrt a `finset`.
-
-Since the underlying type is `sigma`, we use the notation `⟨x, px⟩` to create a
-`fvar X` with the variable, `x : V`, and its proof of membership, `px : x ∈ X`.
--/
-
-definition fvar (X : finset V) : Type :=
-  Σ x : V, x ∉ X
-
--- Convenient notation for the above.
-prefix `ν∈ `:40 := cvar  -- \nu\in
-prefix `ν∉ `:40 := fvar  -- \nu\notin
-
 -- Arbitrary variable names, not explicitly constrained to a finite set.
 variables {a b : V}
 
 variables {X Y : finset V}
 
-namespace cvar -- ==============================================================
+namespace name -- ==============================================================
 
 definition self_constraint : ∀ (a : V) (X : finset V), a ∈ '{a} ∪ X :=
   finset.mem_insert
@@ -63,7 +39,9 @@ definition insert_constraint : ∀ b : V, a ∈ X → a ∈ '{b} ∪ X :=
 
 -- Make a new constraint for another free variable set if the given variable
 -- name equals the inserted one.
-definition replace_constraint_of_eq (Y : finset V) : a ∈ '{b} ∪ X → a = b → a ∈ '{b} ∪ Y :=
+definition replace_constraint_of_eq (Y : finset V)
+: a ∈ '{b} ∪ X → a = b → a ∈ '{b} ∪ Y :=
+
   assume pa a_eq_b,
   begin
     generalize self_constraint a Y,
@@ -76,14 +54,14 @@ definition replace_constraint_of_eq (Y : finset V) : a ∈ '{b} ∪ X → a = b 
 definition map_constraint : X ⊆ Y → a ∈ X → a ∈ Y :=
   finset.mem_of_subset_of_mem
 
-end cvar -- namespace ----------------------------------------------------------
+end name -- namespace ----------------------------------------------------------
 
-attribute cvar.self_constraint          [reducible]
-attribute cvar.erase_constraint         [reducible]
-attribute cvar.insert_constraint        [reducible]
-attribute cvar.replace_constraint_of_eq [reducible]
+attribute name.self_constraint          [reducible]
+attribute name.erase_constraint         [reducible]
+attribute name.insert_constraint        [reducible]
+attribute name.replace_constraint_of_eq [reducible]
 
-namespace cvar -- ==============================================================
+namespace name -- ==============================================================
 
 protected
 definition eq {x₁ : ν∈ X} {x₂ : ν∈ X} : x₁.1 = x₂.1 → x₁ = x₂ :=
@@ -109,7 +87,7 @@ definition replace_of_eq (Y : finset V) (x : ν∈ '{a} ∪ X) : x.1 = a → ν�
 
 -- Update a function with an extra argument and a matching result.
 definition update (a b : V) (F : ν∈ X → ν∈ Y) (x : ν∈ '{a} ∪ X) : ν∈ '{b} ∪ Y :=
-  if P : x.1 = a then cvar.self b Y else cvar.insert b (F (cvar.erase x P))
+  if P : x.1 = a then name.self b Y else name.insert b (F (name.erase x P))
 
 -- Map the free variable set from `X` to `Y` if `x.1 ∈ Y`.
 definition map_of_mem (x : ν∈ X) : x.1 ∈ Y → ν∈ Y :=
@@ -119,17 +97,17 @@ definition map_of_mem (x : ν∈ X) : x.1 ∈ Y → ν∈ Y :=
 definition map_of_subset : X ⊆ Y → ν∈ X → ν∈ Y :=
   λ P x, ⟨x.1, map_constraint P x.2⟩
 
-end cvar -- namespace ----------------------------------------------------------
+end name -- namespace ----------------------------------------------------------
 
-attribute cvar.self          [reducible]
-attribute cvar.erase         [reducible]
-attribute cvar.insert        [reducible]
-attribute cvar.replace_of_eq [reducible]
-attribute cvar.update        [reducible]
-attribute cvar.map_of_mem    [reducible]
-attribute cvar.map_of_subset [reducible]
+attribute name.self          [reducible]
+attribute name.erase         [reducible]
+attribute name.insert        [reducible]
+attribute name.replace_of_eq [reducible]
+attribute name.update        [reducible]
+attribute name.map_of_mem    [reducible]
+attribute name.map_of_subset [reducible]
 
-namespace cvar -- ==============================================================
+namespace name -- ==============================================================
 
 theorem eq_of_erase_insert {a : V} (x : ν∈ X) (x_ne_a : x.1 ≠ a)
 : erase (insert a x) x_ne_a = x :=
@@ -140,7 +118,7 @@ theorem eq_of_erase_insert {a : V} (x : ν∈ X) (x_ne_a : x.1 ≠ a)
   end
 
 -- Variables of exclusive constraints are not equal
-theorem ne_of_cvar_of_fvar (x : ν∈ X) (x' : ν∉ X) : x.1 ≠ x'.1 :=
+theorem ne_of_iname_of_oname (x : ν∈ X) (x' : ν∉ X) : x.1 ≠ x'.1 :=
   finset.ne_of_mem_of_not_mem x.2 x'.2
 
-end cvar -- namespace ----------------------------------------------------------
+end name -- namespace ----------------------------------------------------------
