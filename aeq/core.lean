@@ -20,7 +20,7 @@ namespace aeq -- ===============================================================
 
 -- Identity of one expression
 protected
-definition id (e : exp X) : aeq (nrel.id X) e e :=
+definition id (e : exp X) : e ≡α e :=
 
   begin
     induction e with
@@ -38,10 +38,10 @@ definition id (e : exp X) : aeq (nrel.id X) e e :=
     end
   end
 
-variables {R : nrel X Y} {eX : exp X} {eY : exp Y}
+variables {R : X × Y} {eX : exp X} {eY : exp Y}
 
 -- Inverse of `aeq`
-definition inverse (H : aeq R eX eY) : aeq (nrel.inverse R) eY eX :=
+definition inverse (H : eX ≡α⟨R⟩ eY) :  eY ≡α⟨R⁻¹⟩ eX :=
 
   begin
     induction H with
@@ -63,9 +63,9 @@ definition inverse (H : aeq R eX eY) : aeq (nrel.inverse R) eY eX :=
 variables {eY₁ : exp Y}
 
 -- The `compose` implementation for `aeq`: composition of two `aeq`s.
-definition compose_core (HXY : aeq R eX eY₁)
-: ∀ {Z : finset V} {S : nrel Y Z} {eY₂ : exp Y} {eZ : exp Z}
-, eY₁ = eY₂ →  aeq S eY₂ eZ → aeq (R ⨾ S) eX eZ :=
+definition compose_core (HXY : eX ≡α⟨R⟩ eY₁)
+: ∀ {Z : finset V} {S : Y × Z} {eY₂ : exp Y} {eZ : exp Z}
+, eY₁ = eY₂ → eY₂ ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
 
   begin
     induction HXY with
@@ -133,42 +133,42 @@ definition compose_core (HXY : aeq R eX eY₁)
 
   end
 
-variables {S : nrel Y Z} {eZ : exp Z}
+variables {S : Y × Z} {eZ : exp Z}
 
 -- A more convenient wrapper for the `compose` implementation.
-definition compose : aeq R eX eY → aeq S eY eZ → aeq (R ⨾ S) eX eZ :=
+definition compose : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
   λ aR, compose_core aR (eq.refl eY)
 
 end aeq -- namespace -----------------------------------------------------------
 
 namespace aeq -- ===============================================================
--- Properties of `aeq (id X)`.
+-- Properties of `aeqi`.
 
 -- Reflexivity
 protected
-theorem refl (X : finset V) : reflexive (aeq (nrel.id X)) :=
+theorem refl (X : finset V) : reflexive (aeqi X) :=
   aeq.id
 
 -- Symmetricity
 protected
-theorem symm (X : finset V) : symmetric (aeq (nrel.id X)) :=
+theorem symm (X : finset V) : symmetric (aeqi X) :=
   assume e₁ e₂,
   map_simple (λ x y, iff.elim_right nrel.mem_inverse_id_iff_mem_id) ∘ inverse
 
 -- Transitivity
 protected
-theorem trans (X : finset V) : transitive (aeq (nrel.id X)) :=
+theorem trans (X : finset V) : transitive (aeqi X) :=
   assume e₁ e₂ e₃ a₁ a₂,
   map_simple (λ x y, iff.elim_left nrel.mem_id_of_mem_compose_id) $ compose a₁ a₂
 
 -- Equivalence
 protected
-theorem equiv (X : finset V) : equivalence (aeq (nrel.id X)) :=
-  mk_equivalence (aeq (nrel.id X)) (aeq.refl X) (aeq.symm X) (aeq.trans X)
+theorem equiv (X : finset V) : equivalence (aeqi X) :=
+  mk_equivalence (aeqi X) (aeq.refl X) (aeq.symm X) (aeq.trans X)
 
 -- Setoid
 protected
 theorem setoid [instance] (X : finset V) : setoid (exp X) :=
-  setoid.mk (aeq (nrel.id X)) (by exact aeq.equiv X)
+  setoid.mk (aeqi X) (by exact aeq.equiv X)
 
 end aeq -- namespace -----------------------------------------------------------

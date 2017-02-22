@@ -17,13 +17,13 @@ variables {V : Type} [decidable_eq V]
 
 namespace aeq -- ===============================================================
 
-variables {X₁ Y₁ : finset V} {R : nrel X₁ Y₁} {eX : exp X₁} {eY : exp Y₁}
+variables {X₁ Y₁ : finset V} {R : X₁ × Y₁} {eX : exp X₁} {eY : exp Y₁}
 
 -- The `map` implementation for `aeq`.
-lemma map_core (H : aeq R eX eY)
+lemma map_core (H : eX ≡α⟨R⟩ eY)
 : ∀ {X₂ Y₂ : finset V} (pX : X₁ ⊆ X₂) (pY : Y₁ ⊆ Y₂)
-    {S : nrel X₂ Y₂} (F : nrel.translate R S)
-, aeq S (exp.map pX eX) (exp.map pY eY) :=
+    {S : X₂ × Y₂} (F : nrel.translate R S)
+, exp.map pX eX ≡α⟨S⟩ exp.map pY eY :=
 
   begin
     induction H with
@@ -48,12 +48,12 @@ lemma map_core (H : aeq R eX eY)
     end
   end
 
-variables {X₂ Y₂ : finset V} {S : nrel X₂ Y₂}
+variables {X₂ Y₂ : finset V} {S : X₂ × Y₂}
 
--- Map alpha-equality from one variable relation, `R : nrel X₁ Y₁`, to another,
--- `S : nrel X₂ Y₂`, as long as `X₁ ⊆ X₂` and `Y₁ ⊆ Y₂`.
+-- Map alpha-equality from one variable relation, `R : X₁ × Y₁`, to another,
+-- `S : X₂ × Y₂`, as long as `X₁ ⊆ X₂` and `Y₁ ⊆ Y₂`.
 theorem map (pX : X₁ ⊆ X₂) (pY : Y₁ ⊆ Y₂)
-: nrel.translate R S → aeq R eX eY → aeq S (exp.map pX eX) (exp.map pY eY) :=
+: nrel.translate R S → eX ≡α⟨R⟩ eY → exp.map pX eX ≡α⟨S⟩ exp.map pY eY :=
 
   λ F H, map_core H pX pY @F
 
@@ -61,11 +61,11 @@ end aeq -- namespace -----------------------------------------------------------
 
 namespace aeq -- ===============================================================
 
-variables {X Y : finset V} {R S : nrel X Y} {eX : exp X} {eY : exp Y}
+variables {X Y : finset V} {R S : X × Y} {eX : exp X} {eY : exp Y}
 
 -- A wrapper for `map` in which the free variable sets do not change.
 theorem map_simple
-: (∀ {x : ν∈ X} {y : ν∈ Y}, ⟪x, y, R⟫ → ⟪x, y, S⟫) → aeq R eX eY → aeq S eX eY :=
+: (∀ {x : ν∈ X} {y : ν∈ Y}, (x, y) ∈ R → (x, y) ∈ S) → eX ≡α⟨R⟩ eY → eX ≡α⟨S⟩ eY :=
 
   assume F H,
   have F' : nrel.translate R S, by apply nrel.translate_simple; apply @F,

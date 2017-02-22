@@ -29,7 +29,7 @@ definition subst (X Y : finset V) : Type :=
   ν∈ X → exp Y
 
 -- Lift a function to a substitution
-definition subst.lift : (ν∈ X → ν∈ Y) → subst X Y :=
+definition subst.lift : (X ν⇒ Y) → subst X Y :=
   λ F, var ∘ F
 
 -- Identity substitution construction
@@ -103,7 +103,7 @@ attribute exp.subst_single     [reducible]
 
 namespace exp -- ===============================================================
 
-lemma subst_update_var_eq_var_update (a b : V) (F : ν∈ X → ν∈ Y) (x : ν∈ '{a} ∪ X)
+lemma subst_update_var_eq_var_update (a b : V) (F : X ν⇒ Y) (x : ν∈ '{a} ∪ X)
 : subst_update_var a b (subst.lift F) x = subst.lift (name.update a b F) x :=
 
   begin

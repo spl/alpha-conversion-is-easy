@@ -86,7 +86,7 @@ definition replace_of_eq (Y : finset V) (x : ν∈ '{a} ∪ X) : x.1 = a → ν�
   λ x_eq_a, ⟨x.1, replace_constraint_of_eq Y x.2 x_eq_a⟩
 
 -- Update a function with an extra argument and a matching result.
-definition update (a b : V) (F : ν∈ X → ν∈ Y) (x : ν∈ '{a} ∪ X) : ν∈ '{b} ∪ Y :=
+definition update (a b : V) (F : X ν⇒ Y) (x : ν∈ '{a} ∪ X) : ν∈ '{b} ∪ Y :=
   if P : x.1 = a then name.self b Y else name.insert b (F (name.erase x P))
 
 -- Map the free variable set from `X` to `Y` if `x.1 ∈ Y`.

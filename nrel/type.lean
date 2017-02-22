@@ -18,3 +18,6 @@ and `Y`.
 
 definition nrel (X Y : finset V) : Type :=
   ν∈ X → ν∈ Y → Prop
+
+-- Notation for `nrel`.
+infixl ` × ` := nrel

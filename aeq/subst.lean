@@ -27,12 +27,12 @@ namespace aeq -- ===============================================================
 -- relation on `S` with the substitutions `F` and `G` applied to each side.
 definition subst_aeq
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
-(R : nrel X₁ Y₁) (S : nrel X₂ Y₂) :=
+(R : X₁ × Y₁) (S : X₂ × Y₂) :=
 
-  ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y, R⟫ → aeq S (F x) (G y)
+  ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, (x, y) ∈ R → F x ≡α⟨S⟩ G y
 
 variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂}
-variables {R : nrel X₁ Y₁} {S : nrel X₂ Y₂}
+variables {R : X₁ × Y₁} {S : X₂ × Y₂}
 variables {a b : V}
 
 -- A lemma needed for the `lam` case in `subst_preservation_core`.
@@ -77,11 +77,11 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 variables {eX : exp X₁} {eY : exp Y₁}
 
 -- The implementation of `subst_preservation`.
-definition subst_preservation_core (H : aeq R eX eY)
-: ∀ {X₂ Y₂ : finset V} {S : nrel X₂ Y₂}
+definition subst_preservation_core (H : eX ≡α⟨R⟩ eY)
+: ∀ {X₂ Y₂ : finset V} {S : X₂ × Y₂}
     (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
     (P : subst_aeq F G R S)
-, aeq S (exp.subst_apply F eX) (exp.subst_apply G eY) :=
+, exp.subst_apply F eX ≡α⟨S⟩ exp.subst_apply G eY :=
 
   begin
     induction H with
@@ -110,8 +110,8 @@ definition subst_preservation_core (H : aeq R eX eY)
 definition subst_preservation_general
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 : subst_aeq F G R S
-→ aeq R eX eY
-→ aeq S (exp.subst_apply F eX) (exp.subst_apply G eY) :=
+→ eX ≡α⟨R⟩ eY
+→ exp.subst_apply F eX ≡α⟨S⟩ exp.subst_apply G eY :=
 
   λ P H, subst_preservation_core H F G @P
 
@@ -125,8 +125,8 @@ variables {eX₁ eX₂ : exp X}
 definition subst_preservation
 (F : exp.subst X Y) (G : exp.subst X Y)
 : subst_aeq F G (nrel.id X) (nrel.id Y)
-→ aeq (nrel.id X) eX₁ eX₂
-→ aeq (nrel.id Y) (exp.subst_apply F eX₁) (exp.subst_apply G eX₂) :=
+→ eX₁ ≡α eX₂
+→ exp.subst_apply F eX₁ ≡α exp.subst_apply G eX₂ :=
 
   subst_preservation_general F G
 
@@ -135,8 +135,8 @@ end aeq -- namespace -----------------------------------------------------------
 namespace aeq -- ===============================================================
 
 theorem self_aeq_subst_apply_lift (e : exp X)
-: ∀ {Y : finset V} (F : ν∈ X → ν∈ Y)
-, aeq (nrel.lift F) e (exp.subst_apply (exp.subst.lift F) e) :=
+: ∀ {Y : finset V} (F : X ν⇒ Y)
+, e ≡α⟨nrel.lift F⟩ exp.subst_apply (exp.subst.lift F) e :=
 
   begin
     induction e with

@@ -22,7 +22,7 @@ variables {X Y Z : finset V}
 namespace nrel -- ==============================================================
 
 /-
-The `update` operation takes `R : nrel X Y`, erases from `R` every pair with
+The `update` operation takes `R : X × Y`, erases from `R` every pair with
 either `a` on the left or `b` on the right, and extends the relation with the
 pair `(a, b)`.
 
@@ -39,10 +39,14 @@ But note that `px : a ≠ x` and `py : b ≠ y` are not available as arguments t
 these as propositions as well as their types as arguments.
 -/
 
-definition update (a b : V) : nrel X Y → nrel ('{a} ∪ X) ('{b} ∪ Y) :=
-  assume (R : nrel X Y) (x : ν∈ '{a} ∪ X) (y : ν∈ '{b} ∪ Y),
+definition update (a b : V) : X × Y → '{a} ∪ X × '{b} ∪ Y :=
+  assume (R : X × Y) (x : ν∈ '{a} ∪ X) (y : ν∈ '{b} ∪ Y),
   (x.1 = a ∧ y.1 = b) ∨
   (∃ (px : x.1 ≠ a) (py : y.1 ≠ b), R (name.erase x px) (name.erase y py))
+
+-- Notation for `update`: union with minus sign.
+-- Source: http://www.fileformat.info/info/unicode/char/2a41/index.htm
+infix ` ⩁ `:65 := λ R p, update (prod.pr1 p) (prod.pr2 p) R
 
 end nrel -- namespace ----------------------------------------------------------
 
@@ -55,22 +59,22 @@ namespace nrel -- ==============================================================
 variables {X₁ Y₁ X₂ Y₂ : finset V}
 
 -- The type of a function that translates one `nrel` to another.
-definition translate [reducible] (R : nrel X₁ Y₁) (S : nrel X₂ Y₂) :=
-  ∀   {x : ν∈ X₁}     {y : ν∈ Y₁},     ⟪x,                    y,                    R⟫
-  → ∃ (px : x.1 ∈ X₂) (py : y.1 ∈ Y₂), ⟪name.map_of_mem x px, name.map_of_mem y py, S⟫
+definition translate [reducible] (R : X₁ × Y₁) (S : X₂ × Y₂) :=
+  ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, (x, y) ∈ R
+  → ∃ (px : x.1 ∈ X₂) (py : y.1 ∈ Y₂), (name.map_of_mem x px, name.map_of_mem y py) ∈ S
 
 -- Lift a simpler function on `nrel`s to a `translate`.
-definition translate_simple {R S : nrel X Y}
-: (∀ {x : ν∈ X} {y : ν∈ Y}, ⟪x, y, R⟫ → ⟪x, y, S⟫) → translate R S :=
+definition translate_simple {R S : X × Y}
+: (∀ {x : ν∈ X} {y : ν∈ Y}, (x, y) ∈ R → (x, y) ∈ S) → translate R S :=
 
   assume F x y x_R_y,
   exists.intro x.2 $ exists.intro y.2 (by cases x; cases y; exact F x_R_y)
 
-variables {R : nrel X₁ Y₁} {S : nrel X₂ Y₂}
+variables {R : X₁ × Y₁} {S : X₂ × Y₂}
 
 -- Lift a `translate` over `update`d `nrel`s.
 theorem translate_update {a b : V}
-: translate R S → translate (update a b R) (update a b S) :=
+: translate R S → translate (R ⩁ (a, b)) (S ⩁ (a, b)) :=
 
   begin
     intro F x y H,
@@ -104,7 +108,7 @@ variables {x₁ : ν∈ '{a} ∪ X} {x₂ : ν∈ '{a} ∪ X}
 
 -- `update a a (id X) → id ('{a} ∪ X)`.
 lemma mem_id_insert_of_mem_update_id
-: ⟪x₁, x₂, update a a (id X)⟫ → ⟪x₁, x₂, id ('{a} ∪ X)⟫ :=
+: (x₁, x₂) ∈ id X ⩁ (a, a) → (x₁, x₂) ∈ id ('{a} ∪ X) :=
 
   begin
     intro H,
@@ -122,7 +126,7 @@ lemma mem_id_insert_of_mem_update_id
 
 -- `id ('{a} ∪ X) → update a a (id X)`.
 lemma mem_update_id_of_mem_id_insert
-: ⟪x₁, x₂, id ('{a} ∪ X)⟫ → ⟪x₁, x₂, update a a (id X)⟫ :=
+: (x₁, x₂) ∈ id ('{a} ∪ X) → (x₁, x₂) ∈ id X ⩁ (a, a) :=
 
   begin
     intro H,
@@ -134,7 +138,7 @@ lemma mem_update_id_of_mem_id_insert
 
 -- Show that `update a a (id X) ↔ id ('{a} ∪ X)`.
 theorem mem_update_id_iff_mem_id_insert
-: ⟪x₁, x₂, update a a (id X)⟫ ↔ ⟪x₁, x₂, id ('{a} ∪ X)⟫ :=
+: (x₁, x₂) ∈ id X ⩁ (a, a) ↔ (x₁, x₂) ∈ id ('{a} ∪ X) :=
 
   iff.intro mem_id_insert_of_mem_update_id
             mem_update_id_of_mem_id_insert
@@ -144,13 +148,13 @@ end nrel -- namespace ----------------------------------------------------------
 namespace nrel -- ==============================================================
 -- Properties of `update` and `inverse`.
 
-variables {R : nrel X Y}
+variables {R : X × Y}
 variables {a b : V}
 variables {x : ν∈ '{a} ∪ X} {y : ν∈ '{b} ∪ Y}
 
 -- `inverse (update a b R) → update b a (inverse R)`
 lemma mem_update_inverse_of_mem_inverse_update
-: ⟪y, x, inverse (update a b R)⟫ → ⟪y, x, update b a (inverse R)⟫ :=
+: (y, x) ∈ (R ⩁ (a, b))⁻¹ → (y, x) ∈ R⁻¹ ⩁ (b, a) :=
 
   begin
     intro H,
@@ -168,7 +172,7 @@ lemma mem_update_inverse_of_mem_inverse_update
 
 -- `update b a (inverse R) → inverse (update a b R)`
 lemma mem_inverse_update_of_mem_update_inverse
-: ⟪y, x, update b a (inverse R)⟫ → ⟪y, x, inverse (update a b R)⟫ :=
+: (y, x) ∈ R⁻¹ ⩁ (b, a) → (y, x) ∈ (R ⩁ (a, b))⁻¹ :=
 
   begin
     intro H,
@@ -184,9 +188,9 @@ lemma mem_inverse_update_of_mem_update_inverse
     end
   end
 
--- `inverse (update a b R) → update b a (inverse R)`
+-- `inverse (update a b R) ↔ update b a (inverse R)`
 theorem mem_update_inverse_iff_mem_inverse_update
-: ⟪y, x, inverse (update a b R)⟫ ↔ ⟪y, x, update b a (inverse R)⟫ :=
+: (y, x) ∈ (R ⩁ (a, b))⁻¹ ↔ (y, x) ∈ R⁻¹ ⩁ (b, a) :=
 
   iff.intro mem_update_inverse_of_mem_inverse_update
             mem_inverse_update_of_mem_update_inverse
@@ -196,13 +200,13 @@ end nrel -- namespace ----------------------------------------------------------
 namespace nrel -- ==============================================================
 -- Properties of `update` and `compose`.
 
-variables {R : nrel X Y} {S : nrel Y Z}
+variables {R : X × Y} {S : Y × Z}
 variables {a b c : V}
 variables {x : ν∈ '{a} ∪ X} {z : ν∈ '{c} ∪ Z}
 
 -- `update a b R ⨾ update b c S → update a c (R ⨾ S)`
 lemma mem_update_compose_of_mem_compose_update
-: ⟪x, z, update a b R ⨾ update b c S⟫ → ⟪x, z, update a c (R ⨾ S)⟫ :=
+: (x, z) ∈ R ⩁ (a, b) ⨾ S ⩁ (b, c) → (x, z) ∈ (R ⨾ S) ⩁ (a, c) :=
 
   begin
     intro H,
@@ -233,7 +237,7 @@ lemma mem_update_compose_of_mem_compose_update
 
 -- `update a c (R ⨾ S) → update a b R ⨾ update b c S`
 lemma mem_compose_update_of_mem_update_compose
-: b ∉ Y → ⟪x, z, update a c (R ⨾ S)⟫ → ⟪x, z, update a b R ⨾ update b c S⟫ :=
+: b ∉ Y → (x, z) ∈ (R ⨾ S) ⩁ (a, c) → (x, z) ∈ R ⩁ (a, b) ⨾ S ⩁ (b, c) :=
 
   begin
     intro pb H,
@@ -266,7 +270,7 @@ lemma mem_compose_update_of_mem_update_compose
 
 -- `update a b R ⨾ update b c S ↔ update a c (R ⨾ S)`
 theorem mem_update_compose_iff_mem_compose_update
-: b ∉ Y → (⟪x, z, update a c (R ⨾ S)⟫ ↔ ⟪x, z, update a b R ⨾ update b c S⟫) :=
+: b ∉ Y → ((x, z) ∈ (R ⨾ S) ⩁ (a, c) ↔ (x, z) ∈ R ⩁ (a, b) ⨾ S ⩁ (b, c)) :=
 
   assume pb,
   iff.intro (mem_compose_update_of_mem_update_compose pb)
@@ -284,12 +288,12 @@ variables {a : V} {F : ν∈ X → ν∈ Y}
 definition lift_update_of_fresh
 (x : ν∈ '{a} ∪ X) (y : ν∈ '{(finset.fresh Y).1} ∪ Y)
 : lift (name.update a (finset.fresh Y).1 F) x y
-→ update a (finset.fresh Y).1 (lift F) x y :=
+→ (lift F ⩁ (a, (finset.fresh Y).1)) x y :=
 
   begin
     cases x with x px,
     cases y with y py,
-    unfold [nrel.lift, name.update],
+    unfold [lift, name.update],
     intro H,
     cases decidable.em (x = a) with x_eq_a x_ne_a,
     begin /- x = a -/
