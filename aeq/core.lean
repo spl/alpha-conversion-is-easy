@@ -175,7 +175,7 @@ theorem equiv (X : finset V) : equivalence (aeqi X) :=
 
 -- Setoid
 protected
-theorem setoid [instance] (X : finset V) : setoid (exp X) :=
+definition setoid [instance] (X : finset V) : setoid (exp X) :=
   setoid.mk (aeqi X) (by exact aeq.equiv X)
 
 end aeq -- namespace -----------------------------------------------------------
