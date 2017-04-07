@@ -60,6 +60,9 @@ definition inverse (H : eX ≡α⟨R⟩ eY) :  eY ≡α⟨R⁻¹⟩ eX :=
     end
   end
 
+-- Notation for `inverse`.
+postfix ⁻¹ := inverse
+
 variables {eY₁ : exp Y}
 
 -- The `compose` implementation for `aeq`: composition of two `aeq`s.
@@ -138,6 +141,10 @@ variables {S : Y × Z} {eZ : exp Z}
 -- A more convenient wrapper for the `compose` implementation.
 definition compose : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
   λ aR, compose_core aR (eq.refl eY)
+
+-- Notation for `compose`.
+-- Source: http://www.fileformat.info/info/unicode/char/2a3e/index.htm
+infixr ` ⨾ `:60 := compose
 
 end aeq -- namespace -----------------------------------------------------------
 
