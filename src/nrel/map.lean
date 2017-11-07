@@ -21,7 +21,7 @@ variables {X₁ Y₁ X₂ Y₂ : finset V}
 -- another.
 @[reducible]
 protected
-definition map (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
+def map (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
   ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y⟫ ∈ν R
   → ∃ (px : x.1 ∈ X₂) (py : y.1 ∈ Y₂)
   , ⟪name.map_of_mem x px, name.map_of_mem y py⟫ ∈ν S

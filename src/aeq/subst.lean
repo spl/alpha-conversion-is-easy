@@ -21,7 +21,7 @@ namespace aeq -- ===============================================================
 
 -- This is the type of a function that lifts a relation `R` to an alpha-equality
 -- relation on `S` with the substitutions `F` and `G` applied to each side.
-definition subst_aeq
+def subst_aeq
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
   ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
@@ -87,7 +87,7 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 variables {eX : exp X₁} {eY : exp Y₁}
 
 -- The implementation of `subst_preservation`.
-definition subst_preservation_core (H : eX ≡α⟨R⟩ eY)
+def subst_preservation_core (H : eX ≡α⟨R⟩ eY)
 : ∀ {X₂ Y₂ : finset V} {S : X₂ ×ν Y₂}
     (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
     (P : subst_aeq F G R S)
@@ -116,7 +116,7 @@ definition subst_preservation_core (H : eX ≡α⟨R⟩ eY)
   end
 
 -- General form of substitution preserves alpha equality property.
-definition subst_preservation_general
+def subst_preservation_general
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 : subst_aeq F G R S
 → eX ≡α⟨R⟩ eY
@@ -130,7 +130,7 @@ section
 variables {eX₁ eX₂ : exp X}
 
 -- Substitution preserves alpha equality.
-definition subst_preservation
+def subst_preservation
 (F : exp.subst X Y) (G : exp.subst X Y)
 : subst_aeq F G (nrel.id X) (nrel.id Y)
 → eX₁ ≡α eX₂

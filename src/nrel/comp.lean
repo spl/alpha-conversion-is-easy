@@ -18,7 +18,7 @@ namespace nrel
 -- `comp R S` combines the relations `R` and `S` to create a new relation
 -- that is the composition of their underlying finite sets.
 @[reducible]
-definition comp (R : X ×ν Y) (S : Y ×ν Z) : X ×ν Z :=
+def comp (R : X ×ν Y) (S : Y ×ν Z) : X ×ν Z :=
   λ x z, ∃ y, R x y ∧ S y z
 
 -- Notation for `comp`.

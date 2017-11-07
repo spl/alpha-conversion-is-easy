@@ -18,7 +18,7 @@ variables {R : X ×ν Y}
 variables {eX : exp X} {eY₁ eY₂ : exp Y}
 
 -- The `comp` implementation for `aeq`: composition of two `aeq`s.
-definition comp_core (HXY : eX ≡α⟨R⟩ eY₁)
+def comp_core (HXY : eX ≡α⟨R⟩ eY₁)
 : ∀ {Z : finset V} {S : Y ×ν Z} {eY₂ : exp Y} {eZ : exp Z}
 , eY₁ = eY₂ → eY₂ ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
 
@@ -92,7 +92,7 @@ variables {S : Y ×ν Z}
 variables {eY : exp Y} {eZ : exp Z}
 
 -- A more convenient wrapper for the `comp` implementation.
-definition comp : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
+def comp : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
   λ aR, comp_core aR (eq.refl eY)
 
 -- Notation for `comp`.

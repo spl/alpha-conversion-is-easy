@@ -19,8 +19,8 @@ namespace nrel
 
 -- `inv R` inverts the order of the relation `R`.
 @[reducible]
-definition inv : X ×ν Y → Y ×ν X :=
-  -- An alternative definition for this is `function.swap`; however, that does
+def inv : X ×ν Y → Y ×ν X :=
+  -- An alternative def for this is `function.swap`; however, that does
   -- not unfold as easily as the explicit lambda.
   λ R y x, R x y
 

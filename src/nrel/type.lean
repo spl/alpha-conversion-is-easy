@@ -19,7 +19,7 @@ and `Y`.
 -/
 
 @[reducible]
-definition nrel (X Y : finset V) : Type :=
+def nrel (X Y : finset V) : Type :=
   ν∈ X → ν∈ Y → Prop
 
 -- Notation for `nrel`.
@@ -33,7 +33,7 @@ variables {X Y : finset V}
 -- Lift a function on finite name sets to a `nrel`
 @[reducible]
 protected
-definition nrel.lift (F : X ν⇒ Y) : X ×ν Y :=
+def nrel.lift (F : X ν⇒ Y) : X ×ν Y :=
   λ x y, (F x).1 = y.1
 
 end alpha -- namespace

@@ -18,7 +18,7 @@ namespace exp -- ===============================================================
 -- The `exp` `map` operation.
 
 -- The `map` implementation.
-definition map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
+def map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
 
   begin
     induction e with
@@ -41,7 +41,7 @@ definition map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
 
 -- Given proof `P : X ⊆ Y`, `map P e₁ : exp Y` maps the free variables
 -- from `X` to `Y` in `e₁ : exp X`.
-definition map : X ⊆ Y → exp X → exp Y :=
+def map : X ⊆ Y → exp X → exp Y :=
   λ P e, map_core e P
 
 -- The identity property of `map`.
@@ -68,7 +68,7 @@ theorem eq_of_map (X : finset V) (e : exp X)
 
 -- A weakening property that allows increasing the free variable set without
 -- changing the structure of an expression.
-definition insert_var (a : V) : exp X → exp (insert a X) :=
+def insert_var (a : V) : exp X → exp (insert a X) :=
   map finset.subset_insert
 
 end exp -- namespace -----------------------------------------------------------

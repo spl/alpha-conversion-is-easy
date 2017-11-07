@@ -32,7 +32,7 @@ notation e₁ ` ≡α⟨`:50 R `⟩ ` e₂:50 := aeq R e₁ e₂
 
 -- An abbreviation for `aeq` with `nrel.id`.
 @[reducible]
-definition aeq.identity (X : finset V) : exp X → exp X → Prop :=
+def aeq.identity (X : finset V) : exp X → exp X → Prop :=
   aeq (nrel.id X)
 
 -- Notation for `aeq.identity`. We leave the `finset` implicit here because it

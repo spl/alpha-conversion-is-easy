@@ -17,7 +17,7 @@ namespace aeq
 
 -- Identity of one expression
 protected
-definition id (e : exp X) : e ≡α e :=
+def id (e : exp X) : e ≡α e :=
   begin
     induction e with
       /- var -/ X x

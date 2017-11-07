@@ -22,17 +22,17 @@ membership, `pa : M a X` (or `x.2`).
 -/
 
 @[reducible]
-definition name (X : finset V) (M : V → finset V → Prop) : Type :=
+def name (X : finset V) (M : V → finset V → Prop) : Type :=
   Σ' a : V, M a X
 
 -- A `name` *i*n the finite set `X`.
 @[reducible]
-definition iname (X : finset V) : Type :=
+def iname (X : finset V) : Type :=
   name X finset.mem
 
 -- A `name` *o*ut of the finite set `X`.
 @[reducible]
-definition oname (X : finset V) : Type :=
+def oname (X : finset V) : Type :=
   name X (λ a X, ¬ finset.mem a X)
 
 -- Notation for `iname` and `oname`.
@@ -41,7 +41,7 @@ prefix `ν∉ `:40 := oname  -- \nu\notin
 
 -- A function from an `iname` to an `iname`.
 @[reducible]
-definition iname_fun (X Y : finset V) : Type :=
+def iname_fun (X Y : finset V) : Type :=
   ν∈ X → ν∈ Y
 
 -- Notation for `iname_fun`.

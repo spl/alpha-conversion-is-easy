@@ -26,13 +26,13 @@ class has_fresh (A : Type) :=
 
 -- Given `F : finset A` of `A` elements, produce a fresh `a : A` and a proof
 -- that `a` is not a member of `F`.
-definition fresh {A : Type} [has_fresh A] : ∀ F : finset A, Σ' a : A, a ∉ F :=
+def fresh {A : Type} [has_fresh A] : ∀ F : finset A, Σ' a : A, a ∉ F :=
   has_fresh.fresh
 
 -- Given a `finset` of `nat`, produce the successor of the maximum element as a
 -- fresh element.
 private
-definition fresh_nat (X : finset ℕ) : Σ' x, x ∉ X :=
+def fresh_nat (X : finset ℕ) : Σ' x, x ∉ X :=
   have fresh_not_mem : succ (Max₀ X) ∉ X, from
     assume H : succ (Max₀ X) ∈ X,
     have succ (Max₀ X) ≤ Max₀ X, from le_Max₀ H,

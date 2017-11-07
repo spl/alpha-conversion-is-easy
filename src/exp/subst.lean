@@ -25,31 +25,31 @@ namespace exp -- ===============================================================
 
 -- The type of substitutions.
 @[reducible]
-definition subst (X Y : finset V) : Type :=
+def subst (X Y : finset V) : Type :=
   ν∈ X → exp Y
 
 -- Lift a function to a substitution
 @[reducible]
-definition subst.lift : (X ν⇒ Y) → subst X Y :=
+def subst.lift : (X ν⇒ Y) → subst X Y :=
   λ F, var ∘ F
 
 -- Identity substitution construction
 @[reducible]
-definition subst_id (X : finset V) : subst X X :=
+def subst_id (X : finset V) : subst X X :=
   by exact var
 
 -- Update substitution construction
 @[reducible]
-definition subst_update (a : V) (e : exp Y) (F : subst X Y) : subst (insert a X) Y :=
+def subst_update (a : V) (e : exp Y) (F : subst X Y) : subst (insert a X) Y :=
   λ x : ν∈ insert a X, if P : x.1 = a then e else F (name.erase x P)
 
 -- An update for substituting one variable for another.
 @[reducible]
-definition subst_update_var (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
+def subst_update_var (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
   subst_update a (var (name.self b Y)) (insert_var b ∘ F)
 
 -- Underlying implemention of `subst_apply`.
-definition subst_apply_core (e : exp X) : ∀ {Y : finset V}, subst X Y → exp Y :=
+def subst_apply_core (e : exp X) : ∀ {Y : finset V}, subst X Y → exp Y :=
   begin
     induction e with
       /- var -/ X x
@@ -73,12 +73,12 @@ definition subst_apply_core (e : exp X) : ∀ {Y : finset V}, subst X Y → exp 
 -- Apply a substitution to one expression to get another with different free
 -- variables.
 @[reducible]
-definition subst_apply : subst X Y → exp X → exp Y :=
+def subst_apply : subst X Y → exp X → exp Y :=
   λ F e, subst_apply_core e F
 
 -- Apply a single-variable substitution
 @[reducible]
-definition subst_single (x : V) (e : exp X) : exp (insert x X) → exp X :=
+def subst_single (x : V) (e : exp X) : exp (insert x X) → exp X :=
   subst_apply $ subst_update x e $ subst_id X
 
 -- Substitution is applied to variables

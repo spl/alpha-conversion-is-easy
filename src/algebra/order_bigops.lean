@@ -27,17 +27,17 @@ instance : comm_semigroup B :=
   , mul_comm  := max_comm
   }
 
-definition Max (s : finset A) (f : A → B) : B :=
+def Max (s : finset A) (f : A → B) : B :=
   Prod_semigroup 0 s f
 
-definition Max_singleton (f : A → B) (a : A) : Max {a} f = f a :=
+def Max_singleton (f : A → B) (a : A) : Max {a} f = f a :=
   Prod_semigroup_singleton _ _ _
 
 theorem Max_insert (f : A → B) {a : A} {s : finset A} (anins : a ∉ s) (sne : s ≠ ∅)
 : Max (insert a s) f = max (f a) (Max s f) :=
   Prod_semigroup_insert _ _ anins sne
 
-definition le_Max (f : A → B) {a : A} {s : finset A} : a ∈ s → f a ≤ Max s f :=
+def le_Max (f : A → B) {a : A} {s : finset A} : a ∈ s → f a ≤ Max s f :=
   finset.induction
     (λ (H : a ∈ ∅), false.elim (@not_mem_empty _ a H))
     (λ a' s' (H : a' ∉ s') ih a_in_insert_a'_s,
@@ -70,10 +70,10 @@ section decidable_linear_order_A
 
 variables [decidable_linear_order A] [has_zero A]
 
-definition Max₀ (s : finset A) : A :=
+def Max₀ (s : finset A) : A :=
   Max s id
 
-definition le_Max₀ {a : A} {s : finset A} : a ∈ s → a ≤ Max₀ s :=
+def le_Max₀ {a : A} {s : finset A} : a ∈ s → a ≤ Max₀ s :=
   le_Max id
 
 end decidable_linear_order_A

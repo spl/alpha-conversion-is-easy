@@ -40,7 +40,7 @@ these as propositions as well as their types as arguments.
 -/
 
 @[reducible]
-definition update (a b : V) : X ×ν Y → insert a X ×ν insert b Y :=
+def update (a b : V) : X ×ν Y → insert a X ×ν insert b Y :=
   assume (R : X ×ν Y) (x : ν∈ insert a X) (y : ν∈ insert b Y),
   (x.1 = a ∧ y.1 = b) ∨
   (∃ (px : x.1 ≠ a) (py : y.1 ≠ b), R (name.erase x px) (name.erase y py))
@@ -55,7 +55,7 @@ variables [finset.has_fresh V] {F : X ν⇒ Y}
 
 -- Lift a `name.update` of a fresh variable to a `nrel.update`.
 protected
-definition update.lift
+def update.lift
 (x : ν∈ insert a X) (y : ν∈ insert (finset.fresh Y).1 Y)
 : nrel.lift (name.update a (finset.fresh Y).1 F) x y
 → (nrel.lift F ⩁ (a, (finset.fresh Y).1)) x y :=

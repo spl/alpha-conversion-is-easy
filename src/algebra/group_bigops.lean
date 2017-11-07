@@ -13,10 +13,10 @@ open list
 
 variables {A B : Type}
 
-definition mulf [semigroup B] (f : A → B) : B → A → B :=
+def mulf [semigroup B] (f : A → B) : B → A → B :=
   λ b a, b * f a
 
-definition right_commutative_comp_right
+def right_commutative_comp_right
 (f : A → A → A) (g : B → A) (rcomm : right_commutative f)
 : right_commutative (function.comp_right f g) :=
   λ a b₁ b₂, by apply rcomm
@@ -29,7 +29,7 @@ namespace Prodl_semigroup
 
 variable [semigroup B]
 
-definition Prodl_semigroup (b : B) : ∀ (l : list A) (f : A → B), B
+def Prodl_semigroup (b : B) : ∀ (l : list A) (f : A → B), B
   | []       f := b
   | (a :: l) f := list.foldl (mulf f) (f a) l
 
@@ -92,7 +92,7 @@ theorem Prodl_semigroup_eq_Prodl_semigroup_of_perm
     (λ l₁ l₂ l₃ p₁ p₂ ih₁ ih₂,
      eq.trans ih₁ ih₂)
 
-definition Prod_semigroup (b : B) (s : finset A) (f : A → B) : B :=
+def Prod_semigroup (b : B) (s : finset A) (f : A → B) : B :=
   quot.lift_on s
     (λ l, Prodl_semigroup b l.val f)
     (λ l₁ l₂ p, Prodl_semigroup_eq_Prodl_semigroup_of_perm b f p)

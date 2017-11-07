@@ -18,7 +18,7 @@ variables {R : X ×ν Y}
 variables {eX : exp X} {eY : exp Y}
 
 -- Inverse of `aeq`
-definition inv (H : eX ≡α⟨R⟩ eY) :  eY ≡α⟨R⁻¹⟩ eX :=
+def inv (H : eX ≡α⟨R⟩ eY) :  eY ≡α⟨R⁻¹⟩ eX :=
   begin
     induction H with
       /- var -/ X Y R x y x_R_y

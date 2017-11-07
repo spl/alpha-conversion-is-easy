@@ -18,7 +18,7 @@ namespace nrel
 -- `id X` creates an identity variable relation from the single finite set `X`.
 @[reducible]
 protected
-definition id (X : finset V) : X ×ν X :=
+def id (X : finset V) : X ×ν X :=
   eq
 
 -- Constructor
