@@ -4,11 +4,9 @@
 *.d
 
 *.clean
-*.ilean
 *.olean
 
-.ninja_deps
-.ninja_log
-build.ninja
+/_target
+/leanpkg.path
 
-tmp
+/tmp

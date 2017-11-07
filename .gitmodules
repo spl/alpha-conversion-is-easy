@@ -1,0 +1,3 @@
+[submodule "lean"]
+	path = lean
+	url = git@github.com:leanprover/lean.git

@@ -1,4 +1,5 @@
 import .type
 import .map
-import .core
+import .id
+import .inv
 import .subst

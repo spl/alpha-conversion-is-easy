@@ -1,0 +1,7 @@
+[package]
+name = "alpha"
+version = "0.0.1"
+path = "src"
+
+[dependencies]
+mathlib = {git = "https://github.com/leanprover/mathlib.git", rev = "4ae6a578bca0fa007cda0859b4559afd607ac45e"}

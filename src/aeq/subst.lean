@@ -6,12 +6,6 @@ This file contains the proof that substitution preserves alpha equality.
 
 import .map
 
-open [notation] eq.ops
-open [class] [notation] finset
-open [notation] function
-open [notation] sigma.ops
-open [notation] nrel
-
 -- `V` is the type of an infinite set of variable names with decidable equality.
 variables {V : Type} [decidable_eq V]
 
@@ -21,18 +15,21 @@ variables [finset.has_fresh V]
 -- `X`, `Y`, and variations are finite sets of variable names.
 variables {X X₁ X₂ Y Y₁ Y₂ : finset V}
 
+namespace alpha
+
 namespace aeq -- ===============================================================
 
 -- This is the type of a function that lifts a relation `R` to an alpha-equality
 -- relation on `S` with the substitutions `F` and `G` applied to each side.
 definition subst_aeq
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
-(R : X₁ × Y₁) (S : X₂ × Y₂) :=
+(R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
+  ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
 
-  ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, (x, y) ∈ R → F x ≡α⟨S⟩ G y
+section
 
 variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂}
-variables {R : X₁ × Y₁} {S : X₂ × Y₂}
+variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂}
 variables {a b : V}
 
 -- A lemma needed for the `lam` case in `subst_preservation_core`.
@@ -45,27 +42,40 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
     (nrel.update nx₂.1 ny₂.1 S) :=
 
   begin
-    intro P x₁ y₁ H,
+    intros P x₁ y₁ H,
     cases H with H H,
     begin
-      cases H,
-      rewrite [dif_pos `x₁.1 = a`, dif_pos `y₁.1 = b`],
+      cases H with x₁_eq_a y₁_eq_b,
+      unfold exp.subst_update_var exp.subst_update,
+      rw [dif_pos x₁_eq_a, dif_pos y₁_eq_b],
       apply var, left, split, reflexivity, reflexivity
     end,
     begin
-      cases H with x_ne_a₁ H,
-      cases H with y_ne_b₁ x₁_R_y₁,
-      rewrite [dif_neg `x₁.1 ≠ a`, dif_neg `y₁.1 ≠ b`],
-      apply map (finset.subset_insert X₂ nx₂.1) (finset.subset_insert Y₂ ny₂.1),
-      rotate_left 1,
+      cases H with x₁_ne_a₁ H,
+      cases H with y₁_ne_b₁ x₁_R_y₁,
+      unfold exp.subst_update_var exp.subst_update,
+      rw [dif_neg x₁_ne_a₁, dif_neg y₁_ne_b₁],
+      apply map finset.subset_insert finset.subset_insert,
+      tactic.rotate 3,
       begin
-        exact P x₁_R_y₁,
+        exact _inst_1
       end,
       begin
-        intro x₂ y₂ c_S_d,
+        exact _inst_1
+      end,
+      tactic.rotate 2,
+      begin
+        exact S
+      end,
+      tactic.rotate 1,
+      begin
+        exact P x₁_R_y₁
+      end,
+      begin
+        intros x₂ y₂ c_S_d,
         cases x₂ with x₂ px₂, cases y₂ with y₂ py₂,
-        existsi name.insert_constraint nx₂.1 px₂,
-        existsi name.insert_constraint ny₂.1 py₂,
+        existsi name.insert_constraint px₂,
+        existsi name.insert_constraint py₂,
         right,
         existsi finset.ne_of_mem_of_not_mem px₂ nx₂.2,
         existsi finset.ne_of_mem_of_not_mem py₂ ny₂.2,
@@ -78,26 +88,25 @@ variables {eX : exp X₁} {eY : exp Y₁}
 
 -- The implementation of `subst_preservation`.
 definition subst_preservation_core (H : eX ≡α⟨R⟩ eY)
-: ∀ {X₂ Y₂ : finset V} {S : X₂ × Y₂}
+: ∀ {X₂ Y₂ : finset V} {S : X₂ ×ν Y₂}
     (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
     (P : subst_aeq F G R S)
 , exp.subst_apply F eX ≡α⟨S⟩ exp.subst_apply G eY :=
-
   begin
     induction H with
       /- var -/ X₁ Y₁ R x y x_R_y
       /- app -/ X₁ Y₁ R fX eX fY eY af ae rf re
       /- lam -/ X₁ Y₁ R x y eX eY a r,
     begin /- var -/
-      intro X₂ Y₂ S F G P,
+      intros X₂ Y₂ S F G P,
       exact P x_R_y
     end,
     begin /- app -/
-      intro X₂ Y₂ S F G P,
+      intros X₂ Y₂ S F G P,
       exact app (rf F G @P) (re F G @P)
     end,
     begin /- lam -/
-      intro X₂ Y₂ S F G P,
+      intros X₂ Y₂ S F G P,
       apply lam,
       exact r
         (exp.subst_update_var x (finset.fresh X₂).1 F)
@@ -112,12 +121,11 @@ definition subst_preservation_general
 : subst_aeq F G R S
 → eX ≡α⟨R⟩ eY
 → exp.subst_apply F eX ≡α⟨S⟩ exp.subst_apply G eY :=
-
   λ P H, subst_preservation_core H F G @P
 
-end aeq -- namespace -----------------------------------------------------------
+end
 
-namespace aeq -- ===============================================================
+section
 
 variables {eX₁ eX₂ : exp X}
 
@@ -127,37 +135,41 @@ definition subst_preservation
 : subst_aeq F G (nrel.id X) (nrel.id Y)
 → eX₁ ≡α eX₂
 → exp.subst_apply F eX₁ ≡α exp.subst_apply G eX₂ :=
-
   subst_preservation_general F G
 
-end aeq -- namespace -----------------------------------------------------------
+end
 
-namespace aeq -- ===============================================================
+section
 
 theorem self_aeq_subst_apply_lift (e : exp X)
 : ∀ {Y : finset V} (F : X ν⇒ Y)
 , e ≡α⟨nrel.lift F⟩ exp.subst_apply (exp.subst.lift F) e :=
-
   begin
     induction e with
       /- var -/ X x
       /- app -/ X f e rf re
       /- lam -/ X a e r,
     begin /- var -/
-      intro Y F,
+      intros Y F,
       exact var rfl
     end,
     begin /- app -/
-      intro Y F,
+      intros Y F,
       exact app (rf F) (re F)
     end,
     begin /- lam -/
-      intro Y F,
-      exact lam $
-        map_simple nrel.lift_update_of_fresh $
-          (funext (exp.subst_update_var_eq_var_update a (finset.fresh Y).1 F))⁻¹ ▸
-          r (name.update a (finset.fresh Y).1 F)
+      intros Y F,
+      have H : e ≡α⟨nrel.lift (name.update a (finset.fresh Y).1 F)⟩ exp.subst_apply (exp.subst.lift (name.update a (finset.fresh Y).1 F)) e :=
+        r (name.update a (finset.fresh Y).1 F),
+      have P : exp.subst_update_var a (finset.fresh Y).1 (exp.subst.lift F) = exp.subst.lift (name.update a (finset.fresh Y).1 F) :=
+        funext (exp.subst_update_var_eq_var_update a (finset.fresh Y).1 F),
+      rw [←P] at H,
+      exact (lam (map_simple nrel.update.lift H))
     end
   end
 
+end
+
 end aeq -- namespace -----------------------------------------------------------
+
+end alpha
