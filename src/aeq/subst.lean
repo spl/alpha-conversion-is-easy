@@ -6,18 +6,16 @@ This file contains the proof that substitution preserves alpha equality.
 
 import .map
 
--- `V` is the type of an infinite set of variable names with decidable equality.
-variables {V : Type} [decidable_eq V]
-
--- `finset V` is the type of a finite set of variable names with freshness.
-variables [finset.has_fresh V]
-
--- `X`, `Y`, and variations are finite sets of variable names.
-variables {X X₁ X₂ Y Y₁ Y₂ : finset V}
-
 namespace alpha
 
 namespace aeq -- ===============================================================
+
+variables {V : Type} [decidable_eq V] -- Type of variable names
+variables {a b : V} -- Variable names
+variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
+variables {X X₁ X₂ Y Y₁ Y₂ Z : vs V} -- Variable name sets
+variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂} -- Variable name set relations
+variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂} -- Substitutions
 
 -- This is the type of a function that lifts a relation `R` to an alpha-equality
 -- relation on `S` with the substitutions `F` and `G` applied to each side.
@@ -26,20 +24,14 @@ def subst_aeq
 (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
   ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
 
-section
-
-variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂}
-variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂}
-variables {a b : V}
-
 -- A lemma needed for the `lam` case in `subst_preservation_core`.
 lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 : subst_aeq F G R S
 → subst_aeq
     (exp.subst_update_var a nx₂.1 F)
     (exp.subst_update_var b ny₂.1 G)
-    (nrel.update a b R)
-    (nrel.update nx₂.1 ny₂.1 S) :=
+    (vrel.update a b R)
+    (vrel.update nx₂.1 ny₂.1 S) :=
 
   begin
     intros P x₁ y₁ H,
@@ -55,43 +47,32 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
       cases H with y₁_ne_b₁ x₁_R_y₁,
       unfold exp.subst_update_var exp.subst_update,
       rw [dif_neg x₁_ne_a₁, dif_neg y₁_ne_b₁],
-      apply map finset.subset_insert finset.subset_insert,
-      tactic.rotate 3,
-      begin
-        exact _inst_1
-      end,
-      begin
-        exact _inst_1
-      end,
-      tactic.rotate 2,
-      begin
-        exact S
-      end,
-      tactic.rotate 1,
-      begin
-        exact P x₁_R_y₁
-      end,
+      apply map (vset.prop_subset_insert_self _ _) (vset.prop_subset_insert_self _ _),
       begin
         intros x₂ y₂ c_S_d,
         cases x₂ with x₂ px₂, cases y₂ with y₂ py₂,
-        existsi name.insert_constraint px₂,
-        existsi name.insert_constraint py₂,
+        existsi vset.prop_insert nx₂.1 px₂,
+        existsi vset.prop_insert ny₂.1 py₂,
         right,
-        existsi finset.ne_of_mem_of_not_mem px₂ nx₂.2,
-        existsi finset.ne_of_mem_of_not_mem py₂ ny₂.2,
+        existsi vset.prop_ne_if_mem_and_not_mem px₂ nx₂.2,
+        existsi vset.prop_ne_if_mem_and_not_mem py₂ ny₂.2,
         exact c_S_d
+      end,
+      begin
+        exact P x₁_R_y₁
       end
     end
   end
 
-variables {eX : exp X₁} {eY : exp Y₁}
+section
+variables {eX₁ : exp X₁} {eY₁ : exp Y₁} -- Expressions
 
 -- The implementation of `subst_preservation`.
-def subst_preservation_core (H : eX ≡α⟨R⟩ eY)
-: ∀ {X₂ Y₂ : finset V} {S : X₂ ×ν Y₂}
+def subst_preservation_core (H : eX₁ ≡α⟨R⟩ eY₁)
+: ∀ {X₂ Y₂ : vs V} {S : X₂ ×ν Y₂}
     (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
     (P : subst_aeq F G R S)
-, exp.subst_apply F eX ≡α⟨S⟩ exp.subst_apply G eY :=
+, exp.subst_apply F eX₁ ≡α⟨S⟩ exp.subst_apply G eY₁ :=
   begin
     induction H with
       /- var -/ X₁ Y₁ R x y x_R_y
@@ -109,9 +90,9 @@ def subst_preservation_core (H : eX ≡α⟨R⟩ eY)
       intros X₂ Y₂ S F G P,
       apply lam,
       exact r
-        (exp.subst_update_var x (finset.fresh X₂).1 F)
-        (exp.subst_update_var y (finset.fresh Y₂).1 G)
-        (λ x y, subst_preservation_update (finset.fresh X₂) (finset.fresh Y₂) @P)
+        (exp.subst_update_var x (fresh X₂).1 F)
+        (exp.subst_update_var y (fresh Y₂).1 G)
+        (λ x y, subst_preservation_update (fresh X₂) (fresh Y₂) @P)
     end
   end
 
@@ -119,31 +100,28 @@ def subst_preservation_core (H : eX ≡α⟨R⟩ eY)
 def subst_preservation_general
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 : subst_aeq F G R S
-→ eX ≡α⟨R⟩ eY
-→ exp.subst_apply F eX ≡α⟨S⟩ exp.subst_apply G eY :=
+→ eX₁ ≡α⟨R⟩ eY₁
+→ exp.subst_apply F eX₁ ≡α⟨S⟩ exp.subst_apply G eY₁ :=
   λ P H, subst_preservation_core H F G @P
 
 end
 
 section
-
-variables {eX₁ eX₂ : exp X}
+variables {eX₁ eX₂ : exp X} -- Expressions
 
 -- Substitution preserves alpha equality.
 def subst_preservation
 (F : exp.subst X Y) (G : exp.subst X Y)
-: subst_aeq F G (nrel.id X) (nrel.id Y)
+: subst_aeq F G (vrel.id X) (vrel.id Y)
 → eX₁ ≡α eX₂
 → exp.subst_apply F eX₁ ≡α exp.subst_apply G eX₂ :=
   subst_preservation_general F G
 
 end
 
-section
-
 theorem self_aeq_subst_apply_lift (e : exp X)
-: ∀ {Y : finset V} (F : X ν⇒ Y)
-, e ≡α⟨nrel.lift F⟩ exp.subst_apply (exp.subst.lift F) e :=
+: ∀ {Y : vs V} (F : X →ν Y)
+, e ≡α⟨vrel.lift F⟩ exp.subst_apply (exp.subst.lift F) e :=
   begin
     induction e with
       /- var -/ X x
@@ -159,16 +137,14 @@ theorem self_aeq_subst_apply_lift (e : exp X)
     end,
     begin /- lam -/
       intros Y F,
-      have H : e ≡α⟨nrel.lift (name.update a (finset.fresh Y).1 F)⟩ exp.subst_apply (exp.subst.lift (name.update a (finset.fresh Y).1 F)) e :=
-        r (name.update a (finset.fresh Y).1 F),
-      have P : exp.subst_update_var a (finset.fresh Y).1 (exp.subst.lift F) = exp.subst.lift (name.update a (finset.fresh Y).1 F) :=
-        funext (exp.subst_update_var_eq_var_update a (finset.fresh Y).1 F),
+      have H : e ≡α⟨vrel.lift (vname.update a (fresh Y).1 F)⟩ exp.subst_apply (exp.subst.lift (vname.update a (fresh Y).1 F)) e :=
+        r (vname.update a (fresh Y).1 F),
+      have P : exp.subst_update_var a (fresh Y).1 (exp.subst.lift F) = exp.subst.lift (vname.update a (fresh Y).1 F) :=
+        funext (exp.subst_update_var_eq_var_update a (fresh Y).1 F),
       rw [←P] at H,
-      exact (lam (map_simple nrel.update.lift H))
+      exact (lam (map.simple vrel.update.lift H))
     end
   end
-
-end
 
 end aeq -- namespace -----------------------------------------------------------
 

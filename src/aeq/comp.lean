@@ -6,20 +6,19 @@ This file contains declarations related to `aeq` composition.
 
 import .map
 
--- `V` is the type of an infinite set of variable names with decidable equality.
-variables {V : Type} [decidable_eq V]
-
 namespace alpha
 
 namespace aeq
 
-variables {X Y Z : finset V}
-variables {R : X ×ν Y}
-variables {eX : exp X} {eY₁ eY₂ : exp Y}
+variables {V : Type} [decidable_eq V] -- Type of variable names
+variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
+variables {X Y Z : vs V} -- Variable name sets
+variables {R : X ×ν Y} {S : Y ×ν Z} -- Variable name set relations
+variables {eX : exp X} {eY eY₁ eY₂ : exp Y} {eZ : exp Z} -- Expressions
 
 -- The `comp` implementation for `aeq`: composition of two `aeq`s.
-def comp_core (HXY : eX ≡α⟨R⟩ eY₁)
-: ∀ {Z : finset V} {S : Y ×ν Z} {eY₂ : exp Y} {eZ : exp Z}
+def comp.core (HXY : eX ≡α⟨R⟩ eY₁)
+: ∀ {Z : vs V} {S : Y ×ν Z} {eY₂ : exp Y} {eZ : exp Z}
 , eY₁ = eY₂ → eY₂ ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
 
   begin
@@ -37,7 +36,7 @@ def comp_core (HXY : eX ≡α⟨R⟩ eY₁)
       begin /- HYZ: var -/
         injection P with y₁_eq_y₂ _,
         induction y₁_eq_y₂,
-        exact var (nrel.trans x_R_y₁ y₂_S_z)
+        exact var (vrel.trans x_R_y₁ y₂_S_z)
       end,
       begin /- HYZ: app -/
         exact exp.no_confusion P
@@ -81,19 +80,16 @@ def comp_core (HXY : eX ≡α⟨R⟩ eY₁)
         injection P with y₁_eq_y₂ eY₁_heq_eY₂,
         induction y₁_eq_y₂,
         exact lam
-          (map_simple (λ x z, nrel.update.of_comp)
+          (map.simple (λ x z, vrel.update.of_comp)
                       (r (eq_of_heq eY₁_heq_eY₂) aYZ))
       end
     end
 
   end
 
-variables {S : Y ×ν Z}
-variables {eY : exp Y} {eZ : exp Z}
-
 -- A more convenient wrapper for the `comp` implementation.
 def comp : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
-  λ aR, comp_core aR (eq.refl eY)
+  λ aR, comp.core aR (eq.refl eY)
 
 -- Notation for `comp`.
 -- Source: http://www.fileformat.info/info/unicode/char/2a3e/index.htm

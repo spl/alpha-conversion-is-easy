@@ -6,20 +6,16 @@ This files contains a collection of core definitions and properties for `exp`.
 
 import .type
 
--- `V` is the type of an infinite set of variable names with decidable equality.
-variables {V : Type} [decidable_eq V]
-
--- `X` and `Y` are finite sets of variable names.
-variables {X Y : finset V}
-
 namespace alpha
 
 namespace exp -- ===============================================================
--- The `exp` `map` operation.
+
+variables {V : Type} [decidable_eq V] -- Type of variable names
+variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
+variables {X Y : vs V} -- Variable name sets
 
 -- The `map` implementation.
-def map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
-
+def map_core (e : exp X) : ∀ {Y : vs V}, X ⊆ Y → exp Y :=
   begin
     induction e with
       /- var -/ X x
@@ -27,7 +23,7 @@ def map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
       /- lam -/ X x e r,
     begin /- var -/
       intros Y P,
-      exact var (name.map_of_subset P x)
+      exact var (vname.map_of_subset P x)
     end,
     begin /- app -/
       intros Y P,
@@ -35,7 +31,7 @@ def map_core (e : exp X) : ∀ {Y : finset V}, X ⊆ Y → exp Y :=
     end,
     begin /- lam -/
       intros Y P,
-      exact lam (r $ finset.insert_subset_insert P)
+      exact lam (r $ vset.prop_insert_of_subset x P)
     end
   end
 
@@ -45,8 +41,8 @@ def map : X ⊆ Y → exp X → exp Y :=
   λ P e, map_core e P
 
 -- The identity property of `map`.
-theorem eq_of_map (X : finset V) (e : exp X)
-: map (finset.subset.refl X) e = e :=
+theorem eq_of_map (X : vs V) (e : exp X)
+: map (vset.prop_subset_refl X) e = e :=
   begin
     induction e with
       /- var -/ X x
@@ -69,7 +65,7 @@ theorem eq_of_map (X : finset V) (e : exp X)
 -- A weakening property that allows increasing the free variable set without
 -- changing the structure of an expression.
 def insert_var (a : V) : exp X → exp (insert a X) :=
-  map finset.subset_insert
+  map (vset.prop_subset_insert_self _ _)
 
 end exp -- namespace -----------------------------------------------------------
 

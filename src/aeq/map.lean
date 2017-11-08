@@ -6,23 +6,22 @@ This file contains the `aeq` `map` operation.
 
 import .type
 
--- `V` is the type of an infinite set of variable names with decidable equality.
-variables {V : Type} [decidable_eq V]
-
 namespace alpha
-
-variables {X Y X₁ Y₁ X₂ Y₂ : finset V}
 
 namespace aeq
 
-section
+variables {V : Type} [decidable_eq V] -- Type of variable names
+variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
+variables {X X₂ X₁ Y Y₁ Y₂ : vs V} -- Variable name sets
 
-variables {R : X₁ ×ν Y₁} {eX : exp X₁} {eY : exp Y₁}
+section
+variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂} -- Variable name set relations
+variables {eX : exp X₁} {eY : exp Y₁} -- Expressions
 
 -- The `map` implementation for `aeq`.
 lemma map_core (H : eX ≡α⟨R⟩ eY)
-: ∀ {X₂ Y₂ : finset V} (pX : X₁ ⊆ X₂) (pY : Y₁ ⊆ Y₂)
-    {S : X₂ ×ν Y₂} (F : R nrel⇒ S)
+: ∀ {X₂ Y₂ : vs V} (pX : X₁ ⊆ X₂) (pY : Y₁ ⊆ Y₂)
+    {S : X₂ ×ν Y₂} (F : R ⇒ν S)
 , exp.map pX eX ≡α⟨S⟩ exp.map pY eY :=
   begin
     induction H with
@@ -41,33 +40,31 @@ lemma map_core (H : eX ≡α⟨R⟩ eY)
     begin /- lam -/
       intros X₂ Y₂ pX pY S F,
       exact (lam $
-        r (finset.insert_subset_insert pX)
-          (finset.insert_subset_insert pY)
-          (λ x y, nrel.map.update _ _ @F))
+        r (vset.prop_insert_of_subset _ pX)
+          (vset.prop_insert_of_subset _ pY)
+          (λ x y, vrel.map.update _ _ @F))
     end
   end
-
-variables {S : X₂ ×ν Y₂}
 
 -- Map alpha-equality from one variable relation, `R : X₁ ×ν Y₁`, to another,
 -- `S : X₂ ×ν Y₂`, as long as `X₁ ⊆ X₂` and `Y₁ ⊆ Y₂`.
 theorem map (pX : X₁ ⊆ X₂) (pY : Y₁ ⊆ Y₂)
-: R nrel⇒ S → eX ≡α⟨R⟩ eY → exp.map pX eX ≡α⟨S⟩ exp.map pY eY :=
+: R ⇒ν S → eX ≡α⟨R⟩ eY → exp.map pX eX ≡α⟨S⟩ exp.map pY eY :=
   λ F H, map_core H pX pY @F
 
 end
 
 section
-
-variables {R S : X ×ν Y} {eX : exp X} {eY : exp Y}
+variables {R S : X ×ν Y} -- Variable name set relations
+variables {eX : exp X} {eY : exp Y} -- Expressions
 
 -- A wrapper for `map` in which the free variable sets do not change.
-theorem map_simple
+theorem map.simple
 : (∀ {x : ν∈ X} {y : ν∈ Y}, ⟪x, y⟫ ∈ν R → ⟪x, y⟫ ∈ν S) → eX ≡α⟨R⟩ eY → eX ≡α⟨S⟩ eY :=
   assume F H,
-  have F' : R nrel⇒ S, by apply nrel.map.simple; apply @F,
+  have F' : R ⇒ν S, by apply vrel.map.simple; apply @F,
   exp.eq_of_map X eX ▸ exp.eq_of_map Y eY ▸
-    map (finset.subset.refl X) (finset.subset.refl Y) @F' H
+    map (vset.prop_subset_refl X) (vset.prop_subset_refl Y) @F' H
 
 end
 
