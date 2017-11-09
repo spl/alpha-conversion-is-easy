@@ -7,7 +7,7 @@ set, and other related type definitions.
 
 import vset
 
-namespace alpha
+namespace alpha ----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -25,7 +25,7 @@ notation `x = ⟨a, pa⟩` to refer to a `x : vname X` with the variable, `a : V
 def vname (P : Prop → Prop) (X : vs V) : Type :=
   Σ' a : V, P (a ∈ X)
 
-namespace vname
+namespace vname ----------------------------------------------------------------
 
 /-
 A `vname.id X` is a variable name set member. Its variable name is an element of
@@ -58,6 +58,5 @@ def id.fun (X Y : vs V) : Type :=
 -- Notation for `vname.id.fun`.
 infixr `→ν`:25 := vname.id.fun
 
-end vname
-
-end alpha
+end /- namespace -/ vname ------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

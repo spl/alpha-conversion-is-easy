@@ -25,7 +25,7 @@ theorem mulf_rcomm [comm_semigroup B] (f : A → B)
 : right_commutative (mulf f) :=
   right_commutative_comp_right (*) f mul_right_comm
 
-namespace Prodl_semigroup
+namespace Prodl_semigroup ------------------------------------------------------
 
 variable [semigroup B]
 
@@ -56,8 +56,7 @@ theorem Prodl_semigroup_cons_cons (b : B) (f : A → B) (a₁ a₂ : A) (l : lis
     end
   end
 
-section decidable_eq_A
-
+section decidable_eq_A ---------------------------------------------------------
 variable [decidable_eq A]
 
 theorem Prodl_semigroup_insert_insert_of_not_mem (b : B) (f : A → B)
@@ -65,15 +64,14 @@ theorem Prodl_semigroup_insert_insert_of_not_mem (b : B) (f : A → B)
 : Prodl_semigroup b (insert a₁ (insert a₂ l)) f = f a₁ * Prodl_semigroup b (insert a₂ l) f :=
   by rw [insert_eq_of_not_mem h₂, insert_eq_of_not_mem h₁, Prodl_semigroup_cons_cons]
 
-end decidable_eq_A
+end /- section -/ decidable_eq_A -----------------------------------------------
 
-end Prodl_semigroup
+end /- namespace -/ Prodl_semigroup --------------------------------------------
 
-namespace finset
+namespace finset ---------------------------------------------------------------
+namespace Prod_semigroup -------------------------------------------------------
 
 variable [comm_semigroup B]
-
-namespace Prod_semigroup
 
 open Prodl_semigroup
 
@@ -97,8 +95,7 @@ def Prod_semigroup (b : B) (s : finset A) (f : A → B) : B :=
     (λ l, Prodl_semigroup b l.val f)
     (λ l₁ l₂ p, Prodl_semigroup_eq_Prodl_semigroup_of_perm b f p)
 
-section decidable_eq_A
-
+section decidable_eq_A ---------------------------------------------------------
 variable [decidable_eq A]
 
 theorem Prod_semigroup_singleton (b : B) (f : A → B) (a : A)
@@ -120,8 +117,7 @@ theorem Prod_semigroup_insert (b : B) (f : A → B) {a : A} {s : finset A}
     rw [Prod_semigroup_insert_insert b f not_mem_erase anins]
   end
 
-end decidable_eq_A
+end /- section -/ decidable_eq_A -----------------------------------------------
 
-end Prod_semigroup
-
-end finset
+end /- namespace -/ Prod_semigroup ---------------------------------------------
+end /- namespace -/ finset -----------------------------------------------------

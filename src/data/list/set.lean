@@ -5,7 +5,7 @@ to Lean 3.
 
 -/
 
-namespace list
+namespace list -----------------------------------------------------------------
 
 variables {A : Type} [decidable_eq A]
 
@@ -15,4 +15,4 @@ theorem insert_eq_of_mem {a : A} {l : list A} : a ∈ l → insert a l = l :=
 theorem insert_eq_of_not_mem {a : A} {l : list A} : a ∉ l → insert a l = a::l :=
 λ c, if_neg c
 
-end list
+end /- namespace -/ list -------------------------------------------------------

@@ -10,9 +10,8 @@ import .core
 import data.fresh
 import data.sigma.extra
 
-namespace alpha
-
-namespace exp -- ===============================================================
+namespace alpha ----------------------------------------------------------------
+namespace exp ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -147,6 +146,5 @@ theorem subst_apply_distrib (e : exp X)
     end
   end
 
-end exp -- namespace -----------------------------------------------------------
-
-end alpha
+end /- namespace -/ exp --------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

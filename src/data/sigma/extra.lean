@@ -4,10 +4,9 @@ This file contains extra definitions and theorems for `sigma` and `psigma`.
 
 -/
 
-variables {A : Type} {B : A → Type}
-variables {a₁ a₂ : A} {b₁ : B a₁} {b₂ : B a₂}
+namespace psigma ---------------------------------------------------------------
 
-namespace psigma
+variables {A : Type} {B : A → Type} {a₁ a₂ : A} {b₁ : B a₁} {b₂ : B a₂}
 
 @[simp]
 theorem fst.unwrap (a : A) (b : B a) : (psigma.mk a b).fst = a :=
@@ -23,4 +22,4 @@ theorem fst.eq (P : psigma.mk a₁ b₁ = psigma.mk a₂ b₂) : a₁ = a₂ :=
 theorem snd.heq (P : psigma.mk a₁ b₁ = psigma.mk a₂ b₂) : b₁ == b₂ :=
   psigma.no_confusion P (λ H₁ H₂, H₂)
 
-end psigma -- namespace
+end /- namespace -/ psigma -----------------------------------------------------

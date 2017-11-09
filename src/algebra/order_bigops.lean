@@ -9,14 +9,13 @@ import .group_bigops
 
 variables {A B : Type}
 
-namespace finset
+namespace finset ---------------------------------------------------------------
 
-section decidable_eq_A
+section decidable_eq_A ---------------------------------------------------------
 
 variable [decidable_eq A]
 
-section decidable_linear_order_B
-
+section decidable_linear_order_B -----------------------------------------------
 variables [decidable_linear_order B] [has_zero B]
 
 open Prod_semigroup
@@ -62,12 +61,11 @@ def le_Max (f : A → B) {a : A} {s : finset A} : a ∈ s → f a ≤ Max s f :=
      end)
     s
 
-end decidable_linear_order_B
+end /- section -/ decidable_linear_order_B -------------------------------------
 
-end decidable_eq_A
+end /- section -/ decidable_eq_A -----------------------------------------------
 
-section decidable_linear_order_A
-
+section decidable_linear_order_A -----------------------------------------------
 variables [decidable_linear_order A] [has_zero A]
 
 def Max₀ (s : finset A) : A :=
@@ -76,6 +74,6 @@ def Max₀ (s : finset A) : A :=
 def le_Max₀ {a : A} {s : finset A} : a ∈ s → a ≤ Max₀ s :=
   le_Max id
 
-end decidable_linear_order_A
+end /- section -/ decidable_linear_order_A -------------------------------------
 
-end finset
+end /- namespace -/ finset -----------------------------------------------------

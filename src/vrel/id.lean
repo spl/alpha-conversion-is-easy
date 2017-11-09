@@ -6,9 +6,8 @@ This file contains declarations related to `vrel` identity or reflexivity.
 
 import .type
 
-namespace alpha
-
-namespace vrel
+namespace alpha ----------------------------------------------------------------
+namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -26,6 +25,5 @@ protected
 theorem refl : ∀ (x : ν∈ X), ⟪x, x⟫ ∈ν vrel.id X :=
   eq.refl
 
-end vrel
-
-end alpha
+end /- namespace -/ vrel -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

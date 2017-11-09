@@ -7,7 +7,7 @@ variable names.
 
 import vname
 
-namespace alpha
+namespace alpha ----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -30,4 +30,4 @@ protected
 def vrel.lift (F : X →ν Y) : X ×ν Y :=
   λ x y, (F x).1 = y.1
 
-end alpha -- namespace
+end /- namespace -/ alpha ------------------------------------------------------

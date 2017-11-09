@@ -8,7 +8,7 @@ import vset
 import data.finset.extra
 import data.finset.fresh
 
-namespace finset
+namespace finset ---------------------------------------------------------------
 
 variables {A : Type} [decidable_eq A] {a b : A} {s : finset A}
 
@@ -27,4 +27,4 @@ instance vset_nat : alpha.vset finset ℕ :=
   , prop_subset_insert_self    := λ a s, finset.subset_insert
   }
 
-end finset
+end /- namespace -/ finset -----------------------------------------------------

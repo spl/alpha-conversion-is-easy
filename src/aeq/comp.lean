@@ -6,9 +6,8 @@ This file contains declarations related to `aeq` composition.
 
 import .map
 
-namespace alpha
-
-namespace aeq
+namespace alpha ----------------------------------------------------------------
+namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -95,6 +94,5 @@ def comp : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ e
 -- Source: http://www.fileformat.info/info/unicode/char/2a3e/index.htm
 infixr ` ⨾ `:60 := comp
 
-end aeq
-
-end alpha
+end /- namespace -/ aeq --------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

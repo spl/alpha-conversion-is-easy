@@ -8,9 +8,8 @@ import .type
 import data.fresh
 import data.sigma.extra
 
-namespace alpha
-
-namespace vrel
+namespace alpha ----------------------------------------------------------------
+namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {a b : V} -- Variable names
@@ -46,8 +45,7 @@ def update (a b : V) : X ×ν Y → insert a X ×ν insert b Y :=
 -- Source: http://www.fileformat.info/info/unicode/char/2a41/index.htm
 notation R ` ⩁ `:65 (a `, ` b) := vrel.update a b R
 
-section
-
+section ------------------------------------------------------------------------
 variables {F : X →ν Y} -- Function on variable name set members
 
 -- Lift a `vname.update` of a fresh variable to a `vrel.update`.
@@ -77,8 +75,7 @@ def update.lift
     end
   end
 
-end
+end /- section -/ --------------------------------------------------------------
 
-end vrel
-
-end alpha -- namespace
+end /- namespace -/ vrel -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

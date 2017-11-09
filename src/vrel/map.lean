@@ -7,9 +7,8 @@ This file contains declarations for mapping one `vrel` to another.
 import .update
 import data.exists.extra
 
-namespace alpha
-
-namespace vrel
+namespace alpha ----------------------------------------------------------------
+namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -26,9 +25,9 @@ def map (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
 -- Notation for `map`.
 infixr `⇒ν`:30 := vrel.map
 
-namespace map
+namespace map ------------------------------------------------------------------
 
-section
+section ------------------------------------------------------------------------
 variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂} -- Variable name set relations
 
 -- Lift a `map` over `vrel.update`.
@@ -53,9 +52,9 @@ theorem update (a b : V) : R ⇒νS → R ⩁ (a, b) ⇒ν S ⩁ (a, b) :=
     end
   end
 
-end
+end /- section -/ --------------------------------------------------------------
 
-section
+section ------------------------------------------------------------------------
 variables {R S : X ×ν Y} -- Variable name set relations
 
 -- Lift a simpler function on `vrel` membership to a `map`.
@@ -64,10 +63,8 @@ theorem simple
 : (∀ {x : ν∈ X} {y : ν∈ Y}, ⟪x, y⟫ ∈ν R → ⟪x, y⟫ ∈ν S) → R ⇒ν S :=
   λ F x y x_R_y, exists.intro₂ x.2 y.2 (by cases x; cases y; exact F x_R_y)
 
-end
+end /- section -/ --------------------------------------------------------------
 
-end map
-
-end vrel
-
-end alpha
+end /- namespace -/ map --------------------------------------------------------
+end /- namespace -/ vrel -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

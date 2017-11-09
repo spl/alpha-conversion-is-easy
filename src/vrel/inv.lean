@@ -6,9 +6,8 @@ This file contains declarations related to `vrel` inversion or symmetry.
 
 import .id
 
-namespace alpha
-
-namespace vrel
+namespace alpha ----------------------------------------------------------------
+namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -31,6 +30,5 @@ protected
 theorem symm : ⟪x, y⟫ ∈ν R → ⟪y, x⟫ ∈ν R⁻¹ :=
   λ m, m
 
-end vrel
-
-end alpha
+end /- namespace -/ vrel -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

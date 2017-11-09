@@ -9,13 +9,12 @@ import .inv
 import .comp
 import .update
 
-namespace alpha
+namespace alpha ----------------------------------------------------------------
+namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X : vs V} -- Variable name sets
-
-namespace vrel
 
 -- `identity R` is a type class for `R : X ×ν X` that witnesses the isomorphism
 -- between `R` and `id X`. This class allows the use of more general identities
@@ -92,6 +91,5 @@ instance update.is_identity (R : X ×ν X) [I : is_identity R] (a : V) : is_iden
       end
   }
 
-end vrel
-
-end alpha
+end /- namespace -/ vrel -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

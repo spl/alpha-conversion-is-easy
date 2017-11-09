@@ -7,9 +7,9 @@ This file defines the `fresh` class for `finset` and an instance for `nat`.
 import algebra.order_bigops
 import data.fresh
 
-open nat
+namespace finset ---------------------------------------------------------------
 
-namespace finset -- ============================================================
+open nat
 
 -- Given a `finset` of `nat`, produce the successor of the maximum element as a
 -- fresh element.
@@ -26,4 +26,4 @@ instance has_fresh : has_fresh ℕ finset :=
   , fresh := fresh_nat
   }
 
-end finset -- namespace --------------------------------------------------------
+end /- namespace -/ finset -----------------------------------------------------

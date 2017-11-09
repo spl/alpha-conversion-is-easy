@@ -6,11 +6,9 @@ This file contains extra definitions and theorems for `finset`.
 
 import data.finset
 
-variables {A : Type} [decidable_eq A]
+namespace finset ---------------------------------------------------------------
 
-namespace finset -- ============================================================
-
-variables {a b : A} {s : finset A}
+variables {A : Type} [decidable_eq A] {a b : A} {s : finset A}
 
 -- Given `s : finset A`, `a ∈ s`, and `b ∉ s`, show that `a ≠ b`.
 theorem ne_of_mem_of_not_mem : a ∈ s → b ∉ s → a ≠ b :=
@@ -29,4 +27,4 @@ theorem eq_of_mem_of_subset_of_mem₂ (b_ne_a : b ≠ a) (b_in_insert_a_s : b �
 : mem_of_subset_of_mem subset_insert (mem_of_mem_insert_of_ne b_in_insert_a_s b_ne_a) = b_in_insert_a_s :=
   rfl
 
-end finset -- namespace --------------------------------------------------------
+end /- namespace -/ finset -----------------------------------------------------

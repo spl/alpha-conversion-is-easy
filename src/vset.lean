@@ -8,7 +8,7 @@ import data.fresh
 
 universes u v
 
-namespace alpha
+namespace alpha ----------------------------------------------------------------
 
 /-
 The type class `vset V S` defines the requirements for a finite set `S` of
@@ -29,7 +29,7 @@ extends has_fresh V S
   (prop_insert_of_subset      : ∀ (a : V) {s₁ s₂ : S V}, s₁ ⊆ s₂ → insert a s₁ ⊆ insert a s₂)
   (prop_subset_insert_self    : ∀ (a : V) (s : S V), s ⊆ insert a s)
 
-namespace vset
+namespace vset -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {S : Type → Type} [vset S V] -- Type of variable name sets
@@ -40,6 +40,5 @@ variables {a b : V} -- Variable names
 theorem prop_insert_self_if_eq (s : S V) (p : a = b) : a ∈ insert b s :=
   by rw [p]; exact vset.prop_insert_self b s
 
-end vset
-
-end alpha
+end /- namespace -/ vset -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

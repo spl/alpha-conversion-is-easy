@@ -6,24 +6,23 @@ This file contains definitions and theorems of combined `vrel` relations.
 
 import .identity
 
-namespace alpha
-
-namespace vrel
+namespace alpha ----------------------------------------------------------------
+namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {a b c : V} -- Variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y Z : vs V} -- Variable name sets
 
-section
+section ------------------------------------------------------------------------
 variables {x₁ x₂ : ν∈ X} -- Variable name set members
 
 theorem inv.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id X → ⟪x₁, x₂⟫ ∈ν (vrel.id X)⁻¹ :=
   eq.symm
 
-end
+end /- section -/ --------------------------------------------------------------
 
-section
+section ------------------------------------------------------------------------
 variables {x₁ x₂ : ν∈ insert a X} -- Variable name set members
 
 -- Produce an update on id from an id.
@@ -32,9 +31,9 @@ theorem update.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id (insert a X) → ⟪x₁, 
   -- id.is_identity instance here.
   @vrel.is_identity.from_id _ _ _ _ _ _ (@vrel.update.is_identity _ _ _ _ _ _ (vrel.id.is_identity X) _) _ _
 
-end
+end /- section -/ --------------------------------------------------------------
 
-section
+section ------------------------------------------------------------------------
 variables {R : X ×ν Y} -- Variable name set relations
 variables {x : ν∈ insert a X} {y : ν∈ insert b Y} -- Variable name set members
 
@@ -74,9 +73,9 @@ theorem update_of_inv_iff_inv_of_update (x : ν∈ insert a X) (y : ν∈ insert
 : ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) ↔ ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ :=
   iff.intro inv.of_update update.of_inv
 
-end
+end /- section -/ --------------------------------------------------------------
 
-section
+section ------------------------------------------------------------------------
 variables {R : X ×ν Y} {S : Y ×ν Z} -- Variable name set relations
 variables {x : ν∈ insert a X} {y : ν∈ insert b Y} {z : ν∈ insert c Z} -- Variable name set members
 
@@ -144,8 +143,7 @@ theorem update_of_comp_iff_comp_of_update
 : b ∉ Y → (⟪x, z⟫ ∈ν (R ⨾ S) ⩁ (a, c) ↔ ⟪x, z⟫ ∈ν R ⩁ (a, b) ⨾ S ⩁ (b, c)) :=
   λ pb, iff.intro (comp.of_update pb) update.of_comp
 
-end
+end /- section -/ --------------------------------------------------------------
 
-end vrel
-
-end alpha
+end /- namespace -/ vrel -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

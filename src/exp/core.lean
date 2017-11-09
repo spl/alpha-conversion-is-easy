@@ -6,9 +6,8 @@ This files contains a collection of core definitions and properties for `exp`.
 
 import .type
 
-namespace alpha
-
-namespace exp -- ===============================================================
+namespace alpha ----------------------------------------------------------------
+namespace exp ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -67,6 +66,5 @@ theorem eq_of_map (X : vs V) (e : exp X)
 def insert_var (a : V) : exp X → exp (insert a X) :=
   map (vset.prop_subset_insert_self _ _)
 
-end exp -- namespace -----------------------------------------------------------
-
-end alpha
+end /- namespace -/ exp --------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

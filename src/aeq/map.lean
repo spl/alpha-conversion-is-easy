@@ -6,15 +6,14 @@ This file contains the `aeq` `map` operation.
 
 import .type
 
-namespace alpha
-
-namespace aeq
+namespace alpha ----------------------------------------------------------------
+namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X X₂ X₁ Y Y₁ Y₂ : vs V} -- Variable name sets
 
-section
+section ------------------------------------------------------------------------
 variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂} -- Variable name set relations
 variables {eX : exp X₁} {eY : exp Y₁} -- Expressions
 
@@ -52,9 +51,9 @@ theorem map (pX : X₁ ⊆ X₂) (pY : Y₁ ⊆ Y₂)
 : R ⇒ν S → eX ≡α⟨R⟩ eY → exp.map pX eX ≡α⟨S⟩ exp.map pY eY :=
   λ F H, map_core H pX pY @F
 
-end
+end /- section -/ --------------------------------------------------------------
 
-section
+section ------------------------------------------------------------------------
 variables {R S : X ×ν Y} -- Variable name set relations
 variables {eX : exp X} {eY : exp Y} -- Expressions
 
@@ -66,8 +65,7 @@ theorem map.simple
   exp.eq_of_map X eX ▸ exp.eq_of_map Y eY ▸
     map (vset.prop_subset_refl X) (vset.prop_subset_refl Y) @F' H
 
-end
+end /- section -/ --------------------------------------------------------------
 
-end aeq -- namespace -----------------------------------------------------------
-
-end alpha
+end /- namespace -/ aeq --------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

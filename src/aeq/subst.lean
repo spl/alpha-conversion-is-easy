@@ -6,9 +6,8 @@ This file contains the proof that substitution preserves alpha equality.
 
 import .map
 
-namespace alpha
-
-namespace aeq -- ===============================================================
+namespace alpha ----------------------------------------------------------------
+namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {a b : V} -- Variable names
@@ -64,7 +63,7 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
     end
   end
 
-section
+section ------------------------------------------------------------------------
 variables {eX₁ : exp X₁} {eY₁ : exp Y₁} -- Expressions
 
 -- The implementation of `subst_preservation`.
@@ -104,9 +103,9 @@ def subst_preservation_general
 → exp.subst_apply F eX₁ ≡α⟨S⟩ exp.subst_apply G eY₁ :=
   λ P H, subst_preservation_core H F G @P
 
-end
+end /- section -/ --------------------------------------------------------------
 
-section
+section ------------------------------------------------------------------------
 variables {eX₁ eX₂ : exp X} -- Expressions
 
 -- Substitution preserves alpha equality.
@@ -117,7 +116,7 @@ def subst_preservation
 → exp.subst_apply F eX₁ ≡α exp.subst_apply G eX₂ :=
   subst_preservation_general F G
 
-end
+end /- section -/ --------------------------------------------------------------
 
 theorem self_aeq_subst_apply_lift (e : exp X)
 : ∀ {Y : vs V} (F : X →ν Y)
@@ -146,6 +145,5 @@ theorem self_aeq_subst_apply_lift (e : exp X)
     end
   end
 
-end aeq -- namespace -----------------------------------------------------------
-
-end alpha
+end /- namespace -/ aeq --------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

@@ -10,7 +10,7 @@ we want Lean to cache the results.
 import exp
 import vrel
 
-namespace alpha
+namespace alpha ----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -38,4 +38,4 @@ def aeq.identity (X : vs V) : exp X → exp X → Prop :=
 -- should be inferred using type class elaboration.
 infix ` ≡α `:50 := aeq.identity _
 
-end alpha
+end /- namespace -/ alpha ------------------------------------------------------

@@ -6,9 +6,8 @@ This file contains declarations related to `vrel` composition or transitivity.
 
 import .id
 
-namespace alpha
-
-namespace vrel
+namespace alpha ----------------------------------------------------------------
+namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -32,6 +31,5 @@ protected
 theorem trans : ⟪x, y⟫ ∈ν R → ⟪y, z⟫ ∈ν S → ⟪x, z⟫ ∈ν R ⨾ S :=
   λ x_R_y y_S_z, exists.intro y $ and.intro x_R_y y_S_z
 
-end vrel
-
-end alpha
+end /- namespace -/ vrel -------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------

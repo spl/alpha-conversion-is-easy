@@ -7,14 +7,13 @@ names.
 
 import .type
 
-namespace alpha
+namespace alpha ----------------------------------------------------------------
+namespace vname ----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {a b : V} -- Variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y : vs V} -- Variable name sets
-
-namespace vname
 
 -- Rewrite a constraint from `X` to `Y` if `X = Y`.
 @[reducible]
@@ -85,6 +84,5 @@ theorem eq_of_erase_insert {a : V} (x : ν∈ X) (x_ne_a : x.1 ≠ a)
 theorem ne_if_mem_and_not_mem (x : ν∈ X) (x' : ν∉ X) : x.1 ≠ x'.1 :=
   vset.prop_ne_if_mem_and_not_mem x.2 x'.2
 
-end vname
-
-end alpha -- namespace
+end /- namespace -/ vname ------------------------------------------------------
+end /- namespace -/ alpha ------------------------------------------------------
