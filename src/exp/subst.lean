@@ -42,33 +42,28 @@ def subst_update (a : V) (e : exp Y) (F : subst X Y) : subst (insert a X) Y :=
 def subst_update_var (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
   subst_update a (var (vname.insert_self b Y)) (insert_var b ∘ F)
 
--- Underlying implemention of `subst_apply`.
-def subst_apply_core (e : exp X) : ∀ {Y : vs V}, subst X Y → exp Y :=
-  begin
-    induction e with
-      /- var -/ X x
-      /- app -/ X f e rf re
-      /- lam -/ X x e r,
-    begin /- var -/
-      intros Y F,
-      exact F x
-    end,
-    begin /- app -/
-      intros Y F,
-      exact app (rf F) (re F)
-    end,
-    begin /- lam -/
-      intros Y F,
-      have y : V, from (fresh Y).1,
-      exact lam (r (subst_update_var x y F))
-    end
-  end
-
 -- Apply a substitution to one expression to get another with different free
 -- variables.
 @[reducible]
 def subst_apply : subst X Y → exp X → exp Y :=
-  λ F e, subst_apply_core e F
+  begin
+    intros F e,
+    induction e with
+      /- var -/ X x
+      /- app -/ X f e rf re
+      /- lam -/ X x e r
+      generalizing F Y,
+    begin /- var -/
+      exact F x
+    end,
+    begin /- app -/
+      exact app (rf F) (re F)
+    end,
+    begin /- lam -/
+      have y : V, from (fresh Y).1,
+      exact lam (r (subst_update_var x y F))
+    end
+  end
 
 -- Apply a single-variable substitution
 @[reducible]
@@ -100,16 +95,17 @@ lemma subst_update_var_eq_var_update (a b : V) (F : X →ν Y) (x : ν∈ insert
       simp [dif_pos c_eq_a]
     end,
     begin /- c_ne_a : c ≠ a -/
-      simp [dif_neg c_ne_a, insert_var, map, map_core, vname.insert],
+      simp [dif_neg c_ne_a, insert_var, map, vname.insert],
       reflexivity
     end
   end
 
+variables {F G : subst X Y} -- Substitutions
+
 theorem subst_update_var_distrib (a b : V)
-: ∀ {F G :  subst X Y}, (∀ x : ν∈ X, F x = G x)
-→ ∀ x : ν∈ insert a X, subst_update_var a b F x = subst_update_var a b G x :=
+(P : ∀ (x : ν∈ X), F x = G x) (x : ν∈ insert a X)
+: subst_update_var a b F x = subst_update_var a b G x :=
   begin
-    intros F G F_eq_G x,
     cases x with c pc,
     unfold subst_update_var subst_update,
     cases decidable.em (c = a) with c_eq_a c_ne_a,
@@ -118,31 +114,28 @@ theorem subst_update_var_distrib (a b : V)
     end,
     begin /- c_ne_a : c ≠ a -/
       simp [dif_neg c_ne_a, function.comp],
-      rw [F_eq_G (vname.erase ⟨c, pc⟩ c_ne_a)]
+      rw [P $ vname.erase ⟨c, pc⟩ c_ne_a]
     end
   end
 
-theorem subst_apply_distrib (e : exp X)
-: ∀ {Y : vs V} {F G :  subst X Y}, (∀ x : ν∈ X, F x = G x)
-→ subst_apply F e = subst_apply G e :=
+theorem subst_apply_distrib (P : ∀ (x : ν∈ X), F x = G x) (e : exp X)
+: subst_apply F e = subst_apply G e :=
   begin
     induction e with
       /- var -/ X x
       /- app -/ X f e rf re
-      /- lam -/ X a e r,
+      /- lam -/ X a e r
+      generalizing Y F G P,
     begin /- var -/
-      intros Y F G F_eq_G,
-      apply F_eq_G,
+      apply P,
     end,
     begin /- app -/
-      intros Y F G F_eq_G,
       simp [subst_distrib_app],
-      rw [rf F_eq_G, re F_eq_G],
+      rw [rf P, re P],
     end,
     begin /- lam -/
-      intros Y F G F_eq_G,
       simp [subst_distrib_lam],
-      rw [r $ subst_update_var_distrib a (fresh Y).1 F_eq_G],
+      rw [r $ subst_update_var_distrib a (fresh Y).1 P],
     end
   end
 

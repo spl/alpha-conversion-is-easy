@@ -13,69 +13,68 @@ variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y Z : vs V} -- Variable name sets
 variables {R : X ×ν Y} {S : Y ×ν Z} -- Variable name set relations
-variables {eX : exp X} {eY eY₁ eY₂ : exp Y} {eZ : exp Z} -- Expressions
+variables {eX : exp X} {eY : exp Y} {eZ : exp Z} -- Expressions
 
 -- The `comp` implementation for `aeq`: composition of two `aeq`s.
-def comp.core (HXY : eX ≡α⟨R⟩ eY₁)
-: ∀ {Z : vs V} {S : Y ×ν Z} {eY₂ : exp Y} {eZ : exp Z}
-, eY₁ = eY₂ → eY₂ ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
-
+@[inline]
+private
+def comp.core {eY₁ : exp Y} {eY₂ : exp Y}
+(aR : eX ≡α⟨R⟩ eY₁) (P : eY₁ = eY₂) (aS : eY₂ ≡α⟨S⟩ eZ)
+: eX ≡α⟨R ⨾ S⟩ eZ :=
   begin
-    induction HXY with
+    induction aR with
       /- var -/ X Y R x y₁ x_R_y₁
       /- app -/ X Y R fX eX fY₁ eY₁ afXY aeXY rf re
-      /- lam -/ X Y R x y₁ eX eY₁ aXY r,
+      /- lam -/ X Y R x y₁ eX eY₁ aXY r
+      generalizing Z S eY₂ eZ P aS,
 
-    begin /- HXY: var -/
-      intros Z S eY₂ eZ P HYZ,
-      cases HYZ with
+    begin /- aR: var -/
+      cases aS with
         /- var -/ Y Z S y₂ z y₂_S_z
         /- app -/ Y Z S fY₂ eY₂ fZ eZ afYZ aeYZ
         /- lam -/ Y Z S y₂ z eY₂ eZ aYZ,
-      begin /- HYZ: var -/
+      begin /- aS: var -/
         injection P with y₁_eq_y₂ _,
         induction y₁_eq_y₂,
         exact var (vrel.trans x_R_y₁ y₂_S_z)
       end,
-      begin /- HYZ: app -/
+      begin /- aS: app -/
         exact exp.no_confusion P
       end,
-      begin /- HYZ: lam -/
+      begin /- aS: lam -/
         exact exp.no_confusion P
       end
     end,
 
-    begin /- HXY: app -/
-      intros Z S p_eY' p_e₃ P HYZ,
-      cases HYZ with
+    begin /- aR: app -/
+      cases aS with
         /- var -/ Y Z S y₂ z y₂_S_z
         /- app -/ Y Z S fY₂ eY₂ fZ eZ afYZ aeYZ
         /- lam -/ Y Z S y₂ z eY₂ eZ aYZ,
-      begin /- HYZ: var -/
+      begin /- aS: var -/
         exact exp.no_confusion P
       end,
-      begin /- HYZ: app -/
+      begin /- aS: app -/
         injection P with fY₁_eq_fY₂ eY₁_eq_eY₂,
         exact app (rf fY₁_eq_fY₂ afYZ) (re eY₁_eq_eY₂ aeYZ)
       end,
-      begin /- HYZ: lam -/
+      begin /- aS: lam -/
         exact exp.no_confusion P
       end
     end,
 
-    begin /- HXY: lam -/
-      intros Z S p_e₂' p_e₃ P HYZ,
-      cases HYZ with
+    begin /- aR: lam -/
+      cases aS with
         /- var -/ Y Z S y₂ z y₂_S_z
         /- app -/ Y Z S fY₂ eY₂ fZ eZ afYZ aeYZ
         /- lam -/ Y Z S y₂ z eY₂ eZ aYZ,
-      begin /- HYZ: var -/
+      begin /- aS: var -/
         exact exp.no_confusion P
       end,
-      begin /- HYZ: app -/
+      begin /- aS: app -/
         exact exp.no_confusion P
       end,
-      begin /- HYZ: lam -/
+      begin /- aS: lam -/
         injection P with y₁_eq_y₂ eY₁_heq_eY₂,
         induction y₁_eq_y₂,
         exact lam

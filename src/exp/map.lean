@@ -13,31 +13,26 @@ variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y : vs V} -- Variable name sets
 
--- The `map` implementation.
-def map_core (e : exp X) : ∀ {Y : vs V}, X ⊆ Y → exp Y :=
+-- Given proof `P : X ⊆ Y`, `map P e` maps the free variables from `X` to `Y` in
+-- `e : exp X`.
+def map : X ⊆ Y → exp X → exp Y :=
   begin
+    intros P e,
     induction e with
       /- var -/ X x
       /- app -/ X f e rf re
-      /- lam -/ X x e r,
+      /- lam -/ X x e r
+      generalizing Y P,
     begin /- var -/
-      intros Y P,
       exact var (vname.map_of_subset P x)
     end,
     begin /- app -/
-      intros Y P,
       exact app (rf P) (re P)
     end,
     begin /- lam -/
-      intros Y P,
       exact lam (r $ vset.prop_insert_of_subset x P)
     end
   end
-
--- Given proof `P : X ⊆ Y`, `map P e₁ : exp Y` maps the free variables
--- from `X` to `Y` in `e₁ : exp X`.
-def map : X ⊆ Y → exp X → exp Y :=
-  λ P e, map_core e P
 
 -- The identity property of `map`.
 theorem eq_of_map (X : vs V) (e : exp X)

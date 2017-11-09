@@ -22,8 +22,8 @@ def subst_aeq
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂) (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
   ∀ (x : ν∈ X₁) (y : ν∈ Y₁), ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
 
--- A lemma needed for the `lam` case in `subst_preservation_core`.
-lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
+-- A lemma needed for the `lam` case in `subst_preservation`.
+lemma subst_preservation.update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 : subst_aeq F G R S
 → subst_aeq
     (exp.subst_update_var a nx₂.1 F)
@@ -65,76 +65,65 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 section ------------------------------------------------------------------------
 variables {eX₁ : exp X₁} {eY₁ : exp Y₁} -- Expressions
 
--- The implementation of `subst_preservation`.
-def subst_preservation_core (H : eX₁ ≡α⟨R⟩ eY₁)
-: ∀ {X₂ Y₂ : vs V} {S : X₂ ×ν Y₂}
-    (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
-    (P : subst_aeq F G R S)
-, exp.subst_apply F eX₁ ≡α⟨S⟩ exp.subst_apply G eY₁ :=
-  begin
-    induction H with
-      /- var -/ X₁ Y₁ R x y x_R_y
-      /- app -/ X₁ Y₁ R fX eX fY eY af ae rf re
-      /- lam -/ X₁ Y₁ R x y eX eY a r,
-    begin /- var -/
-      intros X₂ Y₂ S F G P,
-      exact P x y x_R_y
-    end,
-    begin /- app -/
-      intros X₂ Y₂ S F G P,
-      exact app (rf F G P) (re F G P)
-    end,
-    begin /- lam -/
-      intros X₂ Y₂ S F G P,
-      apply lam,
-      exact r
-        (exp.subst_update_var x (fresh X₂).1 F)
-        (exp.subst_update_var y (fresh Y₂).1 G)
-        (subst_preservation_update (fresh X₂) (fresh Y₂) P)
-    end
-  end
-
--- General form of substitution preserves alpha equality property.
-def subst_preservation_general
+-- Substitution preserves alpha equality
+def subst_preservation
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 : subst_aeq F G R S
 → eX₁ ≡α⟨R⟩ eY₁
 → exp.subst_apply F eX₁ ≡α⟨S⟩ exp.subst_apply G eY₁ :=
-  λ P H, subst_preservation_core H F G P
+  begin
+    intros P H,
+    induction H with
+      /- var -/ X₁ Y₁ R x y x_R_y
+      /- app -/ X₁ Y₁ R fX eX fY eY af ae rf re
+      /- lam -/ X₁ Y₁ R x y eX eY a r
+      generalizing X₂ Y₂ S F G P,
+    begin /- var -/
+      exact P x y x_R_y
+    end,
+    begin /- app -/
+      exact app (rf F G P) (re F G P)
+    end,
+    begin /- lam -/
+      apply lam,
+      exact r
+        (exp.subst_update_var x (fresh X₂).1 F)
+        (exp.subst_update_var y (fresh Y₂).1 G)
+        (subst_preservation.update (fresh X₂) (fresh Y₂) P)
+    end
+  end
 
 end /- section -/ --------------------------------------------------------------
 
 section ------------------------------------------------------------------------
 variables {eX₁ eX₂ : exp X} -- Expressions
 
--- Substitution preserves alpha equality.
-def subst_preservation
+-- Simplified version of substitution preserves alpha equality.
+protected
+def subst_preservation.simple
 (F : exp.subst X Y) (G : exp.subst X Y)
 : subst_aeq F G (vrel.id X) (vrel.id Y)
 → eX₁ ≡α eX₂
 → exp.subst_apply F eX₁ ≡α exp.subst_apply G eX₂ :=
-  subst_preservation_general F G
+  subst_preservation F G
 
 end /- section -/ --------------------------------------------------------------
 
-theorem self_aeq_subst_apply_lift (e : exp X)
-: ∀ {Y : vs V} (F : X →ν Y)
-, e ≡α⟨vrel.lift F⟩ exp.subst_apply (exp.subst.lift F) e :=
+theorem self_aeq_subst_apply_lift (F : X →ν Y) (e : exp X)
+: e ≡α⟨vrel.lift F⟩ exp.subst_apply (exp.subst.lift F) e :=
   begin
     induction e with
       /- var -/ X x
       /- app -/ X f e rf re
-      /- lam -/ X a e r,
+      /- lam -/ X a e r
+      generalizing Y F,
     begin /- var -/
-      intros Y F,
       exact var rfl
     end,
     begin /- app -/
-      intros Y F,
       exact app (rf F) (re F)
     end,
     begin /- lam -/
-      intros Y F,
       have H : e ≡α⟨vrel.lift (vname.update a (fresh Y).1 F)⟩ exp.subst_apply (exp.subst.lift (vname.update a (fresh Y).1 F)) e :=
         r (vname.update a (fresh Y).1 F),
       have P : exp.subst_update_var a (fresh Y).1 (exp.subst.lift F) = exp.subst.lift (vname.update a (fresh Y).1 F) :=
