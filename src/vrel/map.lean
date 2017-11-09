@@ -5,7 +5,6 @@ This file contains declarations for mapping one `vrel` to another.
 -/
 
 import .update
-import data.exists.extra
 
 namespace acie ----------------------------------------------------------------
 namespace vrel -----------------------------------------------------------------
@@ -18,7 +17,7 @@ variables {X X₁ X₂ Y Y₁ Y₂ : vs V} -- Variable name sets
 @[reducible]
 protected
 def map (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
-  ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y⟫ ∈ν R
+  ∀ (x : ν∈ X₁) (y : ν∈ Y₁), ⟪x, y⟫ ∈ν R
   → ∃ (px : x.1 ∈ X₂) (py : y.1 ∈ Y₂)
   , ⟪vname.map_of_mem x px, vname.map_of_mem y py⟫ ∈ν S
 
@@ -44,7 +43,7 @@ theorem update (a b : V) : R ⇒νS → R ⩁ (a, b) ⇒ν S ⩁ (a, b) :=
     end,
     begin
       cases H with x_ne_a H, cases H with y_ne_b x_R_y,
-      cases F x_R_y with px H,
+      cases F (vname.erase x x_ne_a) (vname.erase y y_ne_b) x_R_y with px H,
       cases H with py x_S_y,
       existsi vset.prop_insert a px,
       existsi vset.prop_insert b py,
@@ -59,9 +58,13 @@ variables {R S : X ×ν Y} -- Variable name set relations
 
 -- Lift a simpler function on `vrel` membership to a `map`.
 protected
-theorem simple
-: (∀ {x : ν∈ X} {y : ν∈ Y}, ⟪x, y⟫ ∈ν R → ⟪x, y⟫ ∈ν S) → R ⇒ν S :=
-  λ F x y x_R_y, exists.intro₂ x.2 y.2 (by cases x; cases y; exact F x_R_y)
+theorem simple : (∀ (x : ν∈ X) (y : ν∈ Y), ⟪x, y⟫ ∈ν R → ⟪x, y⟫ ∈ν S) → R ⇒ν S :=
+  begin
+    intros F x y x_R_y,
+    cases x with x px, cases y with y py,
+    existsi px, existsi py,
+    exact F (vname.map_of_mem ⟨x, px⟩ px) (vname.map_of_mem ⟨y, py⟩ py) x_R_y
+  end
 
 end /- section -/ --------------------------------------------------------------
 

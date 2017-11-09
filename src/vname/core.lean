@@ -55,8 +55,6 @@ def insert (a : V) (x : ν∈ X) : ν∈ insert a X :=
 def replace_of_eq : a = b → ν∈ insert b X :=
   λ a_eq_b, ⟨a, vset.prop_insert_self_if_eq X a_eq_b⟩
 
--- #check @vset.decidable_eq
-
 -- Update a function on names with an extra argument and a matching result.
 @[reducible]
 protected

@@ -19,9 +19,8 @@ variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂} -- Substitutions
 -- This is the type of a function that lifts a relation `R` to an alpha-equality
 -- relation on `S` with the substitutions `F` and `G` applied to each side.
 def subst_aeq
-(F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
-(R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
-  ∀ {x : ν∈ X₁} {y : ν∈ Y₁}, ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
+(F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂) (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
+  ∀ (x : ν∈ X₁) (y : ν∈ Y₁), ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
 
 -- A lemma needed for the `lam` case in `subst_preservation_core`.
 lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
@@ -58,7 +57,7 @@ lemma subst_preservation_update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
         exact c_S_d
       end,
       begin
-        exact P x₁_R_y₁
+        exact P (vname.erase x₁ x₁_ne_a₁) (vname.erase y₁ y₁_ne_b₁) x₁_R_y₁
       end
     end
   end
@@ -79,11 +78,11 @@ def subst_preservation_core (H : eX₁ ≡α⟨R⟩ eY₁)
       /- lam -/ X₁ Y₁ R x y eX eY a r,
     begin /- var -/
       intros X₂ Y₂ S F G P,
-      exact P x_R_y
+      exact P x y x_R_y
     end,
     begin /- app -/
       intros X₂ Y₂ S F G P,
-      exact app (rf F G @P) (re F G @P)
+      exact app (rf F G P) (re F G P)
     end,
     begin /- lam -/
       intros X₂ Y₂ S F G P,
@@ -91,7 +90,7 @@ def subst_preservation_core (H : eX₁ ≡α⟨R⟩ eY₁)
       exact r
         (exp.subst_update_var x (fresh X₂).1 F)
         (exp.subst_update_var y (fresh Y₂).1 G)
-        (λ x y, subst_preservation_update (fresh X₂) (fresh Y₂) @P)
+        (subst_preservation_update (fresh X₂) (fresh Y₂) P)
     end
   end
 
@@ -101,7 +100,7 @@ def subst_preservation_general
 : subst_aeq F G R S
 → eX₁ ≡α⟨R⟩ eY₁
 → exp.subst_apply F eX₁ ≡α⟨S⟩ exp.subst_apply G eY₁ :=
-  λ P H, subst_preservation_core H F G @P
+  λ P H, subst_preservation_core H F G P
 
 end /- section -/ --------------------------------------------------------------
 
