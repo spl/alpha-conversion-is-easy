@@ -5,4 +5,4 @@ import .comp
 import .update
 import .map
 import .identity
-import .combined
+import .properties

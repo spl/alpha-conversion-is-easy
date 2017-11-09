@@ -16,21 +16,22 @@ variables {X X₁ X₂ Y Y₁ Y₂ Z : vs V} -- Variable name sets
 variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂} -- Variable name set relations
 variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂} -- Substitutions
 
--- This is the type of a function that lifts a relation `R` to an alpha-equality
--- relation on `S` with the substitutions `F` and `G` applied to each side.
-def subst_aeq
+-- This is the type of a function that extends a variable name set relation `R`
+-- to an alpha-equality relation on `S` with the substitutions `F` and `G`
+-- applied to the left and right sides, respectively.
+protected
+def extend
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂) (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
   ∀ (x : ν∈ X₁) (y : ν∈ Y₁), ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
 
 -- A lemma needed for the `lam` case in `subst_preservation`.
+-- Paper: Lemma 5
 lemma subst_preservation.update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
-: subst_aeq F G R S
-→ subst_aeq
-    (exp.subst.update_var a nx₂.1 F)
-    (exp.subst.update_var b ny₂.1 G)
-    (vrel.update a b R)
-    (vrel.update nx₂.1 ny₂.1 S) :=
-
+: aeq.extend F G R S
+→ aeq.extend (exp.subst.update_var a nx₂.1 F)
+             (exp.subst.update_var b ny₂.1 G)
+             (vrel.update a b R)
+             (vrel.update nx₂.1 ny₂.1 S) :=
   begin
     intros P x₁ y₁ H,
     cases H with H H,
@@ -66,9 +67,10 @@ section ------------------------------------------------------------------------
 variables {eX₁ : exp X₁} {eY₁ : exp Y₁} -- Expressions
 
 -- Substitution preserves alpha equality
-def subst_preservation
+-- Paper: Proposition 4
+theorem subst_preservation
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
-: subst_aeq F G R S
+: aeq.extend F G R S
 → eX₁ ≡α⟨R⟩ eY₁
 → exp.subst.apply F eX₁ ≡α⟨S⟩ exp.subst.apply G eY₁ :=
   begin
@@ -100,9 +102,9 @@ variables {eX₁ eX₂ : exp X} -- Expressions
 
 -- Simplified version of substitution preserves alpha equality.
 protected
-def subst_preservation.simple
+theorem subst_preservation.simple
 (F : exp.subst X Y) (G : exp.subst X Y)
-: subst_aeq F G (vrel.id X) (vrel.id Y)
+: aeq.extend F G (vrel.id X) (vrel.id Y)
 → eX₁ ≡α eX₂
 → exp.subst.apply F eX₁ ≡α exp.subst.apply G eX₂ :=
   subst_preservation F G

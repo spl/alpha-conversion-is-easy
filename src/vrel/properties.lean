@@ -1,6 +1,6 @@
 /-
 
-This file contains definitions and theorems of combined `vrel` relations.
+This file contains properties of `vrel` relations.
 
 -/
 
@@ -17,19 +17,51 @@ variables {X Y Z : vs V} -- Variable name sets
 section ------------------------------------------------------------------------
 variables {x₁ x₂ : ν∈ X} -- Variable name set members
 
+theorem id.of_inv : ⟪x₁, x₂⟫ ∈ν (vrel.id X)⁻¹ → ⟪x₁, x₂⟫ ∈ν vrel.id X :=
+  eq.symm
+
 theorem inv.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id X → ⟪x₁, x₂⟫ ∈ν (vrel.id X)⁻¹ :=
   eq.symm
+
+theorem inv_of_id_iff_id_of_inv
+: ⟪x₁, x₂⟫ ∈ν (vrel.id X)⁻¹ ↔ ⟪x₁, x₂⟫ ∈ν vrel.id X :=
+  iff.intro id.of_inv inv.of_id
+
+theorem id.of_comp : ⟪x₁, x₂⟫ ∈ν (vrel.id X ⨾ vrel.id X) → ⟪x₁, x₂⟫ ∈ν vrel.id X :=
+  begin
+    intro h,
+    cases h with x h,
+    exact eq.trans h.1 h.2
+  end
+
+theorem comp.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id X → ⟪x₁, x₂⟫ ∈ν (vrel.id X ⨾ vrel.id X) :=
+  begin
+    intro h,
+    induction h,
+    exact ⟨x₁, ⟨rfl, rfl⟩⟩
+  end
+
+theorem comp_of_id_iff_id_of_comp
+: ⟪x₁, x₂⟫ ∈ν (vrel.id X ⨾ vrel.id X) ↔ ⟪x₁, x₂⟫ ∈ν vrel.id X :=
+  iff.intro id.of_comp comp.of_id
 
 end /- section -/ --------------------------------------------------------------
 
 section ------------------------------------------------------------------------
 variables {x₁ x₂ : ν∈ insert a X} -- Variable name set members
 
--- Produce an update on id from an id.
+-- NOTE: I'm not sure why the type class inference doesn't resolve the instances.
+
+theorem id.of_update : ⟪x₁, x₂⟫ ∈ν vrel.id X ⩁ (a, a) → ⟪x₁, x₂⟫ ∈ν vrel.id (insert a X) :=
+  @vrel.is_identity.to_id _ _ _ _ _ _ (@vrel.update.is_identity _ _ _ _ _ _ (vrel.id.is_identity X) _) _ _
+
 theorem update.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id (insert a X) → ⟪x₁, x₂⟫ ∈ν vrel.id X ⩁ (a, a) :=
-  -- I'm not sure why the type class inference doesn't resolve the
-  -- id.is_identity instance here.
   @vrel.is_identity.from_id _ _ _ _ _ _ (@vrel.update.is_identity _ _ _ _ _ _ (vrel.id.is_identity X) _) _ _
+
+-- Paper: Lemma 1.1
+theorem update_of_id_iff_id_of_update
+: ⟪x₁, x₂⟫ ∈ν vrel.id X ⩁ (a, a) ↔ ⟪x₁, x₂⟫ ∈ν vrel.id (insert a X) :=
+  iff.intro id.of_update update.of_id
 
 end /- section -/ --------------------------------------------------------------
 
@@ -69,7 +101,8 @@ theorem update.of_inv : ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ → ⟪y, x⟫ ∈�
     end
   end
 
-theorem update_of_inv_iff_inv_of_update (x : ν∈ insert a X) (y : ν∈ insert b Y)
+-- Paper: Lemma 1.2
+theorem update_of_inv_iff_inv_of_update
 : ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) ↔ ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ :=
   iff.intro inv.of_update update.of_inv
 
@@ -139,6 +172,7 @@ theorem comp.of_update
     end
   end
 
+-- Paper: Lemma 1.3
 theorem update_of_comp_iff_comp_of_update
 : b ∉ Y → (⟪x, z⟫ ∈ν (R ⨾ S) ⩁ (a, c) ↔ ⟪x, z⟫ ∈ν R ⩁ (a, b) ⨾ S ⩁ (b, c)) :=
   λ pb, iff.intro (comp.of_update pb) update.of_comp

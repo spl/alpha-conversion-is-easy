@@ -1,25 +1,64 @@
 /-
 
-This file contains declarations related to `aeq` composition.
+This file contains properties of `aeq`.
 
 -/
 
 import .map
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y Z : vs V} -- Variable name sets
 variables {R : X ×ν Y} {S : Y ×ν Z} -- Variable name set relations
-variables {eX : exp X} {eY : exp Y} {eZ : exp Z} -- Expressions
+variables {eX : exp X} {eY eY₁ eY₂ : exp Y} {eZ : exp Z} -- Expressions
 
--- The `comp` implementation for `aeq`: composition of two `aeq`s.
-@[inline]
+-- Reflexivity
+-- Paper: Proposition 2.1
+protected
+theorem refl (e : exp X) : e ≡α e :=
+  begin
+    induction e with
+      /- var -/ X x
+      /- app -/ X f e rf re
+      /- lam -/ X a e r,
+    begin /- var -/
+      exact var (vrel.refl x)
+    end,
+    begin /- app -/
+      exact app rf re
+    end,
+    begin /- lam -/
+      exact lam (map.simple (λ x y, vrel.update.of_id) r)
+    end
+  end
+
+-- Symmetry
+-- Paper: Proposition 2.2
+protected
+theorem symm : eX ≡α⟨R⟩ eY → eY ≡α⟨R⁻¹⟩ eX :=
+  begin
+    intro H,
+    induction H with
+      /- var -/ X Y R x y x_R_y
+      /- app -/ X Y R fX eX fY eY af ae rf re
+      /- lam -/ X Y R a b eX eY ae r,
+    begin /- var -/
+      exact var (vrel.symm x_R_y)
+    end,
+    begin /- app -/
+      exact app rf re
+    end,
+    begin /- lam -/
+      exact lam (map.simple (λ x y, vrel.update.of_inv) r)
+    end
+  end
+
+-- Transitivity implementation
 private
-def comp.core {eY₁ : exp Y} {eY₂ : exp Y}
-(aR : eX ≡α⟨R⟩ eY₁) (P : eY₁ = eY₂) (aS : eY₂ ≡α⟨S⟩ eZ)
+theorem trans.core (P : eY₁ = eY₂) (aR : eX ≡α⟨R⟩ eY₁) (aS : eY₂ ≡α⟨S⟩ eZ)
 : eX ≡α⟨R ⨾ S⟩ eZ :=
   begin
     induction aR with
@@ -85,13 +124,11 @@ def comp.core {eY₁ : exp Y} {eY₂ : exp Y}
 
   end
 
--- A more convenient wrapper for the `comp` implementation.
-def comp : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
-  λ aR, comp.core aR (eq.refl eY)
-
--- Notation for `comp`.
--- Source: http://www.fileformat.info/info/unicode/char/2a3e/index.htm
-infixr ` ⨾ `:60 := comp
+-- Transitivity
+-- Paper: Proposition 2.3
+protected
+theorem trans : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
+  trans.core (eq.refl eY)
 
 end /- namespace -/ aeq --------------------------------------------------------
 end /- namespace -/ acie ------------------------------------------------------
