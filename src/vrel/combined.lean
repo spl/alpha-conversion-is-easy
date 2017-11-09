@@ -6,7 +6,7 @@ This file contains definitions and theorems of combined `vrel` relations.
 
 import .identity
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -146,4 +146,4 @@ theorem update_of_comp_iff_comp_of_update
 end /- section -/ --------------------------------------------------------------
 
 end /- namespace -/ vrel -------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

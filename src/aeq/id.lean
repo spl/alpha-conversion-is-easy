@@ -6,7 +6,7 @@ This file contains declarations related to `aeq` identity or reflexivity.
 
 import .map
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -38,4 +38,4 @@ theorem refl (X : vs V) : reflexive (aeq.identity X) :=
   aeq.id
 
 end /- namespace -/ aeq --------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

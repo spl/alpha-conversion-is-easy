@@ -7,7 +7,7 @@ set, and other related type definitions.
 
 import vset
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -59,4 +59,4 @@ def id.fun (X Y : vs V) : Type :=
 infixr `→ν`:25 := vname.id.fun
 
 end /- namespace -/ vname ------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

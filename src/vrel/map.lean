@@ -7,7 +7,7 @@ This file contains declarations for mapping one `vrel` to another.
 import .update
 import data.exists.extra
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -67,4 +67,4 @@ end /- section -/ --------------------------------------------------------------
 
 end /- namespace -/ map --------------------------------------------------------
 end /- namespace -/ vrel -------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

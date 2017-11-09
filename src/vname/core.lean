@@ -7,7 +7,7 @@ names.
 
 import .type
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace vname ----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -85,4 +85,4 @@ theorem ne_if_mem_and_not_mem (x : ν∈ X) (x' : ν∉ X) : x.1 ≠ x'.1 :=
   vset.prop_ne_if_mem_and_not_mem x.2 x'.2
 
 end /- namespace -/ vname ------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

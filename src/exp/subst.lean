@@ -10,7 +10,7 @@ import .core
 import data.fresh
 import data.sigma.extra
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace exp ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -147,4 +147,4 @@ theorem subst_apply_distrib (e : exp X)
   end
 
 end /- namespace -/ exp --------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

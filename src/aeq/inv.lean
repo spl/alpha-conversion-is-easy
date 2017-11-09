@@ -6,7 +6,7 @@ This file contains declarations related to `aeq` inversion.
 
 import .map
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -43,4 +43,4 @@ theorem symm (X : vs V) : symmetric (aeq.identity X) :=
   map.simple (λ x y, vrel.inv.of_id) ∘ inv
 
 end /- namespace -/ aeq --------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

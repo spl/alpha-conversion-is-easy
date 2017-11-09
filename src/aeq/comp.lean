@@ -6,7 +6,7 @@ This file contains declarations related to `aeq` composition.
 
 import .map
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -95,4 +95,4 @@ def comp : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ e
 infixr ` ⨾ `:60 := comp
 
 end /- namespace -/ aeq --------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

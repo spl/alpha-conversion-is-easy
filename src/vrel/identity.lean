@@ -9,7 +9,7 @@ import .inv
 import .comp
 import .update
 
-namespace alpha ----------------------------------------------------------------
+namespace acie ----------------------------------------------------------------
 namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -92,4 +92,4 @@ instance update.is_identity (R : X ×ν X) [I : is_identity R] (a : V) : is_iden
   }
 
 end /- namespace -/ vrel -------------------------------------------------------
-end /- namespace -/ alpha ------------------------------------------------------
+end /- namespace -/ acie ------------------------------------------------------

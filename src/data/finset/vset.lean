@@ -12,7 +12,7 @@ namespace finset ---------------------------------------------------------------
 
 variables {A : Type} [decidable_eq A] {a b : A} {s : finset A}
 
-instance vset_nat : alpha.vset finset ℕ :=
+instance vset_nat : acie.vset finset ℕ :=
   { mem                        := finset.mem
   , fresh                      := has_fresh.fresh
   , insert                     := has_insert.insert
