@@ -29,13 +29,4 @@ inductive aeq : Π {X Y : vs V}, X ×ν Y → exp X → exp Y → Prop
 -- Notation for `aeq`.
 notation e₁ ` ≡α⟨`:50 R `⟩ ` e₂:50 := aeq R e₁ e₂
 
--- An abbreviation for `aeq` with `vrel.id`.
-@[reducible]
-def aeq.identity (X : vs V) : exp X → exp X → Prop :=
-  aeq (vrel.id X)
-
--- Notation for `aeq.identity`. We leave the `vset` implicit here because it
--- should be inferred using type class elaboration.
-infix ` ≡α `:50 := aeq.identity _
-
 end /- namespace -/ acie -------------------------------------------------------

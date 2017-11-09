@@ -4,7 +4,7 @@ This file contains the proof that substitution preserves alpha equality.
 
 -/
 
-import .map
+import .id
 
 namespace acie -----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
@@ -100,9 +100,9 @@ end /- section -/ --------------------------------------------------------------
 section ------------------------------------------------------------------------
 variables {eX₁ eX₂ : exp X} -- Expressions
 
--- Simplified version of substitution preserves alpha equality.
+-- Substitution with the identity relation preserves alpha equality.
 protected
-theorem subst_preservation.simple
+theorem subst_preservation.id
 (F : exp.subst X Y) (G : exp.subst X Y)
 : aeq.extend F G (vrel.id X) (vrel.id Y)
 → eX₁ ≡α eX₂

@@ -18,7 +18,7 @@ variables {eX : exp X} {eY eY₁ eY₂ : exp Y} {eZ : exp Z} -- Expressions
 -- Reflexivity
 -- Paper: Proposition 2.1
 protected
-theorem refl (e : exp X) : e ≡α e :=
+theorem refl (e : exp X) : e ≡α⟨vrel.id X⟩ e :=
   begin
     induction e with
       /- var -/ X x
