@@ -26,8 +26,8 @@ def subst_aeq
 lemma subst_preservation.update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 : subst_aeq F G R S
 → subst_aeq
-    (exp.subst_update_var a nx₂.1 F)
-    (exp.subst_update_var b ny₂.1 G)
+    (exp.subst.update_var a nx₂.1 F)
+    (exp.subst.update_var b ny₂.1 G)
     (vrel.update a b R)
     (vrel.update nx₂.1 ny₂.1 S) :=
 
@@ -36,14 +36,14 @@ lemma subst_preservation.update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
     cases H with H H,
     begin
       cases H with x₁_eq_a y₁_eq_b,
-      unfold exp.subst_update_var exp.subst_update,
+      unfold exp.subst.update_var exp.subst.update,
       rw [dif_pos x₁_eq_a, dif_pos y₁_eq_b],
       apply var, left, split, reflexivity, reflexivity
     end,
     begin
       cases H with x₁_ne_a₁ H,
       cases H with y₁_ne_b₁ x₁_R_y₁,
-      unfold exp.subst_update_var exp.subst_update,
+      unfold exp.subst.update_var exp.subst.update,
       rw [dif_neg x₁_ne_a₁, dif_neg y₁_ne_b₁],
       apply map (vset.prop_subset_insert_self _ _) (vset.prop_subset_insert_self _ _),
       begin
@@ -70,7 +70,7 @@ def subst_preservation
 (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂)
 : subst_aeq F G R S
 → eX₁ ≡α⟨R⟩ eY₁
-→ exp.subst_apply F eX₁ ≡α⟨S⟩ exp.subst_apply G eY₁ :=
+→ exp.subst.apply F eX₁ ≡α⟨S⟩ exp.subst.apply G eY₁ :=
   begin
     intros P H,
     induction H with
@@ -87,8 +87,8 @@ def subst_preservation
     begin /- lam -/
       apply lam,
       exact r
-        (exp.subst_update_var x (fresh X₂).1 F)
-        (exp.subst_update_var y (fresh Y₂).1 G)
+        (exp.subst.update_var x (fresh X₂).1 F)
+        (exp.subst.update_var y (fresh Y₂).1 G)
         (subst_preservation.update (fresh X₂) (fresh Y₂) P)
     end
   end
@@ -104,13 +104,13 @@ def subst_preservation.simple
 (F : exp.subst X Y) (G : exp.subst X Y)
 : subst_aeq F G (vrel.id X) (vrel.id Y)
 → eX₁ ≡α eX₂
-→ exp.subst_apply F eX₁ ≡α exp.subst_apply G eX₂ :=
+→ exp.subst.apply F eX₁ ≡α exp.subst.apply G eX₂ :=
   subst_preservation F G
 
 end /- section -/ --------------------------------------------------------------
 
 theorem self_aeq_subst_apply_lift (F : X →ν Y) (e : exp X)
-: e ≡α⟨vrel.lift F⟩ exp.subst_apply (exp.subst.lift F) e :=
+: e ≡α⟨vrel.lift F⟩ exp.subst.apply (exp.subst.lift F) e :=
   begin
     induction e with
       /- var -/ X x
@@ -124,10 +124,10 @@ theorem self_aeq_subst_apply_lift (F : X →ν Y) (e : exp X)
       exact app (rf F) (re F)
     end,
     begin /- lam -/
-      have H : e ≡α⟨vrel.lift (vname.update a (fresh Y).1 F)⟩ exp.subst_apply (exp.subst.lift (vname.update a (fresh Y).1 F)) e :=
+      have H : e ≡α⟨vrel.lift (vname.update a (fresh Y).1 F)⟩ exp.subst.apply (exp.subst.lift (vname.update a (fresh Y).1 F)) e :=
         r (vname.update a (fresh Y).1 F),
-      have P : exp.subst_update_var a (fresh Y).1 (exp.subst.lift F) = exp.subst.lift (vname.update a (fresh Y).1 F) :=
-        funext (exp.subst_update_var_eq_var_update a (fresh Y).1 F),
+      have P : exp.subst.update_var a (fresh Y).1 (exp.subst.lift F) = exp.subst.lift (vname.update a (fresh Y).1 F) :=
+        funext (exp.subst.update_var_eq_var_update a (fresh Y).1 F),
       rw [←P] at H,
       exact (lam (map.simple vrel.update.lift H))
     end
