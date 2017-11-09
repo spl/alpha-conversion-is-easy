@@ -1,3 +1,3 @@
 import .type
-import .core
+import .map
 import .subst

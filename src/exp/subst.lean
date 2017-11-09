@@ -5,7 +5,7 @@ properties.
 
 -/
 
-import .core
+import .map
 
 import data.fresh
 import data.sigma.extra
