@@ -6,7 +6,7 @@ This file contains declarations related to `vrel` composition or transitivity.
 
 import .id
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -32,4 +32,4 @@ theorem trans : ⟪x, y⟫ ∈ν R → ⟪y, z⟫ ∈ν S → ⟪x, z⟫ ∈ν R
   λ x_R_y y_S_z, exists.intro y $ and.intro x_R_y y_S_z
 
 end /- namespace -/ vrel -------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

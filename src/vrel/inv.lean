@@ -6,7 +6,7 @@ This file contains declarations related to `vrel` inversion or symmetry.
 
 import .id
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -31,4 +31,4 @@ theorem symm : ⟪x, y⟫ ∈ν R → ⟪y, x⟫ ∈ν R⁻¹ :=
   λ m, m
 
 end /- namespace -/ vrel -------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

@@ -6,7 +6,7 @@ This file contains properties of `aeq`.
 
 import .map
 
-namespace acie -----------------------------------------------------------------
+namespace acie ------------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -131,4 +131,4 @@ theorem trans : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S
   trans.core (eq.refl eY)
 
 end /- namespace -/ aeq --------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

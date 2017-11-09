@@ -6,7 +6,7 @@ This files contains a collection of core definitions and properties for `exp`.
 
 import .type
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace exp ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -62,4 +62,4 @@ def insert_var (a : V) : exp X → exp (insert a X) :=
   map (vset.prop_subset_insert_self _ _)
 
 end /- namespace -/ exp --------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

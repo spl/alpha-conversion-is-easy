@@ -8,7 +8,7 @@ import data.fresh
 
 universes u v
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 
 /-
 The type class `vset V S` defines the requirements for a finite set `S` of
@@ -41,4 +41,4 @@ theorem prop_insert_self_if_eq (s : S V) (p : a = b) : a ∈ insert b s :=
   by rw [p]; exact vset.prop_insert_self b s
 
 end /- namespace -/ vset -------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

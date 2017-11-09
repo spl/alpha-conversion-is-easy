@@ -6,7 +6,7 @@ This file contains the proof that substitution preserves alpha equality.
 
 import .map
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -136,4 +136,4 @@ theorem self_aeq_subst_apply_lift (F : X →ν Y) (e : exp X)
   end
 
 end /- namespace -/ aeq --------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

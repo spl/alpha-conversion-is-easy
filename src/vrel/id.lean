@@ -6,7 +6,7 @@ This file contains declarations related to `vrel` identity or reflexivity.
 
 import .type
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace vrel -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -26,4 +26,4 @@ theorem refl : ∀ (x : ν∈ X), ⟪x, x⟫ ∈ν vrel.id X :=
   eq.refl
 
 end /- namespace -/ vrel -------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

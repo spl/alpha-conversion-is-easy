@@ -6,7 +6,7 @@ This file contains declarations related to `aeq` identity or reflexivity.
 
 import .properties
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -44,4 +44,4 @@ theorem trans (X : vs V) : transitive (aeq (vrel.id X)) :=
 end /- namespace -/ id ---------------------------------------------------------
 
 end /- namespace -/ aeq --------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

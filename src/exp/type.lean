@@ -6,7 +6,7 @@ This file contains the `exp` inductive data type.
 
 import vname
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
@@ -23,4 +23,4 @@ inductive exp : vs V → Type
   | app : Π {X : vs V},         exp X → exp X    → exp X  -- application
   | lam : Π {X : vs V} {a : V}, exp (insert a X) → exp X  -- lambda abstraction
 
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------

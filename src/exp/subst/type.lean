@@ -6,7 +6,7 @@ This files defines the substitution type `subst`.
 
 import exp.type
 
-namespace acie ----------------------------------------------------------------
+namespace acie -----------------------------------------------------------------
 namespace exp ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
@@ -24,4 +24,4 @@ def subst.lift : (X →ν Y) → subst X Y :=
   function.comp var
 
 end /- namespace -/ exp --------------------------------------------------------
-end /- namespace -/ acie ------------------------------------------------------
+end /- namespace -/ acie -------------------------------------------------------
