@@ -19,7 +19,7 @@ variables {X Y : vs V} -- Variable name sets
 @[reducible]
 protected
 def id (X : vs V) : subst X X :=
-  by exact var
+  var
 
 -- Update substitution construction
 @[reducible]
@@ -56,12 +56,6 @@ def apply : subst X Y → exp X → exp Y :=
       exact lam (r (subst.update_var x y F))
     end
   end
-
--- Apply a single-variable substitution
-@[reducible]
-protected
-def single (x : V) (e : exp X) : exp (insert x X) → exp X :=
-  subst.apply $ subst.update x e $ subst.id X
 
 end /- namespace -/ subst ------------------------------------------------------
 end /- namespace -/ exp --------------------------------------------------------
