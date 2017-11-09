@@ -11,7 +11,6 @@ namespace aeq ------------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
-variables {X : vs V} -- Variable name sets
 
 -- Identity `aeq` with an implicit `vset`.
 @[inline, reducible]
@@ -40,6 +39,15 @@ protected
 theorem trans (X : vs V) : transitive (aeq (vrel.id X)) :=
   λ e₁ e₂ e₃ a₁ a₂,
   map.simple (λ x₁ x₂, vrel.id.of_comp) (aeq.trans a₁ a₂)
+
+-- Equivalence
+protected
+theorem equiv (X : vs V) : equivalence (aeq (vrel.id X)) :=
+  mk_equivalence (aeq (vrel.id X)) (id.refl X) (id.symm X) (id.trans X)
+
+-- Setoid
+instance setoid (X : vs V) : setoid (exp X) :=
+  setoid.mk (aeq (vrel.id X)) (id.equiv X)
 
 end /- namespace -/ id ---------------------------------------------------------
 
