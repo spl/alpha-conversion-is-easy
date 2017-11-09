@@ -130,5 +130,35 @@ protected
 theorem trans : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
   trans.core (eq.refl eY)
 
+-- Paper: Lemma 7
+theorem self_aeq_subst_lift_self (F : X →ν Y) (e : exp X)
+: e ≡α⟨vrel.lift F⟩ exp.subst.apply (exp.subst.lift F) e :=
+  begin
+    induction e with
+      /- var -/ X x
+      /- app -/ X f e rf re
+      /- lam -/ X a e r
+      generalizing Y F,
+    begin /- var -/
+      exact var rfl
+    end,
+    begin /- app -/
+      exact app (rf F) (re F)
+    end,
+    begin /- lam -/
+      have H : e ≡α⟨vrel.lift (vname.update a (fresh Y).1 F)⟩ exp.subst.apply (exp.subst.lift (vname.update a (fresh Y).1 F)) e :=
+        r (vname.update a (fresh Y).1 F),
+      have P : exp.subst.update_var a (fresh Y).1 (exp.subst.lift F) = exp.subst.lift (vname.update a (fresh Y).1 F) :=
+        funext (exp.subst.update_var_eq_var_update a (fresh Y).1 F),
+      rw [←P] at H,
+      exact (lam (map.simple vrel.update.lift H))
+    end
+  end
+
+-- Paper: Proposition 6.1 (a)
+theorem self_aeq_subst_id_self (e : exp X)
+: e ≡α⟨vrel.id X⟩ exp.subst.apply (exp.subst.id X) e :=
+  map.simple (λ x y p, psigma.eq p rfl) (self_aeq_subst_lift_self id e)
+
 end /- namespace -/ aeq --------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------

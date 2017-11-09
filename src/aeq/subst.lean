@@ -111,29 +111,5 @@ theorem subst_preservation.id
 
 end /- section -/ --------------------------------------------------------------
 
-theorem self_aeq_subst_apply_lift (F : X →ν Y) (e : exp X)
-: e ≡α⟨vrel.lift F⟩ exp.subst.apply (exp.subst.lift F) e :=
-  begin
-    induction e with
-      /- var -/ X x
-      /- app -/ X f e rf re
-      /- lam -/ X a e r
-      generalizing Y F,
-    begin /- var -/
-      exact var rfl
-    end,
-    begin /- app -/
-      exact app (rf F) (re F)
-    end,
-    begin /- lam -/
-      have H : e ≡α⟨vrel.lift (vname.update a (fresh Y).1 F)⟩ exp.subst.apply (exp.subst.lift (vname.update a (fresh Y).1 F)) e :=
-        r (vname.update a (fresh Y).1 F),
-      have P : exp.subst.update_var a (fresh Y).1 (exp.subst.lift F) = exp.subst.lift (vname.update a (fresh Y).1 F) :=
-        funext (exp.subst.update_var_eq_var_update a (fresh Y).1 F),
-      rw [←P] at H,
-      exact (lam (map.simple vrel.update.lift H))
-    end
-  end
-
 end /- namespace -/ aeq --------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
