@@ -66,8 +66,8 @@ theorem update_of_id_iff_id_of_update
 end /- section -/ --------------------------------------------------------------
 
 section ------------------------------------------------------------------------
-variables {R : X ×ν Y} -- Variable name set relations
-variables {x : ν∈ insert a X} {y : ν∈ insert b Y} -- Variable name set members
+variables {R : X ×ν Y} {S : Y ×ν Z} -- Variable name set relations
+variables {x : ν∈ insert a X} {y : ν∈ insert b Y} {z : ν∈ insert c Z} -- Variable name set members
 
 theorem inv.of_update : ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) → ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ :=
   begin
@@ -105,12 +105,6 @@ theorem update.of_inv : ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ → ⟪y, x⟫ ∈�
 theorem update_of_inv_iff_inv_of_update
 : ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) ↔ ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ :=
   iff.intro inv.of_update update.of_inv
-
-end /- section -/ --------------------------------------------------------------
-
-section ------------------------------------------------------------------------
-variables {R : X ×ν Y} {S : Y ×ν Z} -- Variable name set relations
-variables {x : ν∈ insert a X} {y : ν∈ insert b Y} {z : ν∈ insert c Z} -- Variable name set members
 
 theorem update.of_comp
 : ⟪x, z⟫ ∈ν R ⩁ (a, b) ⨾ S ⩁ (b, c) → ⟪x, z⟫ ∈ν (R ⨾ S) ⩁ (a, c) :=
