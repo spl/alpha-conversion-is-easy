@@ -131,7 +131,7 @@ theorem trans : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S
   trans.core (eq.refl eY)
 
 -- Paper: Lemma 7
-theorem self_aeq_subst_lift_self (F : X →ν Y) (e : exp X)
+theorem self_lift_F_aeq_subst_lift_F (F : X →ν Y) (e : exp X)
 : e ≡α⟨vrel.lift F⟩ exp.subst.apply (exp.subst.lift F) e :=
   begin
     induction e with
@@ -156,9 +156,9 @@ theorem self_aeq_subst_lift_self (F : X →ν Y) (e : exp X)
   end
 
 -- Paper: Proposition 6.1 (a)
-theorem self_aeq_subst_id_self (e : exp X)
-: e ≡α⟨vrel.id X⟩ exp.subst.apply (exp.subst.id X) e :=
-  map.simple (λ x y p, psigma.eq p rfl) (self_aeq_subst_lift_self id e)
+theorem self_aeq_subst_var (e : exp X)
+: e ≡α⟨vrel.id X⟩ exp.subst.apply exp.var e :=
+  map.simple (λ x y p, psigma.eq p rfl) (self_lift_F_aeq_subst_lift_F id e)
 
 end /- namespace -/ aeq --------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------

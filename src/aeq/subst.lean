@@ -19,10 +19,15 @@ variables {F : exp.subst X₁ X₂} {G : exp.subst Y₁ Y₂} -- Substitutions
 -- This is the type of a function that extends a variable name set relation `R`
 -- to an alpha-equality relation on `S` with the substitutions `F` and `G`
 -- applied to the left and right sides, respectively.
+@[reducible]
 protected
-def extend
-(F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂) (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
+def extend (F : exp.subst X₁ X₂) (G : exp.subst Y₁ Y₂) (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
   ∀ (x : ν∈ X₁) (y : ν∈ Y₁), ⟪x, y⟫ ∈ν R → F x ≡α⟨S⟩ G y
+
+@[reducible]
+protected
+def extend.id (F : exp.subst X Y) : aeq.extend F F (vrel.id X) (vrel.id Y) :=
+  λ x₁ x₂ x₁_eq_x₂, by induction x₁_eq_x₂; exact aeq.refl (F x₁)
 
 -- A lemma needed for the `lam` case in `subst_preservation`.
 -- Paper: Lemma 5
@@ -100,7 +105,7 @@ end /- section -/ --------------------------------------------------------------
 section ------------------------------------------------------------------------
 variables {eX₁ eX₂ : exp X} -- Expressions
 
--- Substitution with the identity relation preserves alpha equality.
+-- Substitution preservation with the identity relation.
 protected
 theorem subst_preservation.id
 (F : exp.subst X Y) (G : exp.subst X Y)
@@ -108,6 +113,14 @@ theorem subst_preservation.id
 → eX₁ ≡α eX₂
 → exp.subst.apply F eX₁ ≡α exp.subst.apply G eX₂ :=
   subst_preservation F G
+
+-- Substitution preservation with the identity relation and one substitution.
+protected
+theorem subst_preservation.id₁
+(F : exp.subst X Y)
+: eX₁ ≡α eX₂
+→ exp.subst.apply F eX₁ ≡α exp.subst.apply F eX₂ :=
+  aeq.subst_preservation.id F F (aeq.extend.id F)
 
 end /- section -/ --------------------------------------------------------------
 

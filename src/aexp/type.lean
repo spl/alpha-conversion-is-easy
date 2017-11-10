@@ -27,15 +27,15 @@ def of_exp : exp X → aexp X :=
 def var : ν∈ X → aexp X :=
   aexp.of_exp ∘ exp.var
 
+theorem eq_of_aeq_id (F : exp.subst X Y) (e₁ e₂ : exp X)
+: e₁ ≡α e₂
+→ (aexp.of_exp ∘ exp.subst.apply F) e₁ = (aexp.of_exp ∘ exp.subst.apply F) e₂ :=
+  quotient.sound ∘ aeq.subst_preservation.id₁ F
+
 @[reducible]
 protected
 def subst.apply (F : exp.subst X Y) : aexp X → aexp Y :=
-  quotient.lift (aexp.of_exp ∘ exp.subst.apply F) $
-    λ e₁ e₂ e₁_aeq_e₂,
-    quotient.sound $
-      aeq.subst_preservation.id F F
-        (λ x₁ x₂ x₁_eq_x₂, by induction x₁_eq_x₂; exact aeq.refl (F x₁))
-        e₁_aeq_e₂
+  quotient.lift (aexp.of_exp ∘ exp.subst.apply F) (eq_of_aeq_id F)
 
 end /- namespace -/ aexp -------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
