@@ -56,7 +56,7 @@ def id.fun (X Y : vs V) : Type :=
   ν∈ X → ν∈ Y
 
 -- Notation for `vname.id.fun`.
-infixr `→ν`:25 := vname.id.fun
+infixr ` →ν `:25 := vname.id.fun
 
 end /- namespace -/ vname ------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------

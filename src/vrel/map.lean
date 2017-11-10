@@ -22,7 +22,7 @@ def map (R : X₁ ×ν Y₁) (S : X₂ ×ν Y₂) :=
   , ⟪vname.map_of_mem x px, vname.map_of_mem y py⟫ ∈ν S
 
 -- Notation for `map`.
-infixr `⇒ν`:30 := vrel.map
+infixr ` ⇒ν `:30 := vrel.map
 
 namespace map ------------------------------------------------------------------
 
