@@ -1,5 +1,6 @@
 import .type
 import .map
-import .properties
+import .equiv
 import .id
 import .subst
+import .properties

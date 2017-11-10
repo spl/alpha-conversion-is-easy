@@ -4,7 +4,7 @@ This file contains declarations related to `aeq` identity or reflexivity.
 
 -/
 
-import .properties
+import .equiv
 
 namespace acie -----------------------------------------------------------------
 namespace aeq ------------------------------------------------------------------
