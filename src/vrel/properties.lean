@@ -50,13 +50,11 @@ end /- section -/ --------------------------------------------------------------
 section ------------------------------------------------------------------------
 variables {x₁ x₂ : ν∈ insert a X} -- Variable name set members
 
--- NOTE: I'm not sure why the type class inference doesn't resolve the instances.
-
 theorem id.of_update : ⟪x₁, x₂⟫ ∈ν vrel.id X ⩁ (a, a) → ⟪x₁, x₂⟫ ∈ν vrel.id (insert a X) :=
-  @vrel.is_identity.to_id _ _ _ _ _ _ (@vrel.update.is_identity _ _ _ _ _ _ (vrel.id.is_identity X) _) _ _
+  vrel.is_identity.to_id _
 
 theorem update.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id (insert a X) → ⟪x₁, x₂⟫ ∈ν vrel.id X ⩁ (a, a) :=
-  @vrel.is_identity.from_id _ _ _ _ _ _ (@vrel.update.is_identity _ _ _ _ _ _ (vrel.id.is_identity X) _) _ _
+  vrel.is_identity.from_id _
 
 -- Paper: Lemma 1.1
 theorem update_of_id_iff_id_of_update

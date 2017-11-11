@@ -28,11 +28,6 @@ instance id.is_identity (X : vs V) : is_identity (vrel.id X) :=
   , from_id := λ x₁ x₂, id
   }
 
-instance inv.is_identity (R : X ×ν X) [is_identity R] : is_identity R⁻¹ :=
-  { to_id   := λ x₁ x₂, eq.symm ∘ is_identity.to_id X ∘ vrel.symm
-  , from_id := λ x₁ x₂, vrel.symm ∘ is_identity.from_id R ∘ eq.symm
-  }
-
 instance comp.is_identity (R : X ×ν X) (S : X ×ν X) [is_identity R] [is_identity S]
 : is_identity (R ⨾ S) :=
   { to_id :=
