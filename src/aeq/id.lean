@@ -14,7 +14,8 @@ variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 
 -- Identity `aeq` with an implicit `vset`.
 @[inline, reducible]
-def aeq.id {X : vs V} : exp X → exp X → Prop :=
+protected
+def id {X : vs V} : exp X → exp X → Prop :=
   aeq (vrel.id X)
 
 -- Notation for `aeq.id`.

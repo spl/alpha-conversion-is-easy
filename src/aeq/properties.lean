@@ -43,7 +43,7 @@ theorem self_lift_F_aeq_subst_lift_F (F : X →ν Y) (e : exp X)
 
 -- Paper: Proposition 6.1 (a)
 theorem self_aeq_subst_var (e : exp X)
-: e ≡α⟨vrel.id X⟩ exp.subst.apply exp.var e :=
+: e ≡α⟨vrel.id X⟩ exp.subst.apply (exp.subst.id X) e :=
   map.simple (λ x y p, psigma.eq p rfl) (self_lift_F_aeq_subst_lift_F id e)
 
 constant subst_comp.fresh_not_mem.within_lam
