@@ -31,7 +31,7 @@ variables {R : X₁ ×ν Y₁} {S : X₂ ×ν Y₂} -- Variable name set relatio
 
 -- Lift a `map` over `vrel.update`.
 protected
-theorem update (a b : V) : R ⇒νS → R ⩁ (a, b) ⇒ν S ⩁ (a, b) :=
+theorem update (a b : V) : R ⇒ν S → R ⩁ (a, b) ⇒ν S ⩁ (a, b) :=
   begin
     intros F x y x_update_R_y,
     cases x_update_R_y with H H,
