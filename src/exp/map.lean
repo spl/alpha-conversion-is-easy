@@ -59,7 +59,7 @@ theorem eq_of_map (X : vs V) (e : exp X)
 -- A weakening property that allows increasing the free variable set without
 -- changing the structure of an expression.
 def insert_var (a : V) : exp X → exp (insert a X) :=
-  map (vset.prop_subset_insert_self _ _)
+  map (vset.prop_subset_insert_self a X)
 
 end /- namespace -/ exp --------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
