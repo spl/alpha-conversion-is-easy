@@ -4,9 +4,11 @@ This file contains extra definitions and theorems for `sigma` and `psigma`.
 
 -/
 
+universes u v
+
 namespace psigma ---------------------------------------------------------------
 
-variables {A : Type} {B : A → Type} {a₁ a₂ : A} {b₁ : B a₁} {b₂ : B a₂}
+variables {A : Sort u} {B : A → Sort v} {a₁ a₂ : A} {b₁ : B a₁} {b₂ : B a₂}
 
 @[simp]
 theorem fst.unwrap (a : A) (b : B a) : (psigma.mk a b).fst = a :=
