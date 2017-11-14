@@ -59,7 +59,18 @@ theorem subst_comp.fresh_not_mem (F : exp.subst X Y) (G : exp.subst Y Z) (e : ex
     begin /- var -/
       rw [exp.insert_var],
       simp [exp.map, exp.subst.apply, exp.subst.update_var, exp.subst.update],
-      simp [dif_neg (vname.ne_if_mem_and_not_mem (vname.map_of_subset _ x) (fresh X))]
+      rw [dif_neg (vname.ne_if_mem_and_not_mem (vname.map_of_subset _ x) (fresh X))],
+      begin
+        cases x with x px,
+        exact aeq.refl (exp.insert_var ((fresh Z).fst) (G ⟨x, px⟩)),
+      end,
+      begin
+        exact vset.prop_subset_refl X
+      end
+    end,
+    begin /- app -/
+    end,
+    begin /- lam -/
     end
   end
 
