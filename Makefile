@@ -17,10 +17,23 @@ endif
 
 #-------------------------------------------------------------------------------
 
+# Define if it is not already defined
+CMAKE_BUILD_TYPE ?= RELEASE
+
+ifeq ($(CMAKE_BUILD_TYPE), RELEASE)
+  LEAN_BUILD_SUBDIR := release
+else ifeq ($(CMAKE_BUILD_TYPE), DEBUG)
+  LEAN_BUILD_SUBDIR := debug
+else
+  $(error Unknown $$CMAKE_BUILD_TYPE: $(CMAKE_BUILD_TYPE))
+endif
+
+#-------------------------------------------------------------------------------
+
 # Lean directories
 LEAN_DIR := $(shell $(READLINK) -f './lean')
 LEAN_SRC_DIR := $(LEAN_DIR)/src
-LEAN_BUILD_DIR := $(LEAN_DIR)/build/release
+LEAN_BUILD_DIR := $(LEAN_DIR)/build/$(LEAN_BUILD_SUBDIR)
 LEAN_BIN_DIR := $(LEAN_DIR)/bin
 
 # Lean build dependencies: all files except for build and binary files.
@@ -45,11 +58,11 @@ clean-lean: clean $(LEAN_BUILD_DIR)/Makefile
 #-------------------------------------------------------------------------------
 
 # Build the Lean binary
-$(LEAN): $(LEAN_BUILD_DEPS)
+$(LEAN): $(LEAN_BUILD_DIR) $(LEAN_BUILD_DEPS)
 	# Undocumented Build/Home flags:
 	# https://stackoverflow.com/a/20611964/545794
 	# We use these flags to avoid relative directories (e.g. ../../src).
-	cmake -B$(LEAN_BUILD_DIR) -H$(LEAN_SRC_DIR)
+	cmake -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE) -B$(LEAN_BUILD_DIR) -H$(LEAN_SRC_DIR)
 	@make -C $(LEAN_BUILD_DIR)
 	@touch $(LEAN)
 
