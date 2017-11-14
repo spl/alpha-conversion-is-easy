@@ -46,24 +46,25 @@ theorem self_aeq_subst_var (e : exp X)
   map.simple (λ x y p, psigma.eq p rfl) (self_lift_F_aeq_subst_lift_F id e)
 
 -- Paper: Proposition 6.3 (a)
-theorem subst_comp.fresh_not_mem (F : exp.subst X Y) (G : exp.subst Y Z) (e : exp Y)
-: exp.subst.apply (exp.subst.update_var (fresh Y).1 (fresh Z).1 G) (exp.insert_var (fresh Y).1 e)
-    ≡α⟨vrel.id (insert (fresh Z).1 Z)⟩
-  exp.insert_var (fresh Z).1 (exp.subst.apply G e) :=
+theorem subst_comp.fresh_not_mem (F : exp.subst X Y) (e : exp X)
+: exp.subst.apply (exp.subst.update_var (fresh X).1 (fresh Y).1 F) (exp.insert_var (fresh X).1 e)
+    ≡α⟨vrel.id (insert (fresh Y).1 Y)⟩
+  exp.insert_var (fresh Y).1 (exp.subst.apply F e) :=
   begin
     induction e with
       /- var -/ X x
       /- app -/ X f e rf re
       /- lam -/ X a e r
-      generalizing Z F G,
+      generalizing Y F,
     begin /- var -/
       rw [exp.insert_var],
       simp [exp.map, exp.subst.apply, exp.subst.update_var, exp.subst.update],
       rw [dif_neg (vname.ne_if_mem_and_not_mem (vname.map_of_subset (vset.prop_subset_refl X) x) (fresh X))],
       cases x with x px,
-      exact aeq.refl (exp.insert_var ((fresh Z).fst) (G ⟨x, px⟩)),
+      exact aeq.refl (exp.insert_var (fresh Y).1 (F ⟨x, px⟩)),
     end,
     begin /- app -/
+      exact aeq.app (rf F) (re F)
     end,
     begin /- lam -/
     end
@@ -92,7 +93,7 @@ theorem subst_comp.extend (a : V) (F : exp.subst X Y) (G : exp.subst Y Z)
       rw [exp.subst.update_var_of_ne a (fresh Z).1 (exp.subst.apply G ∘ F) ⟨x, px⟩ x_ne_a],
       simp [function.comp],
       generalize : F (vname.erase ⟨x, px⟩ x_ne_a) = m,
-      exact subst_comp.fresh_not_mem F G m
+      exact subst_comp.fresh_not_mem G m
     end
   end
 
