@@ -55,7 +55,7 @@ theorem map.simple
 : (∀ (x : ν∈ X) (y : ν∈ Y), ⟪x, y⟫ ∈ν R → ⟪x, y⟫ ∈ν S) → eX ≡α⟨R⟩ eY → eX ≡α⟨S⟩ eY :=
   assume F H,
   have F' : R ⇒ν S, by apply vrel.map.simple; apply F,
-  exp.eq_of_map X eX ▸ exp.eq_of_map Y eY ▸
+  exp.map.id eX ▸ exp.map.id eY ▸
     map (vset.prop_subset_refl X) (vset.prop_subset_refl Y) F' H
 
 end /- section -/ --------------------------------------------------------------

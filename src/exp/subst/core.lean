@@ -12,6 +12,7 @@ namespace exp ------------------------------------------------------------------
 namespace subst ----------------------------------------------------------------
 
 variables {V : Type} [decidable_eq V] -- Type of variable names
+variables {a : V} -- Variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y : vs V} -- Variable name sets
 
@@ -56,6 +57,30 @@ def apply : subst X Y → exp X → exp Y :=
       exact lam (r (subst.update_var x y F))
     end
   end
+
+namespace apply ----------------------------------------------------------------
+
+section ------------------------------------------------------------------------
+variables {F : subst X Y}
+
+/-
+These are some useful equalities for targeted rewriting.
+-/
+
+theorem of_var (x : ν∈ X) : subst.apply F (var x) = F x :=
+  rfl
+
+theorem of_app (f e : exp X)
+: subst.apply F (app f e) = app (subst.apply F f) (subst.apply F e) :=
+  rfl
+
+theorem of_lam (e : exp (insert a X))
+: subst.apply F (lam e) = lam (subst.apply (subst.update_var a (fresh Y).1 F) e) :=
+  rfl
+
+end /- section -/ --------------------------------------------------------------
+
+end /- namespace -/ apply ------------------------------------------------------
 
 end /- namespace -/ subst ------------------------------------------------------
 end /- namespace -/ exp --------------------------------------------------------
