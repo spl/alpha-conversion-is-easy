@@ -80,20 +80,19 @@ theorem subst_comp.extend (a : V) (F : exp.subst X Y) (G : exp.subst Y Z)
   begin
     intros x y h,
     induction h,
+    simp [function.comp],
     cases x with x px,
     cases decidable.em (x = a) with x_eq_a x_ne_a,
     begin /- x_eq_a : x = a -/
       induction x_eq_a,
-      simp [exp.subst.update_var, exp.subst.update, exp.subst.apply, function.comp],
+      simp [exp.subst.update_var, exp.subst.update, exp.subst.apply],
       exact aeq.refl (exp.var (vname.insert_self (fresh Z).1 Z))
     end,
     begin /- x_ne_a : x ≠ a -/
-      simp [function.comp],
       rw [exp.subst.update_var_of_ne a (fresh Y).1 F ⟨x, px⟩ x_ne_a],
       rw [exp.subst.update_var_of_ne a (fresh Z).1 (exp.subst.apply G ∘ F) ⟨x, px⟩ x_ne_a],
       simp [function.comp],
-      generalize : F (vname.erase ⟨x, px⟩ x_ne_a) = m,
-      exact subst_comp.fresh_not_mem G m
+      exact subst_comp.fresh_not_mem G (F (vname.erase ⟨x, px⟩ x_ne_a))
     end
   end
 
