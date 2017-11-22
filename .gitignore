@@ -10,3 +10,6 @@
 /leanpkg.path
 
 /tmp
+
+# Ignore any sandbox file: these are for experiments.
+sandbox*.lean
