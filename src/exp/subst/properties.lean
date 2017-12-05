@@ -18,11 +18,6 @@ variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y : vs V} -- Variable name sets
 
--- Substitution is applied to variables
-theorem apply_var (F : subst X Y) (x : ν∈ X)
-: subst.apply F (var x) = F x :=
-  rfl
-
 -- Substitution distributes over application
 theorem distrib_app (F : subst X Y) (f e : exp X)
 : subst.apply F (app f e) = app (subst.apply F f) (subst.apply F e) :=
