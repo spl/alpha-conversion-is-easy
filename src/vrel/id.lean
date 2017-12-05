@@ -25,5 +25,8 @@ protected
 theorem refl : ∀ (x : ν∈ X), ⟪x, x⟫ ∈ν vrel.id X :=
   eq.refl
 
+instance id.decidable (x₁ x₂ : ν∈ X) : decidable (⟪x₁, x₂⟫ ∈ν vrel.id X) :=
+  by apply_instance
+
 end /- namespace -/ vrel -------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------

@@ -6,6 +6,8 @@ set, and other related type definitions.
 -/
 
 import vset
+import data.has_mem
+import data.sigma.extra
 
 namespace acie -----------------------------------------------------------------
 
@@ -57,6 +59,9 @@ def id.fun (X Y : vs V) : Type :=
 
 -- Notation for `vname.id.fun`.
 infixr ` →ν `:25 := vname.id.fun
+
+instance decidable_eq (X : vs V) : decidable_eq (ν∈ X) :=
+  psigma.decidable_eq
 
 end /- namespace -/ vname ------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------

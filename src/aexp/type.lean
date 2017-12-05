@@ -34,6 +34,9 @@ def eq (α₁ : aexp X) (α₂ : aexp X) : Prop :=
       iff.intro (λ e₁_aeq_e₂, aeq.id.trans _ (aeq.id.trans _ (aeq.id.symm _ e₁_aeq_e₃) e₁_aeq_e₂) e₂_aeq_e₄)
                 (λ e₃_aeq_e₄, aeq.id.trans _ e₁_aeq_e₃ (aeq.id.trans _ e₃_aeq_e₄ (aeq.id.symm _ e₂_aeq_e₄)))
 
+instance decidable_eq : decidable_eq (aexp X) :=
+  by apply_instance
+
 -- An `aexp` substitution is a strict wrapper around an `exp` substitution. We
 -- use a structure to allow us to convert to and from as necessary.
 protected
