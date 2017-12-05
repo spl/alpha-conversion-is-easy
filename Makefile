@@ -48,6 +48,9 @@ LEANPKG := $(LEAN_BIN_DIR)/leanpkg
 default: $(LEAN)
 	$(LEANPKG) build
 
+version: $(LEAN)
+	$(LEAN) --version
+
 clean:
 	@find src -name '*.d' -or -name '*.clean' -or -name '*.olean' | xargs rm
 
