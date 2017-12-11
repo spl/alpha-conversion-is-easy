@@ -72,7 +72,7 @@ theorem inv.of_update : ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) → ⟪y, x⟫ ∈ν 
     intro H,
     cases H with H H,
     begin
-      cases H, left, split, exact right, exact left
+      cases H with y_eq_b x_eq_a, left, split, exact x_eq_a, exact y_eq_b
     end,
     begin
       cases H with y_ne_b H, cases H with x_ne_a H,
@@ -88,7 +88,7 @@ theorem update.of_inv : ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ → ⟪y, x⟫ ∈�
     intro H,
     cases H with H H,
     begin
-      cases H, left, split, exact right, exact left
+      cases H with x_eq_a y_eq_b, left, split, exact y_eq_b, exact x_eq_a
     end,
     begin
       cases H with x_ne_a H, cases H with y_ne_b H,
