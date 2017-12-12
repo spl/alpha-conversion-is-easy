@@ -55,35 +55,20 @@ def inj_Rdef_mp {ϕ₁ : ν∈ X → fin n} {ϕ₂ : ν∈ Y → fin n} {R : X �
       },
       case or.inr y_ne_b {
         cases R',
-        case or.inl p {
-          have y_eq_b : y.1 = b, from p.right,
-          contradiction
-        },
-        case or.inr p {
-          cases p with x_ne_a,
-          contradiction
-        }
+        case or.inl p { cases p with _ y_eq_b, contradiction },
+        case or.inr p { cases p with x_ne_a, contradiction }
       }
     },
     case or.inr x_ne_a {
       cases decidable.em (y.1 = b),
       case or.inl y_eq_b {
         cases R',
-        case or.inl p {
-          have x_eq_a : x.1 = a, from p.left,
-          contradiction
-        },
-        case or.inr p {
-          cases p with _ p, cases p with y_ne_b,
-          contradiction
-        }
+        case or.inl p { cases p with x_eq_a, contradiction },
+        case or.inr p { cases p with _ p, cases p with y_ne_b, contradiction }
       },
       case or.inr y_ne_b {
         cases R',
-        case or.inl p {
-          have x_eq_a : x.1 = a, from p.left,
-          contradiction
-        },
+        case or.inl p { cases p with x_eq_a, contradiction },
         case or.inr p {
           cases p with px p, cases p with py p,
           rw [dif_neg x_ne_a, dif_neg y_ne_b],
@@ -147,17 +132,10 @@ theorem inj_blah {n : ℕ} {ϕ₁ : ν∈ X → fin n} {ϕ₂ : ν∈ Y → fin 
 (e₁ : exp X) (e₂ : exp Y)
 : (e₁ ≡α⟨R⟩ e₂) ↔ (inject e₁ ϕ₁ = inject e₂ ϕ₂) :=
   begin
-    induction e₁ with
-      /- var -/ X x
-      /- app -/ X f₁ e₁ rf re
-      /- lam -/ X a e₁ r
-      generalizing Y n ϕ₁ ϕ₂ R Rdef e₂,
-    begin /- var -/
-      cases e₂ with
-        /- var -/ Y y
-        /- app -/ Y f₂ e₂
-        /- lam -/ Y b e₂,
-      begin /- var -/
+    induction e₁ generalizing Y n ϕ₁ ϕ₂ R Rdef e₂,
+    case exp.var X x {
+      cases e₂,
+      case exp.var y {
         simp [inject],
         split,
         begin /- iff.mp -/
@@ -170,23 +148,20 @@ theorem inj_blah {n : ℕ} {ϕ₁ : ν∈ X → fin n} {ϕ₂ : ν∈ Y → fin 
           have h : R x y, from iff.mpr (Rdef x y) (db.var.inj p),
           exact aeq.var h
         end
-      end,
-      begin /- app -/
+      },
+      case exp.app f₂ e₂ {
         split, repeat { intro x, cases x }
-      end,
-      begin /- lam -/
+      },
+      case exp.lam b e₂ {
         split, repeat { intro x, cases x }
-      end
-    end,
-    begin /- app -/
-      cases e₂ with
-        /- var -/ Y y
-        /- app -/ Y f₂ e₂
-        /- lam -/ Y b e₂,
-      begin /- var -/
+      }
+    },
+    case exp.app X f₁ e₁ rf re {
+      cases e₂,
+      case exp.var y {
         split, repeat { intro x, cases x },
-      end,
-      begin /- app -/
+      },
+      case exp.app f₂ e₂ {
         simp [inject],
         split,
         begin /- iff.mp -/
@@ -205,23 +180,20 @@ theorem inj_blah {n : ℕ} {ϕ₁ : ν∈ X → fin n} {ϕ₂ : ν∈ Y → fin 
           have αe : e₁ ≡α⟨R⟩ e₂, from iff.mpr (re Rdef e₂) h.2,
           exact aeq.app αf αe
         end
-      end,
-      begin /- lam -/
+      },
+      case exp.lam b e₂ {
         split, repeat { intro x, cases x },
-      end
-    end,
-    begin /- lam -/
-      cases e₂ with
-        /- var -/ Y y
-        /- app -/ Y f₂ e₂
-        /- lam -/ Y b e₂,
-      begin /- var -/
+      }
+    },
+    case exp.lam X a e₁ r {
+      cases e₂,
+      case exp.var y {
         split, repeat { intro x, cases x },
-      end,
-      begin /- app -/
+      },
+      case exp.app f₂ e₂ {
         split, repeat { intro x, cases x },
-      end,
-      begin /- lam -/
+      },
+      case exp.lam b e₂ {
         have Rdef' : ∀ (x : ν∈ insert a X) (y : ν∈ insert b Y), R ⩁ (a, b) x y ↔ inject.lam a ϕ₁ x = inject.lam b ϕ₂ y, from
           inj_Rdef Rdef,
         simp [inject],
@@ -240,8 +212,8 @@ theorem inj_blah {n : ℕ} {ϕ₁ : ν∈ X → fin n} {ϕ₂ : ν∈ Y → fin 
           have α : e₁ ≡α⟨R ⩁ (a, b)⟩ e₂, from iff.mpr (r Rdef' e₂) h,
           exact aeq.lam α
         end
-      end
-    end
+      }
+    }
   end
 
 end /- namespace -/ db ---------------------------------------------------------
