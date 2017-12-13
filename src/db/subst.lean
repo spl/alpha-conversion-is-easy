@@ -18,11 +18,7 @@ def lt_add_pos_right_of_lt (p : m < n) (s : ℕ) : m < n + s :=
   end
 
 def lt_of_lt_succ_of_ne : m < succ n → m ≠ n → m < n :=
-  begin
-    intros m_lt_succ_n m_ne_n,
-    have m_le_n : m ≤ n := le_of_lt_succ m_lt_succ_n,
-    exact nat.lt_of_le_and_ne m_le_n m_ne_n
-  end
+  nat.lt_of_le_and_ne ∘ le_of_lt_succ
 
 end /- namespace -/ nat --------------------------------------------------------
 
@@ -36,12 +32,15 @@ def val_gt_zero (N : fin n) : n > 0 :=
   begin
     cases N with a a_lt_n,
     cases a,
-    case zero { exact a_lt_n },
+    case zero   { exact a_lt_n },
     case succ b { exact lt_trans (zero_lt_succ b) a_lt_n }
   end
 
 def raise (s : ℕ) : fin n → fin (n + s)
   | ⟨x, x_lt_n⟩ := ⟨x, lt_add_pos_right_of_lt x_lt_n s⟩
+
+def of_nat_add_right (s : ℕ) : fin n → fin (n + s) :=
+  λ N, ⟨s, nat.lt_add_of_pos_left $ val_gt_zero N⟩
 
 def lower (N : fin (succ n)) : N.val ≠ n → fin n :=
   begin
@@ -52,10 +51,7 @@ def lower (N : fin (succ n)) : N.val ≠ n → fin n :=
   end
 
 def shift (s c : ℕ) (N : fin n) : fin (n + s) :=
-  if N.val < c then
-    raise s N
-  else
-    raise s N + ⟨s, nat.lt_add_of_pos_left $ val_gt_zero N⟩
+  if N.val < c then raise s N else raise s N + of_nat_add_right s N
 
 end /- namespace -/ fin --------------------------------------------------------
 
