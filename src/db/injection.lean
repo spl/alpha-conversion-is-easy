@@ -34,12 +34,6 @@ def inject : ∀ {X : vs V}, exp X → ∀ {n : ℕ}, (ν∈ X → fin n) → db
   | X (exp.app f e)            n ϕ := db.app (inject f ϕ) (inject e ϕ)
   | X (@exp.lam _ _ _ _ _ a e) n ϕ := db.lam $ inject e $ acie.db.inject.lam a ϕ
 
-def blah (ϕ₁ : ν∈ X → fin n) (ϕ₂ : ν∈ Y → fin n) : X ×ν Y:=
-  λ (x : ν∈ X) (y : ν∈ Y), ϕ₁ x = ϕ₂ y
-
-def blah.lam (ϕ₁ : ν∈ X → fin n) (ϕ₂ : ν∈ Y → fin n) : X ×ν Y:=
-  λ (x : ν∈ X) (y : ν∈ Y), ϕ₁ x = ϕ₂ y
-
 def inj_Rdef_mp {ϕ₁ : ν∈ X → fin n} {ϕ₂ : ν∈ Y → fin n} {R : X ×ν Y}
 (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕ₁ x = ϕ₂ y)) {a b : V}
 (x : ν∈ insert a X) (y : ν∈ insert b Y)
@@ -194,7 +188,7 @@ theorem inj_blah {n : ℕ} {ϕ₁ : ν∈ X → fin n} {ϕ₂ : ν∈ Y → fin 
         split, repeat { intro x, cases x },
       },
       case exp.lam b e₂ {
-        have Rdef' : ∀ (x : ν∈ insert a X) (y : ν∈ insert b Y), R ⩁ (a, b) x y ↔ inject.lam a ϕ₁ x = inject.lam b ϕ₂ y, from
+        have Rdef' : ∀ x y, R ⩁ (a, b) x y ↔ inject.lam a ϕ₁ x = inject.lam b ϕ₂ y, from
           inj_Rdef Rdef,
         simp [inject],
         split,
