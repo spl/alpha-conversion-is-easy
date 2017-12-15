@@ -42,7 +42,7 @@ def raise (s : ℕ) : fin n → fin (n + s)
 def of_nat_add_right (s : ℕ) : fin n → fin (n + s) :=
   λ N, ⟨s, nat.lt_add_of_pos_left $ val_gt_zero N⟩
 
-def lower (N : fin (succ n)) : N.val ≠ n → fin n :=
+def unsucc (N : fin (succ n)) : N.val ≠ n → fin n :=
   begin
     cases N with a a_lt_succ_n,
     intro a_ne_n,
@@ -91,8 +91,12 @@ def shift_var : db n → db (succ n) :=
   shift 1
 
 protected
-def subst.update_var : subst m n → subst (succ m) (succ n)
-  | F M := if p : M.val = m then var (fin.of_nat n) else shift_var (F (fin.lower M p))
+def subst.update (F : subst m n) : subst (succ m) (succ n) :=
+  λ (M : fin (succ m)),
+  if p : M.val = m then
+    var (fin.of_nat n)
+  else
+    shift_var (F (fin.unsucc M p))
 
 protected
 def subst.apply : subst m n → db m → db n :=
@@ -101,7 +105,7 @@ def subst.apply : subst m n → db m → db n :=
     induction d generalizing n F,
     case var m M           { exact F M },
     case app m df de rf re { exact app (rf F) (re F) },
-    case lam m d r         { exact lam (r (subst.update_var F)) }
+    case lam m d r         { exact lam (r (subst.update F)) }
   end
 
 end /- namespace -/ db ---------------------------------------------------------
