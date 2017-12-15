@@ -33,8 +33,8 @@ def extend.id (F : exp.subst X Y) : aeq.extend F F (vrel.id X) (vrel.id Y) :=
 -- Paper: Lemma 5
 lemma subst_preservation.update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
 : aeq.extend F G R S
-→ aeq.extend (exp.subst.update_var a nx₂.1 F)
-             (exp.subst.update_var b ny₂.1 G)
+→ aeq.extend (exp.subst.update a nx₂.1 F)
+             (exp.subst.update b ny₂.1 G)
              (vrel.update a b R)
              (vrel.update nx₂.1 ny₂.1 S) :=
   begin
@@ -42,14 +42,14 @@ lemma subst_preservation.update (nx₂ : ν∉ X₂) (ny₂ : ν∉ Y₂)
     cases H with H H,
     begin
       cases H with x₁_eq_a y₁_eq_b,
-      unfold exp.subst.update_var exp.subst.update,
+      simp [exp.subst.update],
       rw [dif_pos x₁_eq_a, dif_pos y₁_eq_b],
       apply var, left, split, reflexivity, reflexivity
     end,
     begin
       cases H with x₁_ne_a₁ H,
       cases H with y₁_ne_b₁ x₁_R_y₁,
-      unfold exp.subst.update_var exp.subst.update,
+      simp [exp.subst.update],
       rw [dif_neg x₁_ne_a₁, dif_neg y₁_ne_b₁],
       apply map (vset.prop_subset_insert_self _ _) (vset.prop_subset_insert_self _ _),
       begin
@@ -94,8 +94,8 @@ theorem subst_preservation
     begin /- lam -/
       apply lam,
       exact r
-        (exp.subst.update_var x (fresh X₂).1 F)
-        (exp.subst.update_var y (fresh Y₂).1 G)
+        (exp.subst.update x (fresh X₂).1 F)
+        (exp.subst.update y (fresh Y₂).1 G)
         (subst_preservation.update (fresh X₂) (fresh Y₂) P)
     end
   end

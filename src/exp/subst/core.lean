@@ -22,17 +22,15 @@ protected
 def id (X : vs V) : subst X X :=
   var
 
--- Update substitution construction
+-- Update a given substitution with a new variable substitution
 @[reducible]
 protected
-def update (a : V) (e : exp Y) (F : subst X Y) : subst (insert a X) Y :=
-  λ (x : ν∈ insert a X), if P : x.1 = a then e else F (vname.erase x P)
-
--- An update for substituting one variable for another.
-@[reducible]
-protected
-def update_var (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
-  subst.update a (var (vname.insert_self b Y)) (insert_var b ∘ F)
+def update (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
+  λ (x : ν∈ insert a X),
+  if x_eq_a : x.1 = a then
+    var (vname.insert_self b Y)
+  else
+    insert_var b (F (vname.erase x x_eq_a))
 
 -- Apply a substitution to one expression to get another with different free
 -- variables.
@@ -54,7 +52,7 @@ def apply : subst X Y → exp X → exp Y :=
     end,
     begin /- lam -/
       have y : V, from (fresh Y).1,
-      exact lam (r (subst.update_var x y F))
+      exact lam (r (subst.update x y F))
     end
   end
 
@@ -75,7 +73,7 @@ theorem of_app (f e : exp X)
   rfl
 
 theorem of_lam (e : exp (insert a X))
-: subst.apply F (lam e) = lam (subst.apply (subst.update_var a (fresh Y).1 F) e) :=
+: subst.apply F (lam e) = lam (subst.apply (subst.update a (fresh Y).1 F) e) :=
   rfl
 
 end /- section -/ --------------------------------------------------------------
