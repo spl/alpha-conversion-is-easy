@@ -31,7 +31,7 @@ variables {ϕX ϕ : ν∈ X → fin n} {ϕY : ν∈ Y → fin n} -- Injections
 variables {eX e₁ e₂ : exp X} {eY : exp Y} -- Expressions
 
 def inject.lam (a : V) (ϕ : ν∈ X → fin n) (x : ν∈ (insert a X)) : fin (nat.succ n) :=
-  if p : x.1 = a then fin.of_nat 0 else fin.succ $ ϕ $ vname.erase x p
+  if p : x.1 = a then 0 else fin.succ $ ϕ $ vname.erase x p
 
 def inject : ∀ {X : vs V}, exp X → ∀ {n : ℕ}, (ν∈ X → fin n) → db n
   | X (exp.var x)              n ϕ := db.var $ ϕ x
