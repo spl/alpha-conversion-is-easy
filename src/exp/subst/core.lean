@@ -27,10 +27,10 @@ def id (X : vs V) : subst X X :=
 protected
 def update (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
   λ (x : ν∈ insert a X),
-  if x_eq_a : x.1 = a then
+  if p : x.1 = a then
     var (vname.insert_self b Y)
   else
-    insert_var b (F (vname.erase x x_eq_a))
+    insert_var b (F (vname.erase x p))
 
 -- Apply a substitution to one expression to get another with different free
 -- variables.
