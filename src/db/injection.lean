@@ -8,16 +8,6 @@ import .type
 import aeq
 import data.fin
 
-namespace fin ------------------------------------------------------------------
-
-variables {n : ℕ} {a b : fin n}
-
-protected
-theorem succ.inj (p : fin.succ a = fin.succ b) : a = b :=
-  by cases a; cases b; exact eq_of_veq (nat.succ.inj (veq_of_eq p))
-
-end /- namespace -/ fin --------------------------------------------------------
-
 namespace acie -----------------------------------------------------------------
 namespace db -------------------------------------------------------------------
 
@@ -44,28 +34,28 @@ theorem Rdef.lam.mp (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = 
   begin
     simp [inject.lam],
     cases decidable.em (x.1 = a),
-    case or.inl x_eq_a {
+    case or.inl : x_eq_a {
       cases decidable.em (y.1 = b),
-      case or.inl y_eq_b {
+      case or.inl : y_eq_b {
         rw [dif_pos x_eq_a, dif_pos y_eq_b]
       },
-      case or.inr y_ne_b {
+      case or.inr : y_ne_b {
         cases R',
-        case or.inl p { cases p with _ y_eq_b, contradiction },
-        case or.inr p { cases p with x_ne_a, contradiction }
+        case or.inl : p { cases p with _ y_eq_b, contradiction },
+        case or.inr : p { cases p with x_ne_a, contradiction }
       }
     },
-    case or.inr x_ne_a {
+    case or.inr : x_ne_a {
       cases decidable.em (y.1 = b),
-      case or.inl y_eq_b {
+      case or.inl : y_eq_b {
         cases R',
-        case or.inl p { cases p with x_eq_a, contradiction },
-        case or.inr p { cases p with _ p, cases p with y_ne_b, contradiction }
+        case or.inl : p { cases p with x_eq_a, contradiction },
+        case or.inr : p { cases p with _ p, cases p with y_ne_b, contradiction }
       },
-      case or.inr y_ne_b {
+      case or.inr : y_ne_b {
         cases R',
-        case or.inl p { cases p with x_eq_a, contradiction },
-        case or.inr p {
+        case or.inl : p { cases p with x_eq_a, contradiction },
+        case or.inr : p {
           cases p with px p, cases p with py p,
           rw [dif_neg x_ne_a, dif_neg y_ne_b],
           have h : ϕX (vname.erase x px) = ϕY (vname.erase y py), from
@@ -84,27 +74,27 @@ theorem Rdef.lam.mpr (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x =
     simp [vrel.update],
     simp [inject.lam] at P,
     cases decidable.em (x.1 = a),
-    case or.inl x_eq_a {
+    case or.inl : x_eq_a {
       cases decidable.em (y.1 = b),
-      case or.inl y_eq_b {
+      case or.inl : y_eq_b {
         exact or.inl ⟨x_eq_a, y_eq_b⟩
       },
-      case or.inr y_ne_b {
+      case or.inr : y_ne_b {
         rw [dif_pos x_eq_a, dif_neg y_ne_b] at P,
         cases ϕY (vname.erase y y_ne_b) with m,
         have h : 0 = nat.succ m, from fin.veq_of_eq P,
         cases h
       }
     },
-    case or.inr x_ne_a {
+    case or.inr : x_ne_a {
       cases decidable.em (y.1 = b),
-      case or.inl y_eq_b {
+      case or.inl : y_eq_b {
         rw [dif_neg x_ne_a, dif_pos y_eq_b] at P,
         cases ϕX (vname.erase x x_ne_a) with m,
         have h : nat.succ m = 0, from fin.veq_of_eq P,
         cases h
       },
-      case or.inr y_ne_b {
+      case or.inr : y_ne_b {
         rw [dif_neg x_ne_a, dif_neg y_ne_b] at P,
         right,
         existsi x_ne_a, existsi y_ne_b,
@@ -124,9 +114,9 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
 : (eX ≡α⟨R⟩ eY) ↔ (inject eX ϕX = inject eY ϕY) :=
   begin
     induction eX generalizing Y n ϕX ϕY R Rdef eY,
-    case exp.var X x {
+    case exp.var : X x {
       cases eY,
-      case exp.var y {
+      case exp.var : y {
         simp [inject],
         split,
         begin /- iff.mp -/
@@ -142,9 +132,9 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
       },
       repeat { split, repeat { intro x, cases x } }
     },
-    case exp.app X fX eX rf re {
+    case exp.app : X fX eX rf re {
       cases eY,
-      case exp.app fY eY {
+      case exp.app : fY eY {
         simp [inject],
         split,
         begin /- iff.mp -/
@@ -166,9 +156,9 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
       },
       repeat { split, repeat { intro x, cases x } }
     },
-    case exp.lam X a eX r {
+    case exp.lam : X a eX r {
       cases eY,
-      case exp.lam b eY {
+      case exp.lam : b eY {
         have Rdef' : ∀ x y, R ⩁ (a, b) x y ↔ inject.lam a ϕX x = inject.lam b ϕY y, from
           acie.db.Rdef.lam Rdef,
         simp [inject],

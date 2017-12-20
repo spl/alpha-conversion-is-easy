@@ -57,15 +57,15 @@ def shift (s : ℕ) : db n → db (n + s) :=
     have c : ℕ := 0, -- Initial cutoff
     revert c,
     induction d,
-    case var n N {
+    case var : n N {
       intro c,
       exact var (fin.shift s c N)
     },
-    case app m df de rf re {
+    case app : m df de rf re {
       intro c,
       exact app (rf c) (re c)
     },
-    case lam m d r {
+    case lam : m d r {
       intro c,
       have d : db (succ m + s) := r (succ c),
       rw succ_add m s at d,
@@ -93,9 +93,9 @@ def subst.apply : subst m n → db m → db n :=
   begin
     intros F d,
     induction d generalizing n F,
-    case var m M           { exact F M },
-    case app m df de rf re { exact app (rf F) (re F) },
-    case lam m d r         { exact lam (r (subst.update F)) }
+    case var : m M           { exact F M },
+    case app : m df de rf re { exact app (rf F) (re F) },
+    case lam : m d r         { exact lam (r (subst.update F)) }
   end
 
 variables {F : subst m n}
@@ -116,28 +116,28 @@ theorem subst.update_id_eq : subst.update (@subst.id n) = @subst.id (succ n) :=
     funext M,
     simp [subst.update],
     cases decidable.em (M = 0),
-    case or.inl M_eq_0 {
+    case or.inl : M_eq_0 {
       rw [dif_pos M_eq_0, M_eq_0],
       refl
     },
-    case or.inr M_ne_0 {
+    case or.inr : M_ne_0 {
       rw dif_neg M_ne_0,
       simp [subst.id, shift_var, shift, fin.shift],
       rw if_neg (nat.not_lt_zero (fin.pred M M_ne_0).val),
       cases M with m m_lt_succ_n,
       simp [fin.pred],
       cases m,
-      case nat.zero   { cases ne.irrefl (fin.vne_of_ne M_ne_0) },
-      case nat.succ m { simp [nat.pred] }
+      case nat.zero     { cases ne.irrefl (fin.vne_of_ne M_ne_0) },
+      case nat.succ : m { simp [nat.pred] }
     }
   end
 
 theorem subst.id_eq (e : db n) : subst.apply subst.id e = e :=
   begin
     induction e,
-    case var m M         { refl },
-    case app m f e rf re { rw [of_app f e, rf, re] },
-    case lam m e r       { rw [of_lam e, subst.update_id_eq, r] }
+    case var : m M         { refl },
+    case app : m f e rf re { rw [of_app f e, rf, re] },
+    case lam : m e r       { rw [of_lam e, subst.update_id_eq, r] }
   end
 
 end /- namespace -/ db ---------------------------------------------------------
