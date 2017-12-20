@@ -13,8 +13,8 @@ theorem max_zero (a : ℕ) : max a 0 = a :=
   begin
     simp [max],
     cases nat.decidable_le a 0,
-    case is_true h { rw [eq_zero_of_le_zero h], refl },
-    case is_false h { rw [if_neg h] }
+    case is_true : h { rw [eq_zero_of_le_zero h], refl },
+    case is_false : h { rw [if_neg h] }
   end
 
 end /- namespace -/ nat --------------------------------------------------------
@@ -37,19 +37,19 @@ def max_nat_le {a : ℕ} {s : finset ℕ} : a ∈ s → a ≤ max_nat s :=
     (λ b s (h : b ∉ s) ih a_in_insert_b_s,
       begin
         cases decidable.em (s = ∅),
-        case or.inl s_empty {
+        case or.inl : s_empty {
           rw [s_empty] at *,
           have R : max_nat (insert b ∅) = b, from max_nat_singleton b,
           rw [R, mem_singleton.elim_left a_in_insert_b_s]
         },
-        case or.inr s_not_empty {
+        case or.inr : s_not_empty {
           rw [max_nat_insert h],
           cases mem_insert.elim_left a_in_insert_b_s with a_eq_b a_in_s,
-          case or.inl a_eq_b {
+          case or.inl : a_eq_b {
             induction a_eq_b,
             exact le_max_left a (max_nat s)
           },
-          case or.inr a_in_s {
+          case or.inr : a_in_s {
             exact le_trans (ih a_in_s) (le_max_right b (max_nat s))
           }
         }
