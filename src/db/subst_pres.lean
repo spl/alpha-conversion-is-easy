@@ -7,6 +7,12 @@ This file contains substitution preservation for `db` to `aeq`.
 import .injection
 import .subst
 
+theorem fin.succ_ne_zero {n : ℕ} : ∀ {N : fin n}, fin.succ N ≠ 0
+  | ⟨m, m_lt_n⟩ := fin.ne_of_vne (nat.succ_ne_zero m)
+
+theorem fin.pred_succ {n : ℕ} : ∀ {N : fin n} {p : fin.succ N ≠ 0}, fin.pred (fin.succ N) p = N
+  | ⟨m, m_lt_n⟩ p := rfl
+
 namespace acie -----------------------------------------------------------------
 namespace db -------------------------------------------------------------------
 
@@ -19,12 +25,6 @@ variables {m n : ℕ} -- De Bruijn indices
 variables {ϕX : ν∈ X → fin m} {ϕY : ν∈ Y → fin n} -- De Bruijn injections
 variables {F : exp.subst X Y} -- Expression substitutions
 variables {G : db.subst m n} -- De Bruijn substitutions
-
-theorem fin_succ_zero : ∀ {N : fin n}, fin.succ N ≠ 0
-  | ⟨m, m_lt_n⟩ := fin.ne_of_vne (nat.succ_ne_zero m)
-
-theorem fin_pred_succ : ∀ {N : fin n} {p : fin.succ N ≠ 0}, fin.pred (fin.succ N) p = N
-  | ⟨m, m_lt_n⟩ p := rfl
 
 theorem injection_pres_subst.lam₁
 : (∀ (x : ν∈ X), inject (F x) ϕY = G (ϕX x))
@@ -60,8 +60,8 @@ theorem injection_pres_subst.lam₁
       conv {to_rhs, simp [inject.lam]},
       repeat {rw dif_neg h},
       simp [subst.update],
-      rw dif_neg fin_succ_zero,
-      rw fin_pred_succ,
+      rw dif_neg fin.succ_ne_zero,
+      rw fin.pred_succ,
       admit
     }
   end
