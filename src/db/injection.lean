@@ -17,22 +17,36 @@ variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y : vs V} -- Variable name sets
 variables {R : X ×ν Y} -- Variable name set relations
 variables {n : ℕ} -- De Bruijn indices
+variables {x : ν∈ X} -- Variable name set members
 variables {ϕX ϕ : ν∈ X → fin n} {ϕY : ν∈ Y → fin n} -- Injections
 variables {eX e₁ e₂ : exp X} {eY : exp Y} -- Expressions
 
-def inject.lam (a : V) (ϕ : ν∈ X → fin n) (x : ν∈ (insert a X)) : fin (nat.succ n) :=
+protected
+def inject.update (a : V) (ϕ : ν∈ X → fin n) (x : ν∈ insert a X) : fin (nat.succ n) :=
   if p : x.1 = a then 0 else fin.succ $ ϕ $ vname.erase x p
 
 def inject : ∀ {X : vs V}, exp X → ∀ {n : ℕ}, (ν∈ X → fin n) → db n
   | X (exp.var x)              n ϕ := db.var $ ϕ x
   | X (exp.app f e)            n ϕ := db.app (inject f ϕ) (inject e ϕ)
-  | X (@exp.lam _ _ _ _ _ a e) n ϕ := db.lam $ inject e $ acie.db.inject.lam a ϕ
+  | X (@exp.lam _ _ _ _ _ a e) n ϕ := db.lam $ inject e $ acie.db.inject.update a ϕ
+
+protected
+lemma inject.var : inject (exp.var x) ϕ = db.var (ϕ x) :=
+  rfl
+
+protected
+lemma inject.app {f e : exp X}: inject (exp.app f e) ϕ = db.app (inject f ϕ) (inject e ϕ) :=
+  rfl
+
+protected
+lemma inject.lam (e : exp (insert a X)) : inject (exp.lam e) ϕ = db.lam (inject e (inject.update a ϕ)) :=
+  rfl
 
 theorem Rdef.lam.mp (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = ϕY y))
 (x : ν∈ insert a X) (y : ν∈ insert b Y) (R' : R ⩁ (a, b) x y)
-: inject.lam a ϕX x = inject.lam b ϕY y :=
+: inject.update a ϕX x = inject.update b ϕY y :=
   begin
-    simp [inject.lam],
+    simp [inject.update],
     cases decidable.em (x.1 = a),
     case or.inl : x_eq_a {
       cases decidable.em (y.1 = b),
@@ -68,11 +82,11 @@ theorem Rdef.lam.mp (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = 
   end
 
 theorem Rdef.lam.mpr (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = ϕY y))
-(x : ν∈ insert a X) (y : ν∈ insert b Y) (P : inject.lam a ϕX x = inject.lam b ϕY y)
+(x : ν∈ insert a X) (y : ν∈ insert b Y) (P : inject.update a ϕX x = inject.update b ϕY y)
 : R ⩁ (a, b) x y :=
   begin
     simp [vrel.update],
-    simp [inject.lam] at P,
+    simp [inject.update] at P,
     cases decidable.em (x.1 = a),
     case or.inl : x_eq_a {
       cases decidable.em (y.1 = b),
@@ -107,7 +121,7 @@ theorem Rdef.lam.mpr (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x =
 
 theorem Rdef.lam (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = ϕY y))
 (x : ν∈ insert a X) (y : ν∈ insert b Y)
-: R ⩁ (a, b) x y ↔ inject.lam a ϕX x = inject.lam b ϕY y :=
+: R ⩁ (a, b) x y ↔ inject.update a ϕX x = inject.update b ϕY y :=
   ⟨acie.db.Rdef.lam.mp Rdef x y, acie.db.Rdef.lam.mpr Rdef x y⟩
 
 theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = ϕY y))
@@ -159,20 +173,20 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
     case exp.lam : X a eX r {
       cases eY,
       case exp.lam : b eY {
-        have Rdef' : ∀ x y, R ⩁ (a, b) x y ↔ inject.lam a ϕX x = inject.lam b ϕY y, from
+        have Rdef' : ∀ x y, R ⩁ (a, b) x y ↔ inject.update a ϕX x = inject.update b ϕY y, from
           acie.db.Rdef.lam Rdef,
         simp [inject],
         split,
         begin /- iff.mp -/
           intro α,
           have α : eX ≡α⟨R ⩁ (a, b)⟩ eY, from aeq.lam.body α,
-          have p : inject eX (inject.lam a ϕX) = inject eY (inject.lam b ϕY), from
+          have p : inject eX (inject.update a ϕX) = inject eY (inject.update b ϕY), from
             iff.mp (r Rdef') α,
           rw p
         end,
         begin /- iff.mpr -/
           intro p,
-          have h : inject eX (inject.lam a ϕX) = inject eY (inject.lam b ϕY), from
+          have h : inject eX (inject.update a ϕX) = inject eY (inject.update b ϕY), from
             db.lam.inj p,
           have α : eX ≡α⟨R ⩁ (a, b)⟩ eY, from iff.mpr (r Rdef') h,
           exact aeq.lam α
