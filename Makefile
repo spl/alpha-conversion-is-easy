@@ -52,7 +52,8 @@ version: $(LEAN)
 	$(LEAN) --version
 
 clean:
-	@find src -name '*.d' -or -name '*.clean' -or -name '*.olean' | xargs rm
+	@find src -name '*.d' -or -name '*.clean' -or -name '*.olean' -delete
+	@find src -type d -empty -delete
 
 clean-lean: clean $(LEAN_BUILD_DIR)/Makefile
 	@make clean -C $(LEAN_BUILD_DIR)
