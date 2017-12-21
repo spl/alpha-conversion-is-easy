@@ -121,8 +121,7 @@ theorem subst_comp.extend (a : V) (F : exp.subst X Y) (G : exp.subst Y Z)
     cases decidable.em (x = a) with x_eq_a x_ne_a,
     begin /- x_eq_a : x = a -/
       induction x_eq_a,
-      simp [exp.subst.update],
-      simp [exp.subst.apply],
+      simp [exp.subst.update, exp.subst.apply],
       exact aeq.refl (exp.var (vname.insert_self (fresh Z).1 Z))
     end,
     begin /- x_ne_a : x ≠ a -/
