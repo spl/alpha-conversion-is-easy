@@ -28,19 +28,31 @@ def inject.update (a : V) (ϕ : ν∈ X → fin n) (x : ν∈ insert a X) : fin 
 def inject : ∀ {X : vs V}, exp X → ∀ {n : ℕ}, (ν∈ X → fin n) → db n
   | X (exp.var x)              n ϕ := db.var $ ϕ x
   | X (exp.app f e)            n ϕ := db.app (inject f ϕ) (inject e ϕ)
-  | X (@exp.lam _ _ _ _ _ a e) n ϕ := db.lam $ inject e $ acie.db.inject.update a ϕ
+  | X (@exp.lam _ _ _ _ _ a e) n ϕ := db.lam $ inject e $ db.inject.update a ϕ
+
+namespace inject ---------------------------------------------------------------
 
 protected
-lemma inject.var : inject (exp.var x) ϕ = db.var (ϕ x) :=
+lemma var : inject (exp.var x) ϕ = db.var (ϕ x) :=
   rfl
 
 protected
-lemma inject.app {f e : exp X}: inject (exp.app f e) ϕ = db.app (inject f ϕ) (inject e ϕ) :=
+lemma app {f e : exp X}: inject (exp.app f e) ϕ = db.app (inject f ϕ) (inject e ϕ) :=
   rfl
 
 protected
-lemma inject.lam (e : exp (insert a X)) : inject (exp.lam e) ϕ = db.lam (inject e (inject.update a ϕ)) :=
+lemma lam {e : exp (insert a X)} : inject (exp.lam e) ϕ = db.lam (inject e (inject.update a ϕ)) :=
   rfl
+
+theorem update_insert (x : ν∈ X) (x' : ν∉ X)
+: inject.update x'.1 ϕ (vname.insert x'.1 x) = fin.succ (ϕ x) :=
+  begin
+    dunfold inject.update,
+    rw dif_neg (vname.ne_if_mem_and_not_mem x x'),
+    rw vname.eq_of_erase_insert x (vname.ne_if_mem_and_not_mem x x')
+  end
+
+end /- namespace -/ inject -----------------------------------------------------
 
 theorem Rdef.lam.mp (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = ϕY y))
 (x : ν∈ insert a X) (y : ν∈ insert b Y) (R' : R ⩁ (a, b) x y)
@@ -122,7 +134,7 @@ theorem Rdef.lam.mpr (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x =
 theorem Rdef.lam (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = ϕY y))
 (x : ν∈ insert a X) (y : ν∈ insert b Y)
 : R ⩁ (a, b) x y ↔ inject.update a ϕX x = inject.update b ϕY y :=
-  ⟨acie.db.Rdef.lam.mp Rdef x y, acie.db.Rdef.lam.mpr Rdef x y⟩
+  ⟨db.Rdef.lam.mp Rdef x y, db.Rdef.lam.mpr Rdef x y⟩
 
 theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x = ϕY y))
 : (eX ≡α⟨R⟩ eY) ↔ (inject eX ϕX = inject eY ϕY) :=
@@ -174,7 +186,7 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
       cases eY,
       case exp.lam : b eY {
         have Rdef' : ∀ x y, R ⩁ (a, b) x y ↔ inject.update a ϕX x = inject.update b ϕY y, from
-          acie.db.Rdef.lam Rdef,
+          db.Rdef.lam Rdef,
         simp [inject],
         split,
         begin /- iff.mp -/

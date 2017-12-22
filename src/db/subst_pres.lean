@@ -17,9 +17,6 @@ theorem succ_ne_zero : ∀ {N : fin n}, fin.succ N ≠ 0
 theorem pred_succ : ∀ {N : fin n} {p : fin.succ N ≠ 0}, pred (fin.succ N) p = N
   | ⟨m, m_lt_n⟩ p := rfl
 
-theorem succ_eq_add_right_1 : ∀ {N : fin n}, fin.succ N = add_right 1 N
-  | ⟨m, m_lt_n⟩ := rfl
-
 end /- namespace -/ fin --------------------------------------------------------
 
 namespace acie -----------------------------------------------------------------
@@ -116,10 +113,14 @@ theorem injection_pres_subst.lam₂
     }
   end
 
-theorem blah
+-- set_option pp.implicit true
+set_option pp.proofs true
+
+/-
+theorem blah₁
 : inject (exp.insert_var (fresh X).1 e) (inject.update (fresh X).1 ϕ) = shift_var (inject e ϕ) :=
   begin
-    induction e,
+    induction e generalizing m ϕ,
     case exp.var : X x {
       rw exp.insert_var.of_var x,
       repeat {rw db.inject.var},
@@ -130,11 +131,11 @@ theorem blah
       simp [vname.insert, inject.update],
       cases fresh X with x' x'_not_in_X,
       rw dif_neg (vname.ne_if_mem_and_not_mem ⟨x, x_in_X⟩ ⟨x', x'_not_in_X⟩),
-      simp [fin.shift],
-      rw if_neg (nat.not_lt_zero (ϕ ⟨x, x_in_X⟩).val),
-      simp [vname.erase],
-      rw ← fin.succ_eq_add_right_1,
-      refl
+      -- simp [fin.shift],
+      -- rw if_neg (nat.not_lt_zero (ϕ ⟨x, x_in_X⟩).val),
+      -- simp [vname.erase],
+      -- rw ← fin.succ_eq_add_right_1,
+      -- refl
     },
     case exp.app : X f e rf re {
       simp [shift_var],
@@ -151,6 +152,27 @@ theorem blah
       simp only [shift_var, shift],
       rw exp.insert_var.of_lam₃ e,
       rw inject.lam,
+      have r' : inject (exp.insert_var ((fresh (insert a X)).fst) e) (inject.update ((fresh (insert a X)).fst) (inject.update a ϕ)) = shift_var (inject e (inject.update a ϕ)) :=
+        r,
+      admit
+    }
+  end
+-/
+
+theorem blah₂
+: inject (exp.insert_var (fresh X).1 e) (inject.update (fresh X).1 ϕ) = shift_var (inject e ϕ) :=
+  begin
+    dunfold shift_var,
+    induction e generalizing m ϕ,
+    case exp.var : X x {
+      rw [exp.insert_var.of_var x, inject, inject, shift],
+      rw [inject.update_insert x (fresh X), ←fin.succ_eq_shift_1_0]
+    },
+    case exp.app : X f e rf re {
+      rw [exp.insert_var.of_app f e, inject, inject, shift, rf, re]
+    },
+    case exp.lam : X a e r {
+      rw [exp.insert_var.of_lam₃ e, inject, inject, shift],
     }
   end
 
@@ -176,7 +198,8 @@ theorem injection_pres_subst.lam₃
       generalize : vname.erase ⟨x, x_in_insert_a_X⟩ h = x',
       rw ← p x',
       generalize : F x' = e,
-     exact blah
+     -- exact blah₁
+     exact blah₂
     }
   end
 
@@ -199,8 +222,8 @@ theorem injection_pres_subst₁
     case exp.lam : X a eX r {
       intro p,
       rw exp.subst.apply.of_lam eX,
-      rw db.inject.lam (exp.subst.apply _ _),
-      rw db.inject.lam eX,
+      rw db.inject.lam,
+      rw db.inject.lam,
       rw db.subst.apply.lam (inject _ _),
       rw r (injection_pres_subst.lam₃ p)
     }

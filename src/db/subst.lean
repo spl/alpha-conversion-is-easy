@@ -36,8 +36,16 @@ def raise_right (s : ℕ) : fin n → fin (n + s)
 def add_right (s : ℕ) : fin n → fin (n + s)
   | ⟨m, m_lt_n⟩ := ⟨m + s, nat.add_lt_add_right m_lt_n s⟩
 
+@[simp]
+theorem succ_eq_add_right_1 {N : fin n} : add_right 1 N = fin.succ N :=
+  rfl
+
 def shift (s c : ℕ) (N : fin n) : fin (n + s) :=
   if N.val < c then raise_right s N else add_right s N
+
+@[simp]
+theorem succ_eq_shift_1_0 {N : fin n} : shift 1 0 N = fin.succ N :=
+  rfl
 
 end /- namespace -/ fin --------------------------------------------------------
 
@@ -51,26 +59,36 @@ variables {m n : ℕ} -- De Bruijn indices
 def subst (m n : ℕ) : Type :=
   fin m → db n
 
+@[inline]
+def shift.succ_add {s n : ℕ} : db (succ n + s) → db (succ (n + s)) :=
+  eq.mpr (eq.rec (eq.refl (db (succ (n + s)))) (eq.symm (succ_add n s)))
+
 def shift (s : ℕ) : ∀ {n : ℕ}, ℕ → db n → db (n + s)
-  | n c (db.var N)   := db.var (fin.shift s c N)
-  | n c (db.app f e) := db.app (shift c f) (shift c e)
-  | n c (db.lam e)   := db.lam
-    begin
-      have e : db (succ n + s) := shift (succ c) e,
-      rw succ_add n s at e,
-      exact e
-    end
+  | n c (var N)   := var (fin.shift s c N)
+  | n c (app f e) := app (shift c f) (shift c e)
+  | n c (lam e)   := lam (db.shift.succ_add (shift (succ c) e))
 
 namespace shift ----------------------------------------------------------------
 
 variables {s c : ℕ}
 variables {N : fin n}
 
-lemma shift.var : shift s c (db.var N) = db.var (fin.shift s c N) :=
+protected
+lemma var : shift s c (db.var N) = db.var (fin.shift s c N) :=
   rfl
 
-lemma shift.app (n s c : ℕ) (f e : db n) : shift s c (db.app f e) = db.app (shift s c f) (shift s c e) :=
+protected
+lemma app {n s c : ℕ} {f e : db n} : shift s c (db.app f e) = db.app (shift s c f) (shift s c e) :=
   rfl
+
+protected
+lemma lam {n s c : ℕ} {e : db (succ n)} : shift s c (db.lam e) = db.lam (shift.succ_add (shift s (succ c) e)) :=
+  rfl
+
+/-
+theorem shift_blah : shift s c e = shift s (c - pred c) (shift s (pred c) e) :=
+  bbb
+-/
 
 end /- namespace -/ shift ------------------------------------------------------
 
@@ -135,7 +153,7 @@ theorem subst.update_id_eq : subst.update (@subst.id n) = @subst.id (succ n) :=
       simp [fin.pred],
       cases m,
       case nat.zero     { cases ne.irrefl (fin.vne_of_ne M_ne_0) },
-      case nat.succ : m { simp [nat.pred] }
+      case nat.succ : m { simp [nat.pred_succ], refl }
     }
   end
 
