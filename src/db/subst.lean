@@ -47,6 +47,9 @@ def shift (s c : ℕ) (N : fin n) : fin (n + s) :=
 theorem succ_eq_shift_1_0 {N : fin n} : shift 1 0 N = fin.succ N :=
   rfl
 
+-- TODO
+-- theorem shift_s_0_eq_shift_s_1 {N : fin n} : shift s 1 N = shift s 0 N
+
 end /- namespace -/ fin --------------------------------------------------------
 
 namespace acie -----------------------------------------------------------------
@@ -61,7 +64,7 @@ def subst (m n : ℕ) : Type :=
 
 @[inline]
 def shift.succ_add {s n : ℕ} : db (succ n + s) → db (succ (n + s)) :=
-  eq.mpr (eq.rec (eq.refl (db (succ (n + s)))) (eq.symm (succ_add n s)))
+  eq.mpr (eq.rec (eq.refl (db (succ (n + s)))) (eq.symm (nat.succ_add n s)))
 
 def shift (s : ℕ) : ∀ {n : ℕ}, ℕ → db n → db (n + s)
   | n c (var N)   := var (fin.shift s c N)
@@ -95,6 +98,8 @@ end /- namespace -/ shift ------------------------------------------------------
 def shift_var : db n → db (succ n) :=
   shift 1 0
 
+-- add_key_equivalence shift_var shift
+
 protected
 def subst.id : subst n n :=
   var
@@ -108,33 +113,10 @@ def subst.update (F : subst m n) : subst (succ m) (succ n) :=
     shift_var (F (fin.pred M p))
 
 protected
-def subst.apply : subst m n → db m → db n :=
-  begin
-    intros F d,
-    induction d generalizing n F,
-    case var : m M           { exact F M },
-    case app : m df de rf re { exact app (rf F) (re F) },
-    case lam : m d r         { exact lam (r (subst.update F)) }
-  end
-
-namespace subst ----------------------------------------------------------------
-namespace apply ----------------------------------------------------------------
-
-variables {F : subst m n}
-
-theorem var (x : fin m) : subst.apply F (var x) = F x :=
-  rfl
-
-theorem app (f e : db m)
-: subst.apply F (app f e) = app (subst.apply F f) (subst.apply F e) :=
-  rfl
-
-theorem lam (e : db (succ m))
-: subst.apply F (lam e) = lam (subst.apply (subst.update F) e) :=
-  rfl
-
-end /- namespace -/ apply ------------------------------------------------------
-end /- namespace -/ subst ------------------------------------------------------
+def subst.apply : ∀ {m n : ℕ}, subst m n → db m → db n
+  | m n F (var M)   := F M
+  | m n F (app f e) := app (subst.apply F f) (subst.apply F e)
+  | m n F (lam e)   := lam (subst.apply (subst.update F) e)
 
 theorem subst.update_id_eq : subst.update (@subst.id n) = @subst.id (succ n) :=
   begin
@@ -161,8 +143,8 @@ theorem subst.id_eq (e : db n) : subst.apply subst.id e = e :=
   begin
     induction e,
     case var : m M         { refl },
-    case app : m f e rf re { rw [subst.apply.app f e, rf, re] },
-    case lam : m e r       { rw [subst.apply.lam e, subst.update_id_eq, r] }
+    case app : m f e rf re { rw [subst.apply, rf, re] },
+    case lam : m e r       { rw [subst.apply, subst.update_id_eq, r] }
   end
 
 end /- namespace -/ db ---------------------------------------------------------

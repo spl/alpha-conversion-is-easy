@@ -116,50 +116,7 @@ theorem injection_pres_subst.lam₂
 -- set_option pp.implicit true
 set_option pp.proofs true
 
-/-
-theorem blah₁
-: inject (exp.insert_var (fresh X).1 e) (inject.update (fresh X).1 ϕ) = shift_var (inject e ϕ) :=
-  begin
-    induction e generalizing m ϕ,
-    case exp.var : X x {
-      rw exp.insert_var.of_var x,
-      repeat {rw db.inject.var},
-      simp [shift_var],
-      -- rw db.shift.var 1 0 (ϕ x),
-      simp only [shift],
-      cases x with x x_in_X,
-      simp [vname.insert, inject.update],
-      cases fresh X with x' x'_not_in_X,
-      rw dif_neg (vname.ne_if_mem_and_not_mem ⟨x, x_in_X⟩ ⟨x', x'_not_in_X⟩),
-      -- simp [fin.shift],
-      -- rw if_neg (nat.not_lt_zero (ϕ ⟨x, x_in_X⟩).val),
-      -- simp [vname.erase],
-      -- rw ← fin.succ_eq_add_right_1,
-      -- refl
-    },
-    case exp.app : X f e rf re {
-      simp [shift_var],
-      rw inject.app,
-      -- rw shift.app m 1 0 (inject f ϕ) (inject e ϕ),
-      simp [shift],
-      rw exp.insert_var.of_app f e,
-      rw inject.app,
-      rw [rf, re],
-      refl
-    },
-    case exp.lam : X a e r {
-      rw inject.lam,
-      simp only [shift_var, shift],
-      rw exp.insert_var.of_lam₃ e,
-      rw inject.lam,
-      have r' : inject (exp.insert_var ((fresh (insert a X)).fst) e) (inject.update ((fresh (insert a X)).fst) (inject.update a ϕ)) = shift_var (inject e (inject.update a ϕ)) :=
-        r,
-      admit
-    }
-  end
--/
-
-theorem blah₂
+theorem blah
 : inject (exp.insert_var (fresh X).1 e) (inject.update (fresh X).1 ϕ) = shift_var (inject e ϕ) :=
   begin
     dunfold shift_var,
@@ -173,6 +130,9 @@ theorem blah₂
     },
     case exp.lam : X a e r {
       rw [exp.insert_var.of_lam₃ e, inject, inject, shift],
+      have r' : inject (exp.insert_var ((fresh (insert a X)).fst) e) (inject.update ((fresh (insert a X)).fst) (inject.update a ϕ))
+              = shift 1 0 (inject e (inject.update a ϕ)) :=
+        r,
     }
   end
 
@@ -187,7 +147,7 @@ theorem injection_pres_subst.lam₃
     by_cases h : x = a,
     { /- h : x = a -/
       repeat {rw dif_pos h},
-      rw inject.var,
+      rw inject,
       simp [db.subst.update, db.inject.update]
     },
     { /- h₂ : x ≠ a -/
@@ -198,8 +158,7 @@ theorem injection_pres_subst.lam₃
       generalize : vname.erase ⟨x, x_in_insert_a_X⟩ h = x',
       rw ← p x',
       generalize : F x' = e,
-     -- exact blah₁
-     exact blah₂
+     exact blah
     }
   end
 
@@ -216,15 +175,12 @@ theorem injection_pres_subst₁
       intro p,
       conv {to_lhs, simp [exp.subst.apply, inject]},
       conv {to_rhs, simp [inject, db.subst.apply]},
-      rw [rf p, re p],
-      refl
+      rw [rf p, re p]
     },
     case exp.lam : X a eX r {
       intro p,
       rw exp.subst.apply.of_lam eX,
-      rw db.inject.lam,
-      rw db.inject.lam,
-      rw db.subst.apply.lam (inject _ _),
+      rw [db.inject, db.inject, db.subst.apply],
       rw r (injection_pres_subst.lam₃ p)
     }
   end
@@ -240,14 +196,12 @@ theorem injection_pres_subst₂
     case exp.app : X fX eX rf re {
       conv {to_lhs, simp [exp.subst.apply, inject]},
       conv {to_rhs, simp [inject, db.subst.apply]},
-      rw [rf, re],
-      refl
+      rw [rf, re]
     },
     case exp.lam : X a eX r {
       conv {to_lhs, simp [exp.subst.apply, inject]},
       conv {to_rhs, simp [inject, db.subst.apply]},
-      rw r,
-      refl
+      rw r
     }
   end
 

@@ -32,18 +32,6 @@ def inject : ∀ {X : vs V}, exp X → ∀ {n : ℕ}, (ν∈ X → fin n) → db
 
 namespace inject ---------------------------------------------------------------
 
-protected
-lemma var : inject (exp.var x) ϕ = db.var (ϕ x) :=
-  rfl
-
-protected
-lemma app {f e : exp X}: inject (exp.app f e) ϕ = db.app (inject f ϕ) (inject e ϕ) :=
-  rfl
-
-protected
-lemma lam {e : exp (insert a X)} : inject (exp.lam e) ϕ = db.lam (inject e (inject.update a ϕ)) :=
-  rfl
-
 theorem update_insert (x : ν∈ X) (x' : ν∉ X)
 : inject.update x'.1 ϕ (vname.insert x'.1 x) = fin.succ (ϕ x) :=
   begin
