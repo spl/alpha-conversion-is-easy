@@ -139,39 +139,24 @@ theorem subst_comp.preservation (F : exp.subst X Y) (G : exp.subst Y Z) (e : exp
                               (aeq.refl e)
 
 -- Paper: Proposition 6.3 (d)
-theorem subst_comp.lam (F : exp.subst X Y) (G : exp.subst Y Z) (e : exp (insert a X))
-(r : ∀ {Y Z : vs V} (F : exp.subst (insert a X) Y) (G : exp.subst Y Z)
-   , exp.subst.apply G (exp.subst.apply F e)
-       ≡α⟨vrel.id Z⟩
-     exp.subst.apply (exp.subst.apply G ∘ F) e)
-: exp.subst.apply (exp.subst.update (fresh Y).1 (fresh Z).1 G) (exp.subst.apply (exp.subst.update a (fresh Y).1 F) e)
-    ≡α⟨vrel.id Z ⩁ ((fresh Z).1, (fresh Z).1)⟩
-  exp.subst.apply (exp.subst.update a (fresh Z).1 (exp.subst.apply G ∘ F)) e :=
-  aeq.map.simple (λ z₁ z₂, vrel.update.of_id ∘ vrel.is_identity.to_id (insert (fresh Z).1 Z)) $
-    aeq.trans (r (exp.subst.update a (fresh Y).1 F) (exp.subst.update (fresh Y).1 (fresh Z).1 G))
-              (subst_comp.preservation F G e)
-
--- Paper: Proposition 6.3 (e)
-theorem subst_comp (F : exp.subst X Y) (G : exp.subst Y Z) (e : exp X)
-: exp.subst.apply G (exp.subst.apply F e)
+theorem subst_comp
+: ∀ {X Y Z : vs V} (F : exp.subst X Y) (G : exp.subst Y Z) (e : exp X)
+, exp.subst.apply G (exp.subst.apply F e)
     ≡α⟨vrel.id Z⟩
-  exp.subst.apply (exp.subst.apply G ∘ F) e :=
-  begin
-    induction e with
-      /- var -/ X x
-      /- app -/ X f e rf re
-      /- lam -/ X a e r
-      generalizing Y Z F G,
-    begin /- var -/
-      exact aeq.refl (exp.subst.apply G (F x))
-    end,
-    begin /- app -/
-      exact aeq.app (rf F G) (re F G)
-    end,
-    begin /- lam -/
-      exact aeq.lam (subst_comp.lam F G e @r)
-    end
-  end
+  exp.subst.apply (exp.subst.apply G ∘ F) e
+  | X Y Z F G (exp.var x)              := aeq.refl (exp.subst.apply G (F x))
+  | X Y Z F G (exp.app f e)            := aeq.app (subst_comp F G f) (subst_comp F G e)
+  | X Y Z F G (@exp.lam _ _ _ _ _ a e) := aeq.lam $
+    let b := (fresh Y).1 in
+    let c := (fresh Z).1 in
+    have update_id_from_comp_id
+        : ∀ (z₁ : ν∈ insert c Z) (z₂ : ν∈ insert c Z)
+        , (vrel.id (insert c Z) ⨾ vrel.id Z ⩁ (c, c)) z₁ z₂
+        → vrel.id Z ⩁ (c, c) z₁ z₂ :=
+      λ z₁ z₂, vrel.update.of_id ∘ vrel.is_identity.to_id (insert c Z),
+    aeq.map.simple update_id_from_comp_id $
+      aeq.trans (subst_comp (exp.subst.update a b F) (exp.subst.update b c G) e)
+                (aeq.subst_comp.preservation F G e)
 
 end /- namespace -/ aeq --------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
