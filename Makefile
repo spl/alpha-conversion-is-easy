@@ -45,8 +45,13 @@ LEANPKG := $(LEAN_BIN_DIR)/leanpkg
 
 #-------------------------------------------------------------------------------
 
+# Build with default options
 default: $(LEAN)
 	$(LEANPKG) build
+
+# Build without kernel extensions (may be slow)
+noexts: $(LEAN)
+	$(LEANPKG) build -- -t0
 
 version: $(LEAN)
 	$(LEAN) --version
