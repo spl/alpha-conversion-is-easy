@@ -70,14 +70,9 @@ theorem subst_comp.fresh_not_mem.lam (F : exp.subst X Y) (e : exp (insert a X))
   exp.insert_var (fresh Y).1 (exp.subst.apply F (exp.lam e)) :=
   begin
     rw [exp.insert_var.lam_comp e],
-    have h : exp.subst.apply (exp.subst.update (fresh X).1 (fresh Y).1 F) (exp.lam (exp.map (vset.prop_subset_of_insert_comm (fresh X).1 a X) (exp.insert_var (fresh X).1 e)))
-           = exp.lam (exp.subst.apply (exp.subst.update a (fresh (insert (fresh Y).1 Y)).1 (exp.subst.update (fresh X).1 (fresh Y).1 F)) (exp.map (vset.prop_subset_of_insert_comm (fresh X).1 a X) (exp.insert_var (fresh X).1 e))) :=
-      exp.subst.apply.of_lam (exp.map (vset.prop_subset_of_insert_comm (fresh X).1 a X) (exp.insert_var (fresh X).1 e)),
-    rw [h], clear h,
-    rw [exp.subst.apply.of_lam e],
+    rw [exp.subst.apply, exp.subst.apply],
     rw [exp.insert_var.lam_comp (exp.subst.apply (exp.subst.update a (fresh Y).1 F) e)],
-    apply aeq.lam,
-    exact subst_comp.fresh_not_mem.within_lam F e @r
+    exact aeq.lam (subst_comp.fresh_not_mem.within_lam F e @r)
   end
 
 -- Paper: Proposition 6.3 (a)

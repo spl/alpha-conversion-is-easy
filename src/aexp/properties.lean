@@ -43,7 +43,7 @@ theorem subst.left_id (F : aexp.subst X Y) : aexp.subst.id Y ∘ F ≈ F :=
 theorem subst.right_id (F : aexp.subst X Y) : F ∘ aexp.subst.id X ≈ F :=
   begin
     cases F with F,
-    simp [has_comp.comp, setoid.r, subst.eq]
+    simp [has_comp.comp, setoid.r, subst.eq, function.comp, exp.subst.apply]
   end
 
 theorem subst.assoc (H : aexp.subst Y Z) (G : aexp.subst X Y) (F : aexp.subst W X)

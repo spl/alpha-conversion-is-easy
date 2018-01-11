@@ -36,49 +36,10 @@ def update (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
 -- variables.
 @[reducible]
 protected
-def apply : subst X Y → exp X → exp Y :=
-  begin
-    intros F e,
-    induction e with
-      /- var -/ X x
-      /- app -/ X f e rf re
-      /- lam -/ X x e r
-      generalizing F Y,
-    begin /- var -/
-      exact F x
-    end,
-    begin /- app -/
-      exact app (rf F) (re F)
-    end,
-    begin /- lam -/
-      have y : V, from (fresh Y).1,
-      exact lam (r (subst.update x y F))
-    end
-  end
-
-namespace apply ----------------------------------------------------------------
-
-section ------------------------------------------------------------------------
-variables {F : subst X Y}
-
-/-
-These are some useful equalities for targeted rewriting.
--/
-
-theorem of_var (x : ν∈ X) : subst.apply F (var x) = F x :=
-  rfl
-
-theorem of_app (f e : exp X)
-: subst.apply F (app f e) = app (subst.apply F f) (subst.apply F e) :=
-  rfl
-
-theorem of_lam (e : exp (insert a X))
-: subst.apply F (lam e) = lam (subst.apply (subst.update a (fresh Y).1 F) e) :=
-  rfl
-
-end /- section -/ --------------------------------------------------------------
-
-end /- namespace -/ apply ------------------------------------------------------
+def apply : ∀ {X Y : vs V}, subst X Y → exp X → exp Y
+  | X Y F (var x)              := F x
+  | X Y F (app f e)            := app (apply F f) (apply F e)
+  | X Y F (@lam _ _ _ _ _ a e) := lam (apply (subst.update a (fresh Y).1 F) e)
 
 end /- namespace -/ subst ------------------------------------------------------
 end /- namespace -/ exp --------------------------------------------------------
