@@ -71,30 +71,6 @@ def shift (s : ℕ) : ∀ {n : ℕ}, ℕ → db n → db (n + s)
   | n c (app f e) := app (shift c f) (shift c e)
   | n c (lam e)   := lam (db.shift.succ_add (shift (succ c) e))
 
-namespace shift ----------------------------------------------------------------
-
-variables {s c : ℕ}
-variables {N : fin n}
-
-protected
-lemma var : shift s c (db.var N) = db.var (fin.shift s c N) :=
-  rfl
-
-protected
-lemma app {n s c : ℕ} {f e : db n} : shift s c (db.app f e) = db.app (shift s c f) (shift s c e) :=
-  rfl
-
-protected
-lemma lam {n s c : ℕ} {e : db (succ n)} : shift s c (db.lam e) = db.lam (shift.succ_add (shift s (succ c) e)) :=
-  rfl
-
-/-
-theorem shift_blah : shift s c e = shift s (c - pred c) (shift s (pred c) e) :=
-  bbb
--/
-
-end /- namespace -/ shift ------------------------------------------------------
-
 def shift_var : db n → db (succ n) :=
   shift 1 0
 
