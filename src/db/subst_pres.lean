@@ -122,14 +122,14 @@ theorem blah
     dunfold shift_var,
     induction e generalizing m ϕ,
     case exp.var : X x {
-      rw [exp.insert_var.of_var x, inject, inject, shift],
+      rw [exp.insert_var.var, inject, inject, shift],
       rw [inject.update_insert x (fresh X), ←fin.succ_eq_shift_1_0]
     },
     case exp.app : X f e rf re {
-      rw [exp.insert_var.of_app f e, inject, inject, shift, rf, re]
+      rw [exp.insert_var.app, inject, inject, shift, rf, re]
     },
     case exp.lam : X a e r {
-      rw [exp.insert_var.of_lam₃ e, inject, inject, shift],
+      rw [exp.insert_var.lam_comp e, inject, inject, shift],
       have r' : inject (exp.insert_var ((fresh (insert a X)).fst) e) (inject.update ((fresh (insert a X)).fst) (inject.update a ϕ))
               = shift 1 0 (inject e (inject.update a ϕ)) :=
         r,
@@ -179,8 +179,7 @@ theorem injection_pres_subst₁
     },
     case exp.lam : X a eX r {
       intro p,
-      rw exp.subst.apply.of_lam eX,
-      rw [db.inject, db.inject, db.subst.apply],
+      rw [exp.subst.apply, db.inject, db.inject, db.subst.apply],
       rw r (injection_pres_subst.lam₃ p)
     }
   end

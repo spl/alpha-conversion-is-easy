@@ -46,6 +46,22 @@ def insert_var (a : V) : exp X → exp (insert a X) :=
 
 namespace insert_var -----------------------------------------------------------
 
+/- Equational lemmas -/
+
+protected
+theorem var {x : ν∈ X} : insert_var a (var x) = var (vname.insert a x) :=
+  rfl
+
+protected
+theorem app {f e : exp X}
+: insert_var a (app f e) = app (insert_var a f) (insert_var a e) :=
+  rfl
+
+protected
+theorem lam {e : exp (insert a X)}
+: insert_var b (lam e) = lam (map (vset.prop_insert_of_subset a (vset.prop_subset_insert_self b X)) e) :=
+  rfl
+
 theorem lam_comp (e : exp (insert a X))
 : insert_var b (lam e) = lam (map (vset.prop_subset_of_insert_comm b a X) (insert_var b e)) :=
   by unfold insert_var; rw [map.comp e]; reflexivity

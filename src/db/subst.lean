@@ -38,14 +38,14 @@ def add_right (s : ℕ) : fin n → fin (n + s)
 
 @[simp]
 theorem succ_eq_add_right_1 {N : fin n} : add_right 1 N = fin.succ N :=
-  rfl
+  by cases N; reflexivity
 
 def shift (s c : ℕ) (N : fin n) : fin (n + s) :=
   if N.val < c then raise_right s N else add_right s N
 
 @[simp]
 theorem succ_eq_shift_1_0 {N : fin n} : shift 1 0 N = fin.succ N :=
-  rfl
+  by cases N; reflexivity
 
 -- TODO
 -- theorem shift_s_0_eq_shift_s_1 {N : fin n} : shift s 1 N = shift s 0 N
