@@ -158,5 +158,121 @@ theorem subst_comp
       aeq.trans (subst_comp (exp.subst.update a b F) (exp.subst.update b c G) e)
                 (aeq.subst_comp.preservation F G e)
 
+----------------------------------------------------------------------------------------------------
+
+set_option pp.proofs true
+
+/-
+theorem blah : ∀ {X : vs V} (e : exp (insert (fresh X).1 X))
+, exp.insert_var (fresh (insert (fresh X).1 X)).1 e
+    ≡α⟨vrel.id (insert (fresh X).1 X) ⩁ ((fresh (insert (fresh X).1 X)).1, (fresh X).1)⟩
+  exp.insert_var (fresh X).1 e
+  | X (exp.var x)              :=
+    begin
+      rw [exp.insert_var.var, exp.insert_var.var],
+      apply aeq.var,
+      unfold vrel.update,
+      unfold vrel.id,
+      right,
+      have px : (vname.insert (fresh (insert (fresh X).1 X)).1 x).1 ≠ (fresh (insert (fresh X).1 X)).1,
+        begin
+          unfold vname.insert,
+          exact vname.ne_if_mem_and_not_mem x (fresh (insert (fresh X).1 X))
+        end,
+      existsi px,
+      have py : (vname.insert (fresh X).1 x).1 ≠ (fresh X).1,
+        begin
+          unfold vname.insert,
+        end,
+      existsi py,
+    end
+  | X (exp.app f e)            := sorry
+  | X (@exp.lam _ _ _ _ _ a e) := sorry
+-/
+
+theorem subst_comp₂.fresh_not_mem : ∀ {X Y : vs V} (F : exp.subst X Y) (e : exp X)
+, exp.subst.apply (exp.subst.update (fresh X).1 (fresh Y).1 F) (exp.insert_var (fresh X).1 e)
+    ≡α⟨vrel.id (insert (fresh Y).1 Y)⟩
+  exp.insert_var (fresh Y).1 (exp.subst.apply F e)
+  | X Y F (exp.var x) :=
+    begin
+      rw [exp.insert_var.var, exp.subst.apply, exp.subst.apply],
+      have h : (vname.insert (fresh X).1 x).1 ≠ (fresh X).1 :=
+        vname.ne_if_mem_and_not_mem (vname.map_of_subset (vset.prop_subset_refl X) x) (fresh X),
+      rw [exp.subst.update.ne (fresh Y).1 F h, vname.eq_of_erase_insert x h],
+      exact aeq.refl (exp.insert_var (fresh Y).1 (F x))
+    end
+  | X Y F (exp.app f e) :=
+    aeq.app (subst_comp₂.fresh_not_mem F f) (subst_comp₂.fresh_not_mem F e)
+  | X Y F (@exp.lam _ _ _ _ _ a e) :=
+    begin
+/-
+      rw [exp.insert_var.lam_comp, exp.subst.apply, exp.subst.apply, exp.insert_var.lam_comp],
+      apply aeq.lam,
+      rw vset.prop_subset_of_insert_comm_refl (fresh Y).1 Y,
+      rw ←exp.map.id (exp.insert_var (fresh Y).1 (exp.subst.apply (exp.subst.update a (fresh Y).1 F) e)),
+-/
+/-
+      have h : (fresh X).1 = a := sorry,
+      induction h,
+      rw vset.prop_subset_of_insert_comm_refl (fresh X).1 X,
+      rw ←exp.map.id (exp.insert_var (fresh X).1 e),
+      have r :
+        exp.subst.apply (exp.subst.update (fresh (insert (fresh X).1 X)).1 (fresh (insert (fresh Y).1 Y)).1 (exp.subst.update (fresh X).1 (fresh Y).1 F)) (exp.insert_var (fresh (insert (fresh X).1 X)).1 e)
+          ≡α⟨vrel.id (insert (fresh (insert (fresh Y).1 Y)).1 (insert (fresh Y).1 Y))⟩
+        exp.insert_var (fresh (insert (fresh Y).1 Y)).1 (exp.subst.apply (exp.subst.update (fresh X).1 (fresh Y).1 F) e) :=
+          subst_comp₂.fresh_not_mem (exp.subst.update (fresh X).1 (fresh Y).1 F) e,
+-/
+      admit
+    end
+
+lemma subst_comp₂.extend (a : V) (F : exp.subst X Y) (G : exp.subst Y Z)
+: aeq.extend
+    (exp.subst.apply (exp.subst.update (fresh Y).1 (fresh Z).1 G) ∘ exp.subst.update a (fresh Y).1 F)
+    (exp.subst.update a (fresh Z).1 (exp.subst.apply G ∘ F))
+    (vrel.id (insert a X))
+    (vrel.id (insert (fresh Z).1 Z)) :=
+  λ (x₁ : ν∈ insert a X) (x₂ : ν∈ insert a X) (p : ⟪x₁, x₂⟫ ∈ν vrel.id (insert a X)),
+  begin
+    have p : x₁ = x₂, from p,
+    induction p, clear p,
+    rw function.comp, simp,
+    by_cases h : x₁.1 = a,
+    { /- h : x₁.1 = a -/
+      rw exp.subst.update.eq (fresh Y).1 F h,
+      rw exp.subst.update.eq (fresh Z).1 (exp.subst.apply G ∘ F) h,
+      rw exp.subst.apply,
+      simp [vname.insert_self],
+      have h : (psigma.mk (fresh Y).1 _).1 = (fresh Y).1 := rfl,
+      rw exp.subst.update.eq (fresh Z).1 G h,
+      simp [vname.insert_self],
+      exact aeq.refl (exp.var ⟨(fresh Z).1, _⟩)
+    },
+    { /- h : x₁.1 ≠ a -/
+      rw exp.subst.update.ne (fresh Y).1 F h,
+      rw exp.subst.update.ne (fresh Z).1 (exp.subst.apply G ∘ F) h,
+      exact subst_comp₂.fresh_not_mem G (F (vname.erase x₁ h))
+    }
+  end
+
+theorem subst_comp₂
+: ∀ {X Y Z : vs V} (F : exp.subst X Y) (G : exp.subst Y Z) (e : exp X)
+, exp.subst.apply G (exp.subst.apply F e)
+    ≡α⟨vrel.id Z⟩
+  exp.subst.apply (exp.subst.apply G ∘ F) e
+  | X Y Z F G (exp.var x)              := aeq.refl (exp.subst.apply G (F x))
+  | X Y Z F G (exp.app f e)            := aeq.app (subst_comp F G f) (subst_comp F G e)
+  | X Y Z F G (@exp.lam _ _ _ _ _ a e) := aeq.lam $
+    let b := (fresh Y).1, c := (fresh Z).1 in
+    aeq.map.simple (λ z₁ z₂, vrel.update.of_id) $
+    calc
+      exp.subst.apply (exp.subst.update b c G) (exp.subst.apply (exp.subst.update a b F) e)
+        ≡α⟨vrel.id (insert c Z)⟩
+      exp.subst.apply (exp.subst.apply (exp.subst.update b c G) ∘ exp.subst.update a b F) e :
+          subst_comp₂ (exp.subst.update a b F) (exp.subst.update b c G) e
+      ... ≡α⟨vrel.id (insert c Z)⟩
+      exp.subst.apply (exp.subst.update a c (exp.subst.apply G ∘ F)) e :
+          subst_preservation.id _ _ (aeq.subst_comp₂.extend a F G) (aeq.refl e)
+
 end /- namespace -/ aeq --------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------

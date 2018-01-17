@@ -133,6 +133,7 @@ theorem blah
       have r' : inject (exp.insert_var ((fresh (insert a X)).fst) e) (inject.update ((fresh (insert a X)).fst) (inject.update a ϕ))
               = shift 1 0 (inject e (inject.update a ϕ)) :=
         r,
+      admit
     }
   end
 

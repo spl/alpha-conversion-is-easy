@@ -23,7 +23,6 @@ def id (X : vs V) : subst X X :=
   var
 
 -- Update a given substitution with a new variable substitution
-@[reducible]
 protected
 def update (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
   λ (x : ν∈ insert a X),
@@ -31,6 +30,16 @@ def update (a b : V) (F : subst X Y) : subst (insert a X) (insert b Y) :=
     var (vname.insert_self b Y)
   else
     insert_var b (F (vname.erase x p))
+
+protected
+theorem update.eq {a : V} (b : V) (F : subst X Y) {x : ν∈ insert a X} (p : x.1 = a)
+: subst.update a b F x = var (vname.insert_self b Y) :=
+  by simp [subst.update, dif_pos p]
+
+protected
+theorem update.ne {a : V} (b : V) (F : subst X Y) {x : ν∈ insert a X} (p : x.1 ≠ a)
+: subst.update a b F x = insert_var b (F (vname.erase x p)) :=
+  by simp [subst.update, dif_neg p]
 
 -- Apply a substitution to one expression to get another with different free
 -- variables.

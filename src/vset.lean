@@ -31,6 +31,7 @@ extends has_fresh V S
   (prop_subset_trans          : ∀ {s₁ s₂ s₃ : S V}, s₁ ⊆ s₂ → s₂ ⊆ s₃ → s₁ ⊆ s₃)
   (prop_insert_of_subset      : ∀ (a : V) {s₁ s₂ : S V}, s₁ ⊆ s₂ → insert a s₁ ⊆ insert a s₂)
   (prop_subset_insert_self    : ∀ (a : V) (s : S V), s ⊆ insert a s)
+  -- (prop_weaken_fresh          : ∀ (s : S V), s ⊆ insert (fresh s).1 s)
 
 namespace vset -----------------------------------------------------------------
 

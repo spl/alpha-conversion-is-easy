@@ -41,6 +41,13 @@ theorem trans (X : vs V) : transitive (aeq (vrel.id X)) :=
   λ e₁ e₂ e₃ a₁ a₂,
   map.simple (λ x₁ x₂, vrel.id.of_comp) (aeq.trans a₁ a₂)
 
+-- Transitivity of `aeq.id`
+@[trans]
+protected
+theorem trans₁ {X : vs V} ⦃e₁ e₂ e₃ : exp X⦄
+: aeq (vrel.id X) e₁ e₂ → aeq (vrel.id X) e₂ e₃ → aeq (vrel.id X) e₁ e₃ :=
+  λ a₁ a₂, map.simple (λ x₁ x₂, vrel.id.of_comp) (aeq.trans a₁ a₂)
+
 -- Equivalence
 protected
 theorem equiv (X : vs V) : equivalence (aeq (vrel.id X)) :=
