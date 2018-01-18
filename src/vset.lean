@@ -46,11 +46,10 @@ theorem prop_insert_self_if_eq (s : S V) (p : a = b) : a ∈ insert b s :=
 
 theorem prop_subset_of_insert_comm (a b : V) (s : S V)
 : insert a (insert b s) ⊆ insert b (insert a s) :=
-  begin
-    have h : insert a (insert b s) = insert b (insert a s) := prop_insert_comm a b s,
-    rw [h],
-    exact prop_subset_refl (insert b (insert a s))
-  end
+  calc
+    insert a (insert b s)
+        = insert b (insert a s) : prop_insert_comm a b s
+    ... ⊆ insert b (insert a s) : prop_subset_refl (insert b (insert a s))
 
 theorem prop_subset_of_insert_comm_refl (a : V) (s : S V)
 : prop_subset_of_insert_comm a a s = prop_subset_refl (insert a (insert a s)) :=
