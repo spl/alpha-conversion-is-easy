@@ -17,6 +17,7 @@ variables {eX : exp X} {eY eY₁ eY₂ : exp Y} {eZ : exp Z} -- Expressions
 
 -- Reflexivity
 -- Paper: Proposition 2.1
+@[refl]
 protected
 theorem refl (e : exp X) : e ≡α⟨vrel.id X⟩ e :=
   begin
@@ -37,6 +38,7 @@ theorem refl (e : exp X) : e ≡α⟨vrel.id X⟩ e :=
 
 -- Symmetry
 -- Paper: Proposition 2.2
+@[symm]
 protected
 theorem symm : eX ≡α⟨R⟩ eY → eY ≡α⟨R⁻¹⟩ eX :=
   begin
@@ -126,6 +128,7 @@ theorem trans.core (P : eY₁ = eY₂) (aR : eX ≡α⟨R⟩ eY₁) (aS : eY₂ 
 
 -- Transitivity
 -- Paper: Proposition 2.3
+@[trans]
 protected
 theorem trans : eX ≡α⟨R⟩ eY → eY ≡α⟨S⟩ eZ → eX ≡α⟨R ⨾ S⟩ eZ :=
   trans.core (eq.refl eY)

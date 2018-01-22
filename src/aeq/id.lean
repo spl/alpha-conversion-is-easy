@@ -25,33 +25,32 @@ namespace id -------------------------------------------------------------------
 -- Paper: Corollary 3
 
 -- Reflexivity of `aeq.id`
+@[refl]
 protected
-theorem refl (X : vs V) : reflexive (aeq (vrel.id X)) :=
+theorem refl {X : vs V} : ∀ (e : exp X), aeq (vrel.id X) e e :=
   aeq.refl
 
 -- Symmetry of `aeq.id`
+@[symm]
 protected
-theorem symm (X : vs V) : symmetric (aeq (vrel.id X)) :=
-  λ e₁ e₂ a,
-  map.simple (λ x₁ x₂, vrel.inv.of_id) (aeq.symm a)
-
--- Transitivity of `aeq.id`
-protected
-theorem trans (X : vs V) : transitive (aeq (vrel.id X)) :=
-  λ e₁ e₂ e₃ a₁ a₂,
-  map.simple (λ x₁ x₂, vrel.id.of_comp) (aeq.trans a₁ a₂)
+theorem symm {X : vs V} ⦃e₁ e₂ : exp X⦄
+: aeq (vrel.id X) e₁ e₂ → aeq (vrel.id X) e₂ e₁ :=
+  λ a, map.simple (λ x₁ x₂, vrel.inv.of_id) (aeq.symm a)
 
 -- Transitivity of `aeq.id`
 @[trans]
 protected
-theorem trans₁ {X : vs V} ⦃e₁ e₂ e₃ : exp X⦄
+theorem trans {X : vs V} ⦃e₁ e₂ e₃ : exp X⦄
 : aeq (vrel.id X) e₁ e₂ → aeq (vrel.id X) e₂ e₃ → aeq (vrel.id X) e₁ e₃ :=
   λ a₁ a₂, map.simple (λ x₁ x₂, vrel.id.of_comp) (aeq.trans a₁ a₂)
 
 -- Equivalence
 protected
 theorem equiv (X : vs V) : equivalence (aeq (vrel.id X)) :=
-  mk_equivalence (aeq (vrel.id X)) (id.refl X) (id.symm X) (id.trans X)
+  mk_equivalence (aeq (vrel.id X))
+    (@id.refl _ _ _ _ X)
+    (@id.symm _ _ _ _ X)
+    (@id.trans _ _ _ _ X)
 
 -- Setoid
 instance setoid (X : vs V) : setoid (exp X) :=

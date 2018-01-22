@@ -58,8 +58,7 @@ theorem fresh_not_mem : ∀ {X Y : vs V} (F : exp.subst X Y) (e : exp X)
       rw [exp.insert_var.var, exp.subst.apply, exp.subst.apply],
       have h : (vname.insert (fresh X).1 x).1 ≠ (fresh X).1 :=
         vname.insert_mem_ne_not_mem x (fresh X),
-      rw [exp.subst.update.ne (fresh Y).1 F h, vname.eq_of_erase_insert x h],
-      exact aeq.refl (exp.insert_var (fresh Y).1 (F x))
+      rw [exp.subst.update.ne (fresh Y).1 F h, vname.eq_of_erase_insert x h]
     end
   | X Y F (exp.app f e) :=
     aeq.app (fresh_not_mem F f) (fresh_not_mem F e)
@@ -115,9 +114,7 @@ lemma extend (a : V) (F : exp.subst X Y) (G : exp.subst Y Z)
       rw exp.subst.apply,
       simp [vname.insert_self],
       have h : (psigma.mk b' _).1 = b' := rfl,
-      rw exp.subst.update.eq c' G h,
-      simp [vname.insert_self],
-      exact aeq.refl (exp.var ⟨c', _⟩)
+      rw exp.subst.update.eq c' G h
     },
     { /- h : x₁.1 ≠ a -/
       calc
