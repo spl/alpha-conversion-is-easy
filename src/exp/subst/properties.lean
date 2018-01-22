@@ -28,10 +28,6 @@ theorem distrib_lam (F : subst X Y) (a : V) (e : exp (insert a X))
 : subst.apply F (lam e) = lam (subst.apply (subst.update a (fresh Y).1 F) e) :=
   rfl
 
-theorem update_of_ne (a b : V) (F : subst X Y) (x : ν∈ insert a X) (p : x.1 ≠ a)
-: subst.update a b F x = insert_var b (F (vname.erase x p)) :=
-  by simp [exp.subst.update, dif_neg p]
-
 theorem update_eq_var_update (a b : V) (F : X →ν Y) (x : ν∈ insert a X)
 : subst.update a b (subst.lift F) x = subst.lift (vname.update a b F) x :=
   begin

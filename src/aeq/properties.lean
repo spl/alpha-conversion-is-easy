@@ -119,8 +119,8 @@ theorem subst_comp.extend (a : V) (F : exp.subst X Y) (G : exp.subst Y Z)
       simp [exp.subst.update, exp.subst.apply]
     end,
     begin /- x_ne_a : x ≠ a -/
-      rw [exp.subst.update_of_ne a (fresh Y).1 F ⟨x, px⟩ x_ne_a],
-      rw [exp.subst.update_of_ne a (fresh Z).1 (exp.subst.apply G ∘ F) ⟨x, px⟩ x_ne_a],
+      rw [exp.subst.update.ne ⟨x, px⟩ x_ne_a],
+      rw [exp.subst.update.ne ⟨x, px⟩ x_ne_a],
       simp [function.comp],
       exact subst_comp.fresh_not_mem G (F (vname.erase ⟨x, px⟩ x_ne_a))
     end
