@@ -82,5 +82,8 @@ theorem eq_of_erase_insert {a : V} (x : ν∈ X) (x_ne_a : x.1 ≠ a)
 theorem ne_if_mem_and_not_mem (x : ν∈ X) (x' : ν∉ X) : x.1 ≠ x'.1 :=
   vset.prop_ne_if_mem_and_not_mem x.2 x'.2
 
+theorem insert_mem_ne_not_mem {a : V} (x : ν∈ X) (x' : ν∉ X) : (vname.insert a x).1 ≠ x'.1 :=
+  ne_if_mem_and_not_mem (map_of_subset (vset.prop_subset_refl X) x) x'
+
 end /- namespace -/ vname ------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
