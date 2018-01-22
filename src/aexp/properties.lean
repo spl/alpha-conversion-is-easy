@@ -37,7 +37,7 @@ theorem subst.left_id (F : aexp.subst X Y) : aexp.subst.id Y ∘ F ≈ F :=
     intro x,
     apply quotient.sound,
     simp [setoid.r, function.comp],
-    exact aeq.id.symm _ (aeq.self_aeq_subst_var (F x))
+    exact aeq.id.symm (aeq.self_aeq_subst_var (F x))
   end
 
 theorem subst.right_id (F : aexp.subst X Y) : F ∘ aexp.subst.id X ≈ F :=
