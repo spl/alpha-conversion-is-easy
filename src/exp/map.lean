@@ -66,6 +66,10 @@ theorem lam_comp (e : exp (insert a X))
 : insert_var b (lam e) = lam (map (vset.prop_subset_of_insert_comm b a X) (insert_var b e)) :=
   by unfold insert_var; rw [map.comp e]; reflexivity
 
+theorem lam_blah (pb : b ∉ X) (e : exp (insert a X))
+: insert_var b (lam e) = lam (map (vset.prop_subset_of_insert_comm b a X) (insert_var b e)) :=
+  by unfold insert_var; rw [map.comp e]; reflexivity
+
 /-
 protected
 theorem id (e : exp (insert a X)) : insert_var a e = e :=

@@ -45,12 +45,14 @@ def update (a b : V) : X ×ν Y → insert a X ×ν insert b Y :=
 -- Source: http://www.fileformat.info/info/unicode/char/2a41/index.htm
 notation R ` ⩁ `:65 (a `, ` b) := vrel.update a b R
 
+namespace update ---------------------------------------------------------------
+
 section ------------------------------------------------------------------------
 variables {F : X →ν Y} -- Function on variable name set members
 
 -- Lift a `vname.update` of a fresh variable to a `vrel.update`.
 protected
-def update.lift
+def lift
 (x : ν∈ insert a X) (y : ν∈ insert (fresh Y).1 Y)
 : vrel.lift (vname.update a (fresh Y).1 F) x y
 → (vrel.lift F ⩁ (a, (fresh Y).1)) x y :=
@@ -76,6 +78,19 @@ def update.lift
   end
 
 end /- section -/ --------------------------------------------------------------
+
+section ------------------------------------------------------------------------
+variables {R₁ R₂ : X ×ν Y} -- Variable name set relations
+
+protected
+theorem map (F : ∀ {x : ν∈ X} {y : ν∈ Y}, ⟪x, y⟫ ∈ν R₁ → ⟪x, y⟫ ∈ν R₂)
+{x : ν∈ insert a X} {y : ν∈ insert b Y}
+: ⟪x, y⟫ ∈ν R₁ ⩁ (a, b) → ⟪x, y⟫ ∈ν R₂ ⩁ (a, b) :=
+  or.imp_right (λ ⟨px, ⟨py, p⟩⟩, ⟨px, ⟨py, F p⟩⟩)
+
+end /- section -/ --------------------------------------------------------------
+
+end /- namespace -/ update -----------------------------------------------------
 
 end /- namespace -/ vrel -------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------

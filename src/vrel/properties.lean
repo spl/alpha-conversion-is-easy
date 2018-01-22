@@ -171,5 +171,19 @@ theorem update_of_comp_iff_comp_of_update
 
 end /- section -/ --------------------------------------------------------------
 
+section ------------------------------------------------------------------------
+variables {a₁ a₂ : V} -- Variable names
+variables {x₁ : ν∈ insert a₁ X} {x₂ : ν∈ insert a₂ X} -- Variable name set members
+
+theorem update.comp.of_id
+: ⟪x₁, x₂⟫ ∈ν vrel.id X ⩁ (a₁, a₂) → ⟪x₁, x₂⟫ ∈ν (vrel.id X ⨾ vrel.id X) ⩁ (a₁, a₂) :=
+  update.map (λ x₁ x₂, comp.of_id)
+
+theorem update.id.of_comp
+: ⟪x₁, x₂⟫ ∈ν (vrel.id X ⨾ vrel.id X) ⩁ (a₁, a₂) → ⟪x₁, x₂⟫ ∈ν vrel.id X ⩁ (a₁, a₂) :=
+  update.map (λ x₁ x₂, id.of_comp)
+
+end /- section -/ --------------------------------------------------------------
+
 end /- namespace -/ vrel -------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
