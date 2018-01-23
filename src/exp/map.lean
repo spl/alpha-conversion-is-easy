@@ -18,9 +18,9 @@ variables {p : X ⊆ Y} {q : Y ⊆ Z} -- Subset properties
 -- Given proof `p : X ⊆ Y`, `map p e` maps the free variables from `X` to `Y` in
 -- `e : exp X`.
 def map : ∀ {X Y : vs V}, X ⊆ Y → exp X → exp Y
-  | X Y p (var x)              := var (vname.map_of_subset p x)
-  | X Y p (app f e)            := app (map p f) (map p e)
-  | X Y p (@lam _ _ _ _ _ a e) := lam (map (vset.prop_insert_of_subset a p) e)
+  | X Y p (var x)    := var (vname.map_of_subset p x)
+  | X Y p (app f e)  := app (map p f) (map p e)
+  | X Y p (lam' a e) := lam (map (vset.prop_insert_of_subset a p) e)
 
 namespace map ------------------------------------------------------------------
 

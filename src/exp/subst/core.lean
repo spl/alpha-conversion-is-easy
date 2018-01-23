@@ -52,9 +52,9 @@ theorem update.ne {a b : V} (F : subst X Y) (x : ν∈ insert a X) (p : x.1 ≠ 
 @[reducible]
 protected
 def apply : ∀ {X Y : vs V}, subst X Y → exp X → exp Y
-  | X Y F (var x)              := F x
-  | X Y F (app f e)            := app (apply F f) (apply F e)
-  | X Y F (@lam _ _ _ _ _ a e) := lam (apply (subst.update a (fresh Y).1 F) e)
+  | X Y F (var x)    := F x
+  | X Y F (app f e)  := app (apply F f) (apply F e)
+  | X Y F (lam' a e) := lam (apply (subst.update a (fresh Y).1 F) e)
 
 end /- namespace -/ subst ------------------------------------------------------
 end /- namespace -/ exp --------------------------------------------------------

@@ -62,7 +62,7 @@ theorem fresh_not_mem : ∀ {X Y : vs V} (F : exp.subst X Y) (e : exp X)
     end
   | X Y F (exp.app f e) :=
     aeq.app (fresh_not_mem F f) (fresh_not_mem F e)
-  | X Y F (@exp.lam _ _ _ _ _ a e) :=
+  | X Y F (exp.lam' a e) :=
     begin
       let a' := (fresh X).1,
       let b' := (fresh Y).1,
@@ -137,9 +137,9 @@ theorem subst_comp
 , exp.subst.apply G (exp.subst.apply F e)
     ≡α⟨vrel.id Z⟩
   exp.subst.apply (exp.subst.apply G ∘ F) e
-  | X Y Z F G (exp.var x)              := aeq.refl (exp.subst.apply G (F x))
-  | X Y Z F G (exp.app f e)            := aeq.app (subst_comp F G f) (subst_comp F G e)
-  | X Y Z F G (@exp.lam _ _ _ _ _ a e) := aeq.lam $
+  | X Y Z F G (exp.var x)    := aeq.refl (exp.subst.apply G (F x))
+  | X Y Z F G (exp.app f e)  := aeq.app (subst_comp F G f) (subst_comp F G e)
+  | X Y Z F G (exp.lam' a e) := aeq.lam $
     let b' := (fresh Y).1, c' := (fresh Z).1 in
     aeq.map.simple (λ z₁ z₂, vrel.update.of_id) $
     calc

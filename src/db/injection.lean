@@ -26,9 +26,9 @@ def inject.update (a : V) (ϕ : ν∈ X → fin n) (x : ν∈ insert a X) : fin 
   if p : x.1 = a then 0 else fin.succ $ ϕ $ vname.erase x p
 
 def inject : ∀ {X : vs V}, exp X → ∀ {n : ℕ}, (ν∈ X → fin n) → db n
-  | X (exp.var x)              n ϕ := db.var $ ϕ x
-  | X (exp.app f e)            n ϕ := db.app (inject f ϕ) (inject e ϕ)
-  | X (@exp.lam _ _ _ _ _ a e) n ϕ := db.lam $ inject e $ db.inject.update a ϕ
+  | X (exp.var x)    n ϕ := db.var $ ϕ x
+  | X (exp.app f e)  n ϕ := db.app (inject f ϕ) (inject e ϕ)
+  | X (exp.lam' a e) n ϕ := db.lam $ inject e $ db.inject.update a ϕ
 
 namespace inject ---------------------------------------------------------------
 
