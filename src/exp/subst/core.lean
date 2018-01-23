@@ -16,12 +16,6 @@ variables {a : V} -- Variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y : vs V} -- Variable name sets
 
--- Identity substitution construction
-@[reducible]
-protected
-def id (X : vs V) : subst X X :=
-  var
-
 -- Update a given substitution with a new variable substitution
 @[reducible]
 protected
