@@ -140,7 +140,7 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
         end,
         begin /- iff.mpr -/
           intro p,
-          have h : R x y, from iff.mpr (Rdef x y) (db.var.inj p),
+          have h : R x y, from iff.mpr (Rdef x y) p,
           exact aeq.var h
         end
       },
@@ -157,14 +157,13 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
           have αe : eX ≡α⟨R⟩ eY, from aeq.app.arg α,
           have pf : inject fX ϕX = inject fY ϕY, from iff.mp (rf Rdef) αf,
           have pe : inject eX ϕX = inject eY ϕY, from iff.mp (re Rdef) αe,
-          rw [pf, pe]
+          rw [pf, pe],
+          exact ⟨rfl, rfl⟩
         end,
         begin /- iff.mpr -/
           intro p,
-          have h : inject fX ϕX = inject fY ϕY ∧ inject eX ϕX = inject eY ϕY, from
-            db.app.inj p,
-          have αf : fX ≡α⟨R⟩ fY, from iff.mpr (rf Rdef) h.1,
-          have αe : eX ≡α⟨R⟩ eY, from iff.mpr (re Rdef) h.2,
+          have αf : fX ≡α⟨R⟩ fY, from iff.mpr (rf Rdef) p.1,
+          have αe : eX ≡α⟨R⟩ eY, from iff.mpr (re Rdef) p.2,
           exact aeq.app αf αe
         end
       },
@@ -186,9 +185,7 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
         end,
         begin /- iff.mpr -/
           intro p,
-          have h : inject eX (inject.update a ϕX) = inject eY (inject.update b ϕY), from
-            db.lam.inj p,
-          have α : eX ≡α⟨R ⩁ (a, b)⟩ eY, from iff.mpr (r Rdef') h,
+          have α : eX ≡α⟨R ⩁ (a, b)⟩ eY, from iff.mpr (r Rdef') p,
           exact aeq.lam α
         end
       },

@@ -18,16 +18,6 @@ variables {V : Type} [decidable_eq V] -- Type of variable names
 variables {vs : Type → Type} [vset vs V] -- Type of variable name sets
 variables {X Y : vs V} -- Variable name sets
 
--- Substitution distributes over application
-theorem distrib_app (F : subst X Y) (f e : exp X)
-: subst.apply F (app f e) = app (subst.apply F f) (subst.apply F e) :=
-  rfl
-
--- Substitution distributes over lambda abstraction
-theorem distrib_lam (F : subst X Y) (a : V) (e : exp (insert a X))
-: subst.apply F (lam e) = lam (subst.apply (subst.update a (fresh Y).1 F) e) :=
-  rfl
-
 theorem update_eq_var_update (a b : V) (F : X →ν Y) (x : ν∈ insert a X)
 : subst.update a b (subst.lift F) x = subst.lift (vname.update a b F) x :=
   begin
@@ -75,12 +65,10 @@ theorem apply_distrib (P : ∀ (x : ν∈ X), F x = G x) (e : exp X)
       apply P,
     end,
     begin /- app -/
-      simp [distrib_app],
-      rw [rf P, re P],
+      rw [subst.apply, subst.apply, rf P, re P]
     end,
     begin /- lam -/
-      simp [distrib_lam],
-      rw [r $ update_distrib a (fresh Y).1 P],
+      rw [subst.apply, subst.apply, r $ update_distrib a (fresh Y).1 P]
     end
   end
 
