@@ -38,7 +38,12 @@ theorem update.eq {a b : V} {F : subst X Y} (x : ν∈ insert a X) (p : x.1 = a)
   by simp [subst.update, dif_pos p]
 
 protected
-theorem update.ne {a b : V} {F : subst X Y} (x : ν∈ insert a X) (p : x.1 ≠ a)
+theorem update.eq_self {a b : V} {F : subst X Y}
+: subst.update a b F (vname.insert_self a X) = var (vname.insert_self b Y) :=
+  update.eq (vname.insert_self a X) rfl
+
+protected
+theorem update.ne {a b : V} (F : subst X Y) (x : ν∈ insert a X) (p : x.1 ≠ a)
 : subst.update a b F x = insert_var b (F (vname.erase x p)) :=
   by simp [subst.update, dif_neg p]
 
