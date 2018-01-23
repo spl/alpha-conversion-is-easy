@@ -1,3 +1,3 @@
 import .type
-import .core
-import .properties
+import .update
+import .apply

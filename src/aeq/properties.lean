@@ -32,12 +32,8 @@ theorem self_lift_F_aeq_subst_lift_F (F : X →ν Y) (e : exp X)
       exact app (rf F) (re F)
     end,
     begin /- lam -/
-      have H : e ≡α⟨vrel.lift (vname.update a (fresh Y).1 F)⟩ exp.subst.apply (exp.subst.lift (vname.update a (fresh Y).1 F)) e :=
-        r (vname.update a (fresh Y).1 F),
-      have P : exp.subst.update a (fresh Y).1 (exp.subst.lift F) = exp.subst.lift (vname.update a (fresh Y).1 F) :=
-        funext (exp.subst.update_eq_var_update a (fresh Y).1 F),
-      rw [←P] at H,
-      exact (lam (map.simple vrel.update.lift H))
+      rw [exp.subst.apply, exp.subst.update.lift a (fresh Y).1 F],
+      exact lam (map.simple vrel.update.lift (r (vname.update a (fresh Y).1 F)))
     end
   end
 
