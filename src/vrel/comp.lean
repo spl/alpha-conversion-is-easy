@@ -19,7 +19,7 @@ variables {x : ν∈ X} {y : ν∈ Y} {z : ν∈ Z} -- Variable name set members
 -- that is the composition of their underlying finite sets.
 @[reducible]
 def comp (R : X ×ν Y) (S : Y ×ν Z) : X ×ν Z :=
-  λ x z, ∃ y, R x y ∧ S y z
+  λ x z, ∃ y, ⟪x, y⟫ ∈ν R ∧ ⟪y, z⟫ ∈ν S
 
 -- Notation for `comp`.
 -- Source: http://www.fileformat.info/info/unicode/char/2a3e/index.htm
