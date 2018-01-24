@@ -195,10 +195,7 @@ theorem aeq_iff_inject (Rdef : ∀ (x : ν∈ X) (y : ν∈ Y), R x y ↔ (ϕX x
 
 theorem aeq_iff_inject.id (inj : function.injective ϕ)
  : (e₁ ≡α e₂) ↔ (inject e₁ ϕ = inject e₂ ϕ) :=
-  aeq_iff_inject $ λ x₁ x₂,
-    ⟨ λ (p : vrel.id X x₁ x₂), by simp [vrel.id] at p; rw p
-    , λ (p : ϕ x₁ = ϕ x₂), inj p
-    ⟩
+  aeq_iff_inject $ λ x₁ x₂, ⟨λ (p : x₁ = x₂), by rw p, λ (p : ϕ x₁ = ϕ x₂), inj p⟩
 
 end /- namespace -/ db ---------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
