@@ -17,14 +17,14 @@ variables {X Y Z : vs V} -- Variable name sets
 section ------------------------------------------------------------------------
 variables {x₁ x₂ : ν∈ X} -- Variable name set members
 
-theorem id.of_inv : ⟪x₁, x₂⟫ ∈ν (vrel.id X)⁻¹ → ⟪x₁, x₂⟫ ∈ν vrel.id X :=
+theorem id.of_inv : ⟪x₁, x₂⟫ ∈ν (vrel.id X)° → ⟪x₁, x₂⟫ ∈ν vrel.id X :=
   eq.symm
 
-theorem inv.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id X → ⟪x₁, x₂⟫ ∈ν (vrel.id X)⁻¹ :=
+theorem inv.of_id : ⟪x₁, x₂⟫ ∈ν vrel.id X → ⟪x₁, x₂⟫ ∈ν (vrel.id X)° :=
   eq.symm
 
 theorem inv_of_id_iff_id_of_inv
-: ⟪x₁, x₂⟫ ∈ν (vrel.id X)⁻¹ ↔ ⟪x₁, x₂⟫ ∈ν vrel.id X :=
+: ⟪x₁, x₂⟫ ∈ν (vrel.id X)° ↔ ⟪x₁, x₂⟫ ∈ν vrel.id X :=
   iff.intro id.of_inv inv.of_id
 
 theorem id.of_comp : ⟪x₁, x₂⟫ ∈ν (vrel.id X ⨾ vrel.id X) → ⟪x₁, x₂⟫ ∈ν vrel.id X :=
@@ -67,7 +67,7 @@ section ------------------------------------------------------------------------
 variables {R : X ×ν Y} {S : Y ×ν Z} -- Variable name set relations
 variables {x : ν∈ insert a X} {y : ν∈ insert b Y} {z : ν∈ insert c Z} -- Variable name set members
 
-theorem inv.of_update : ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) → ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ :=
+theorem inv.of_update : ⟪y, x⟫ ∈ν R° ⩁ (b, a) → ⟪y, x⟫ ∈ν (R ⩁ (a, b))° :=
   begin
     intro H,
     cases H with H H,
@@ -83,7 +83,7 @@ theorem inv.of_update : ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) → ⟪y, x⟫ ∈ν 
     end
   end
 
-theorem update.of_inv : ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ → ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) :=
+theorem update.of_inv : ⟪y, x⟫ ∈ν (R ⩁ (a, b))° → ⟪y, x⟫ ∈ν R° ⩁ (b, a) :=
   begin
     intro H,
     cases H with H H,
@@ -101,7 +101,7 @@ theorem update.of_inv : ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ → ⟪y, x⟫ ∈�
 
 -- Paper: Lemma 1.2
 theorem update_of_inv_iff_inv_of_update
-: ⟪y, x⟫ ∈ν R⁻¹ ⩁ (b, a) ↔ ⟪y, x⟫ ∈ν (R ⩁ (a, b))⁻¹ :=
+: ⟪y, x⟫ ∈ν R° ⩁ (b, a) ↔ ⟪y, x⟫ ∈ν (R ⩁ (a, b))° :=
   iff.intro inv.of_update update.of_inv
 
 theorem update.of_comp

@@ -40,7 +40,7 @@ theorem refl (e : exp X) : e ≡α⟨vrel.id X⟩ e :=
 -- Paper: Proposition 2.2
 @[symm]
 protected
-theorem symm : eX ≡α⟨R⟩ eY → eY ≡α⟨R⁻¹⟩ eX :=
+theorem symm : eX ≡α⟨R⟩ eY → eY ≡α⟨R°⟩ eX :=
   begin
     intro H,
     induction H with

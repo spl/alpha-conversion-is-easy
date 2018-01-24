@@ -23,11 +23,11 @@ def inv : X ×ν Y → Y ×ν X :=
   λ R y x, R x y
 
 -- Notation for `inv`.
-postfix ⁻¹ := inv
+postfix `°`:std.prec.max_plus := inv
 
 @[reducible]
 protected
-theorem symm : ⟪x, y⟫ ∈ν R → ⟪y, x⟫ ∈ν R⁻¹ :=
+theorem symm : ⟪x, y⟫ ∈ν R → ⟪y, x⟫ ∈ν R° :=
   λ m, m
 
 end /- namespace -/ vrel -------------------------------------------------------
