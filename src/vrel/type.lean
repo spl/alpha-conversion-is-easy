@@ -22,7 +22,8 @@ def vrel (X Y : vs V) : Type :=
 infixl ` ×ν `:35 := vrel
 
 -- Notation for membership of an `vrel`.
-notation `⟪` x `, ` y `⟫` ` ∈ν ` R:50 := R x y
+-- We use type ascription (R : vrel _ _) to improve elaboration/type inference.
+notation `⟪` x `, ` y `⟫` ` ∈ν ` R:50 := (R : vrel _ _) x y
 
 -- Lift a function on finite name sets to a `vrel`
 @[reducible]

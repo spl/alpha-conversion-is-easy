@@ -20,7 +20,8 @@ variables {x : ν∈ X} {y : ν∈ Y} -- Variable name set members
 def inv : X ×ν Y → Y ×ν X :=
   -- An alternative def for this is `function.swap`; however, that does
   -- not unfold as easily as the explicit lambda.
-  λ R y x, R x y
+  -- We use type ascription (R : vrel _ _) to improve elaboration/type inference.
+  λ R y x, (R : vrel _ _) x y
 
 -- Notation for `inv`.
 postfix `°`:std.prec.max_plus := inv
