@@ -63,5 +63,8 @@ infixr ` →ν `:25 := vname.id.fun
 instance decidable_eq (X : vs V) : decidable_eq (ν∈ X) :=
   psigma.decidable_eq
 
+instance has_repr [has_repr V] (X : vs V) : has_repr (ν∈ X) :=
+  ⟨has_repr.repr ∘ psigma.fst⟩
+
 end /- namespace -/ vname ------------------------------------------------------
 end /- namespace -/ acie -------------------------------------------------------
