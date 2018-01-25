@@ -18,6 +18,7 @@ decidable equality.
 
 class vset (S : Type u → Type v) (V : Type u) [decidable_eq V]
 extends has_fresh V S
+      , has_emptyc (S V)
       , has_insert V (S V)
       , has_subset (S V) :=
   (prop_insert_self           : ∀ (a : V) (s : S V), a ∈ insert a s)

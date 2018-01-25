@@ -13,6 +13,7 @@ namespace finset ---------------------------------------------------------------
 instance vset_nat : acie.vset finset ℕ :=
   { mem                        := has_mem.mem
   , fresh                      := has_fresh.fresh
+  , emptyc                     := has_emptyc.emptyc (finset ℕ)
   , insert                     := has_insert.insert
   , subset                     := has_subset.subset
   , prop_insert_self           := finset.mem_insert_self
