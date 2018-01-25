@@ -7,7 +7,7 @@ set, and other related type definitions.
 
 import vset
 import data.has_mem
-import data.sigma.extra
+import data.sigma.basic
 
 namespace acie -----------------------------------------------------------------
 
