@@ -69,15 +69,12 @@ theorem fresh_not_mem : ∀ {X Y : vs V} (F : exp.subst X Y) (e : exp X)
         exp.insert_var b'' (exp.subst.apply (exp.subst.update a b' F) e) :=
           fresh_not_mem (exp.subst.update a b' F) e,
       rw exp.subst.apply,
-      rw exp.insert_var.lam_comp (exp.subst.apply (exp.subst.update a b' F) e),
+      rw exp.insert_var.lam_self (exp.subst.apply (exp.subst.update a b' F) e),
       rw exp.insert_var.lam_comp e,
       rw exp.subst.apply,
       apply aeq.lam,
       have h : (fresh X).1 = a' := rfl, rw h, clear h,
-      have h : (fresh Y).1 = b' := rfl, rw h, clear h,
       have h : (fresh (insert b' Y)).1 = b'' := rfl, rw h, clear h,
-      rw vset.prop_subset_of_insert_comm_refl b' Y,
-      rw ←exp.map.id (exp.insert_var b' (exp.subst.apply (exp.subst.update a b' F) e)),
       have upd₂ : ∀ (y₁ : ν∈ insert b'' (insert b' Y)) (y₂ : ν∈ insert b' (insert b' Y))
         , ⟪y₁, y₂⟫ ∈ν vrel.id (insert b' Y) ⩁ (b'', b'') ⨾ vrel.id (insert b' Y) ⩁ (b'', b')
         → ⟪y₁, y₂⟫ ∈ν vrel.id (insert b' Y) ⩁ (b'', b') :=
