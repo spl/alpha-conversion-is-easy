@@ -46,6 +46,30 @@ theorem map (pX : X₁ ⊆ X₂) (pY : Y₁ ⊆ Y₂)
 end /- section -/ --------------------------------------------------------------
 
 section ------------------------------------------------------------------------
+variables {a₁ a₂ : V} -- Variable names
+variables {R : X ×ν X} -- Variable name set relations
+variables {e₁ e₂ : exp X} -- Expressions
+
+theorem insert_var.ne (ha₁ : ∀ x : ν∈ X, x.1 ≠ a₁) (ha₂ : ∀ x : ν∈ X, x.1 ≠ a₂)
+: e₁ ≡α⟨vrel.id X⟩ e₂ → exp.insert_var a₁ e₁ ≡α⟨vrel.id X ⩁ (a₁, a₂)⟩ exp.insert_var a₂ e₂ :=
+  map _ _ $
+  λ x₁ x₂ p,
+  ⟨ vset.prop_insert a₁ x₁.2
+  , ⟨ vset.prop_insert a₂ x₂.2
+    , begin
+        unfold vrel.id at p,
+        induction p,
+        right,
+        existsi ha₁ x₁,
+        existsi ha₂ x₁,
+        unfold vrel.id
+      end
+    ⟩
+  ⟩
+
+end /- section -/ --------------------------------------------------------------
+
+section ------------------------------------------------------------------------
 variables {R S : X ×ν Y} -- Variable name set relations
 variables {eX : exp X} {eY : exp Y} -- Expressions
 
