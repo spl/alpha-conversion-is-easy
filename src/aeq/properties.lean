@@ -44,6 +44,8 @@ theorem self_aeq_subst_var (e : exp X)
 
 namespace subst_comp -----------------------------------------------------------
 
+set_option pp.proofs true
+
 -- Paper: Proposition 6.3 (a)
 theorem fresh_not_mem : ∀ {X Y : vs V} (F : exp.subst X Y) (e : exp X)
 , exp.subst.apply (exp.subst.update (fresh X).1 (fresh Y).1 F) (exp.insert_var (fresh X).1 e)
@@ -75,6 +77,7 @@ theorem fresh_not_mem : ∀ {X Y : vs V} (F : exp.subst X Y) (e : exp X)
       apply aeq.lam,
       have h : (fresh X).1 = a' := rfl, rw h, clear h,
       have h : (fresh (insert b' Y)).1 = b'' := rfl, rw h, clear h,
+/-
       have upd₂ : ∀ (y₁ : ν∈ insert b'' (insert b' Y)) (y₂ : ν∈ insert b' (insert b' Y))
         , ⟪y₁, y₂⟫ ∈ν vrel.id (insert b' Y) ⩁ (b'', b'') ⨾ vrel.id (insert b' Y) ⩁ (b'', b')
         → ⟪y₁, y₂⟫ ∈ν vrel.id (insert b' Y) ⩁ (b'', b') :=
@@ -85,9 +88,9 @@ theorem fresh_not_mem : ∀ {X Y : vs V} (F : exp.subst X Y) (e : exp X)
           ≡α⟨vrel.id (insert b' Y) ⩁ (b'', b'') ⨾ vrel.id (insert b' Y) ⩁ (b'', b')⟩
         exp.insert_var b' (exp.subst.apply (exp.subst.update a b' F) e), from
           sorry
+-/
+      admit
     end
-
-set_option pp.proofs true
 
 -- Paper: Proposition 6.3 (b)
 lemma extend (a : V) (F : exp.subst X Y) (G : exp.subst Y Z)
