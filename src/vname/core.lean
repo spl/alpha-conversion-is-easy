@@ -17,14 +17,14 @@ variables {X Y : vs V} -- Variable name sets
 
 -- Rewrite a constraint from `X` to `Y` if `X = Y`.
 @[reducible]
-theorem rw_constraint (H : X = Y) : a ∈ X → a ∈ Y :=
-  by rw [H]; intro; assumption
+theorem rw_constraint (p : X = Y) : a ∈ X → a ∈ Y :=
+  by rw [p]; intro; assumption
 
 -- Rewrite the free variable set from `X` to `Y` if `X = Y`.
 @[reducible]
 protected
-theorem rw : X = Y → ν∈ X → ν∈ Y :=
-  λ H x, ⟨x.1, rw_constraint H x.2⟩
+theorem rw (p : X = Y) (x : ν∈ X) : ν∈ Y :=
+  ⟨x.1, rw_constraint p x.2⟩
 
 @[reducible]
 protected
@@ -40,20 +40,14 @@ def insert_self (a : V) (X : vs V) : ν∈ insert a X :=
 -- variable.
 @[reducible]
 protected
-def erase (x : ν∈ insert a X) : x.1 ≠ a → ν∈ X :=
-  λ x_ne_a, ⟨x.1, vset.prop_rm_insert_if_ne x.2 x_ne_a⟩
+def erase (x : ν∈ insert a X) (p : x.1 ≠ a) : ν∈ X :=
+  ⟨x.1, vset.prop_rm_insert_if_ne x.2 p⟩
 
 -- Insert a variable name into the free variable set.
 @[reducible]
 protected
 def insert (a : V) (x : ν∈ X) : ν∈ insert a X :=
   ⟨x.1, vset.prop_insert a x.2⟩
-
--- Replace the free variable set of a variable name with another if the given
--- variable name equals the inserted one.
-@[reducible]
-def replace_of_eq : a = b → ν∈ insert b X :=
-  λ a_eq_b, ⟨a, vset.prop_insert_self_if_eq X a_eq_b⟩
 
 -- Update a function on names with an extra argument and a matching result.
 @[reducible]
@@ -66,13 +60,13 @@ def update (a b : V) (F : X →ν Y) (x : ν∈ insert a X) : ν∈ insert b Y :
 
 -- Map the free variable set from `X` to `Y` if `x.1 ∈ Y`.
 @[reducible]
-def map_of_mem (x : ν∈ X) : x.1 ∈ Y → ν∈ Y :=
-  λ px, ⟨x.1, px⟩
+def map_of_mem (x : ν∈ X) (p : x.1 ∈ Y) : ν∈ Y :=
+  ⟨x.1, p⟩
 
 -- Map the free variable set from `X` to `Y` if `X ⊆ Y`.
 @[reducible]
-def map_of_subset : X ⊆ Y → ν∈ X → ν∈ Y :=
-  λ P x, ⟨x.1, vset.prop_mem_of_subset P x.2⟩
+def map_of_subset (p : X ⊆ Y) (x : ν∈ X) : ν∈ Y :=
+  ⟨x.1, vset.prop_mem_of_subset p x.2⟩
 
 theorem eq_of_erase_insert {a : V} (x : ν∈ X) (x_ne_a : x.1 ≠ a)
 : vname.erase (vname.insert a x) x_ne_a = x :=
