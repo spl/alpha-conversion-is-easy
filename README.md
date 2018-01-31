@@ -1,7 +1,6 @@
-This is an attempt to use [Lean](https://leanprover.github.io/) to implement a
-proof of [Alpha-conversion is
-easy](http://www.cs.nott.ac.uk/~psztxa/publ/alpha-draft.pdf) by Thorsten
-Altenkirch.
+This is an attempt — so far unsuccessful — to implement a proof of
+[Alpha-conversion is easy](./doc/alpha-conversion-is-easy.pdf) by Thorsten
+Altenkirch in [Lean](https://leanprover.github.io/).
 
 ## Get
 
